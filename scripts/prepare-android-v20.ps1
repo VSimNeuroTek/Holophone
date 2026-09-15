@@ -20,6 +20,19 @@ else {
     Write-Host 'ATTENTION : patch MainActivity immersif absent.' -ForegroundColor Yellow
 }
 
+# Holophone 3.3.0 : contrôle dynamique de la miniature Android / FLAG_SECURE.
+$PrivacyPatch = Join-Path $ProjectRoot 'scripts\patches\android\PrivacyControlPlugin.java'
+$PrivacyTarget = Join-Path $ProjectRoot 'android\app\src\main\java\com\mudva\lumen\PrivacyControlPlugin.java'
+if (Test-Path $PrivacyPatch) {
+    $PrivacyDir = Split-Path -Parent $PrivacyTarget
+    if (-not (Test-Path $PrivacyDir)) { New-Item -ItemType Directory -Force -Path $PrivacyDir | Out-Null }
+    Copy-Item -LiteralPath $PrivacyPatch -Destination $PrivacyTarget -Force
+    Write-Host 'PrivacyControlPlugin restaure.' -ForegroundColor Green
+}
+else {
+    Write-Host 'ATTENTION : patch PrivacyControlPlugin absent.' -ForegroundColor Yellow
+}
+
 if (-not (Test-Path $ManifestPath)) {
     throw "AndroidManifest.xml introuvable : $ManifestPath"
 }

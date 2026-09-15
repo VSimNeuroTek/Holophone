@@ -4,7 +4,7 @@
 (() => {
   'use strict';
 
-  const STABLE_VERSION = '3.2.3';
+  const STABLE_VERSION = '3.3.0';
   const SCHEMA_VERSION = 3200;
   const SCHEMA_KEY = 'v3.schemaVersion';
   const MIGRATION_LOG_KEY = 'v3.migrationLog';
@@ -478,7 +478,7 @@
       ts:Date.now(),contacts:copy(CONTACTS),convs:copy(CONVS),curCt:String(curCt||''),
       auto:copy(AUTO),voice:copy(VOICE),search:copy(SEARCH),gen:copy(GEN),braindance:copy(BDCFG),
       actions:copy(ACTCFG),user:copy(USER),spot:copy(SPOT),theme:copy(THEME),startup:copy(STARTCFG),audio:copy(AUDIOCFG),
-      api:copy(API),v2:(window.HolophoneV2&&window.HolophoneV2.cfg)?copy(window.HolophoneV2.cfg):null
+      api:copy(API),privacy:(typeof PRIVACYCFG!=='undefined'?copy(PRIVACYCFG):null),language:(window.HolophoneI18n?copy(window.HolophoneI18n.exportState()):null),v2:(window.HolophoneV2&&window.HolophoneV2.cfg)?copy(window.HolophoneV2.cfg):null
     };
     state.restorePoint=cp;return cp;
   }
@@ -488,13 +488,15 @@
     CONTACTS=copy(cp.contacts)||[];CONVS=copy(cp.convs)||[];curCt=cp.curCt||((CONTACTS[0]&&CONTACTS[0].id)||null);cur=null;
     Object.assign(AUTO,copy(cp.auto)||{});Object.assign(VOICE,copy(cp.voice)||{});Object.assign(SEARCH,copy(cp.search)||{});Object.assign(GEN,copy(cp.gen)||{});
     Object.assign(BDCFG,copy(cp.braindance)||{});ACTCFG=copy(cp.actions)||ACTCFG;Object.assign(USER,copy(cp.user)||{});Object.assign(SPOT,copy(cp.spot)||{});
-    Object.assign(THEME,copy(cp.theme)||{});STARTCFG=copy(cp.startup)||STARTCFG;AUDIOCFG=copy(cp.audio)||AUDIOCFG;Object.assign(API,copy(cp.api)||{});
+    Object.assign(THEME,copy(cp.theme)||{});STARTCFG=copy(cp.startup)||STARTCFG;AUDIOCFG=copy(cp.audio)||AUDIOCFG;Object.assign(API,copy(cp.api)||{});if(cp.privacy&&typeof PRIVACYCFG!=='undefined'){PRIVACYCFG=copy(cp.privacy)||PRIVACYCFG}
     if(cp.v2&&window.HolophoneV2&&window.HolophoneV2.cfg)Object.assign(window.HolophoneV2.cfg,copy(cp.v2));
     try{normalizeActions()}catch(e){}try{bdNormalizeCfg()}catch(e){}try{audioNormalize()}catch(e){}try{applyUiTheme(THEME.ui)}catch(e){}
     await saveCoreSettings();
     try{await saveAuto();await saveVoice();await saveSearch();await saveUser();await saveGen();await saveSpot()}catch(e){}
     try{await Store.set(K.key,JSON.stringify(API.keys));await Store.set(K.model,API.model);await Store.set(K.prov,API.prov)}catch(e){}
     try{if(window.HolophoneV2&&window.HolophoneV2.cfg)await Store.set('v2.config',JSON.stringify(window.HolophoneV2.cfg))}catch(e){}
+    try{if(typeof savePrivacy==='function')await savePrivacy();if(typeof applyPrivacyNative==='function')await applyPrivacyNative()}catch(e){}
+    try{if(cp.language&&window.HolophoneI18n)await window.HolophoneI18n.importState(cp.language)}catch(e){}
     try{await audioLibraryHydrate()}catch(e){}
     state.restorePoint=null;return true;
   }

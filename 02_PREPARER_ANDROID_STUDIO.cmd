@@ -3,7 +3,7 @@ setlocal EnableExtensions
 cd /d "%~dp0"
 
 echo ============================================================
-echo  HOLOPHONE 3.2.2 - VSNT SYSTEM PROFILE
+echo  HOLOPHONE 3.3.0 - I18N + PRIVACY
 echo ============================================================
 echo.
 
@@ -52,7 +52,7 @@ if errorlevel 1 (
 
 echo.
 echo Projet pret.
-echo Release Android attendue : versionName 3.2.2 / versionCode 49
-echo Pour une release complete, utilise RELEASE_3.2.2.cmd
+echo Release Android attendue : versionName 3.3.0 / versionCode 51
+echo Pour une release complete, utilise RELEASE_3.3.0.cmd
 echo.
 pause

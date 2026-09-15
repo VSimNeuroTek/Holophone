@@ -32,13 +32,14 @@ if($VersionCode -lt 1){throw 'VersionCode doit etre positif.'}
 $IndexPath = Join-Path $ProjectRoot 'www\index.html'
 $V2Path = Join-Path $ProjectRoot 'www\js\holophone-v2.js'
 $GradlePath = Join-Path $ProjectRoot 'android\app\build.gradle'
-$TestScript = Join-Path $PSScriptRoot 'test-stable-v323.js'
+$TestScript = Join-Path $PSScriptRoot 'test-stable-v330.js'
 $PrepareScript = Join-Path $PSScriptRoot 'prepare-android-v20.ps1'
 $PatchSource = Join-Path $PSScriptRoot 'patches\local-notifications\SoundResolver.kt'
 $PatchTarget = Join-Path $ProjectRoot 'node_modules\@capacitor\local-notifications\android\src\main\kotlin\com\capacitorjs\plugins\localnotifications\SoundResolver.kt'
 $MainPatch = Join-Path $PSScriptRoot 'patches\android\MainActivity.java'
+$PrivacyPatch = Join-Path $PSScriptRoot 'patches\android\PrivacyControlPlugin.java'
 
-foreach($required in @($IndexPath,$V2Path,$GradlePath,$TestScript,$PrepareScript,$MainPatch)){
+foreach($required in @($IndexPath,$V2Path,$GradlePath,$TestScript,$PrepareScript,$MainPatch,$PrivacyPatch)){
     if(-not (Test-Path $required)){throw "Fichier requis absent : $required"}
 }
 

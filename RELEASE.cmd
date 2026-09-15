@@ -4,8 +4,8 @@ cd /d "%~dp0"
 
 set "VERSION_NAME=%~1"
 set "VERSION_CODE=%~2"
-if "%VERSION_NAME%"=="" set "VERSION_NAME=3.2.3"
-if "%VERSION_CODE%"=="" set "VERSION_CODE=50"
+if "%VERSION_NAME%"=="" set "VERSION_NAME=3.3.0"
+if "%VERSION_CODE%"=="" set "VERSION_CODE=51"
 
 echo ============================================================
 echo  HOLOPHONE - RELEASE %VERSION_NAME% / CODE %VERSION_CODE%

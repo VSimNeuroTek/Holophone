@@ -1,13 +1,720 @@
-# HOLOPHONE — DOCUMENT MAÎTRE DE PASSATION 3.0.0
+# HOLOPHONE MASTER HANDOFF 3.3.0
 
-**Référence actuelle : Holophone 3.0.0 — Lot 1 Stabilisation technique**  
-**Android : `versionName "3.0.0"` / `versionCode 41`**  
-**Schéma de données : `3000`**  
+## Validation de ce lot
+
+- recette statique : 54/54 ;
+- `npx cap sync android` : OK ;
+- packs FR/EN présents dans les assets Android ;
+- Gradle : bloqué avant compilation par `UnknownHostException: services.gradle.org`.
+
+
+## État courant
+
+Version cible : **3.3.0** — Android `versionCode 51` — schéma structuré `3200`.
+
+Cette version est cumulative sur 3.2.3 et introduit l'internationalisation collaborative ainsi que la confidentialité dynamique des notifications et de l'aperçu Android.
+
+# Holophone 3.3.0 — Architecture i18n & confidentialité
+
+## Objectif
+
+Holophone reste **French-first** : `fr-FR` est la langue de référence, la langue par défaut et le fallback ultime. L'anglais est livré en standard. Des packs communautaires JSON peuvent être importés sans modifier ni recompiler l'application.
+
+## Moteur i18n
+
+Fichier runtime : `www/js/holophone-i18n.js`.
+
+Packs intégrés :
+- `www/lang/fr-FR.json`
+- `www/lang/en.json`
+
+État local :
+- `v7.language` : code actif ;
+- `v7.languagePacks` : packs communautaires importés.
+
+Un pack contient :
+- `meta` : code, noms, version, auteur ;
+- `strings` : clés stables ;
+- `legacyText` facultatif : traduction des textes historiques français ;
+- `legacyAttrs` facultatif : placeholders, title et aria-label historiques.
+
+Si une clé manque : pack actif → Français → clé technique en dernier recours. Une traduction communautaire ancienne ne bloque donc jamais une version plus récente de Holophone.
+
+Les packs importés sont limités à 1 MiB, validés avant installation, stockés localement et inclus dans les sauvegardes Holophone.
+
+## À propos
+
+Les drapeaux FR / EN ne maintiennent plus un réglage séparé. Ils sont des raccourcis vers la langue globale de l'application.
+
+## Confidentialité
+
+État local `v7.privacy` :
+
+```json
+{
+  "anonymousNotifications": true,
+  "recentsPreview": "auto"
+}
+```
+
+### Notifications
+
+- `true` : titre `Holophone`, corps générique ;
+- `false` : titre = prénom configuré de la persona, corps = aperçu du message, tronqué.
+
+Les notifications déjà planifiées sont annulées lorsqu'on change ce réglage pour éviter qu'un ancien contenu ne subsiste.
+
+### Aperçu Android dans les applications récentes
+
+Modes :
+- `auto` : masqué si le PIN Holophone est actif, visible sinon ;
+- `hide` : toujours masquer ;
+- `show` : toujours afficher.
+
+Le plugin natif `PrivacyControlPlugin` applique dynamiquement :
+- Android 13+ : `setRecentsScreenshotEnabled(...)` ;
+- Android 12 et antérieurs : ajout/retrait de `FLAG_SECURE`.
+
+Au lancement, `MainActivity` masque d'abord l'aperçu par sécurité ; le réglage utilisateur est appliqué dès que le runtime web est prêt. Le mode immersif edge-to-edge reste indépendant.
+
+## Sauvegardes
+
+La sauvegarde v12 inclut désormais :
+- `privacy` ;
+- `language.active` ;
+- les packs communautaires.
+
+Le checkpoint transactionnel de restauration couvre lui aussi ces deux domaines.
+
+
+---
+
+## Historique / handoff 3.2.3
+
+# HOLOPHONE — DOCUMENT MAÎTRE DE PASSATION 3.2.3
+
+**Référence actuelle : Holophone 3.2.3 — Continuité vivante + VSNT System Profile bilingue / header centré**  
+**Android : `versionName "3.2.3"` / `versionCode 50`**  
+**Schéma de données : `3200`**  
 **Package historique conservé : `com.mudva.lumen`**
 
 Ce fichier est la référence à transmettre à une nouvelle conversation avec le dernier projet source ou le dernier patch effectivement installé.
 
-> **Priorité documentaire :** les règles de cette section 3.0.0 remplacent toute règle contradictoire présente dans la consolidation 2.9.0 plus bas. La partie 2.9.0 est conservée parce qu'elle contient l'architecture métier complète et l'historique utile.
+> **Priorité documentaire :** le **Delta courant 3.2.3** ci-dessous prime sur toute règle contradictoire des sections historiques. Les sections 3.1.x et antérieures sont conservées pour comprendre les choix et les compatibilités, mais ne doivent pas être prises comme l'état courant lorsqu'elles divergent.
+
+---
+
+# 0. Delta courant 3.2.3 — à lire en premier
+
+## 0.1 Position
+
+La 3.2.3 est une révision cumulative de présentation de la 3.2.2. Elle ne modifie ni le schéma 3200, ni la Continuité vivante, ni la mémoire, ni les données de Persona.
+
+Elle remplace le petit dock latéral de la page `À propos` par un en-tête fixe centré.
+
+## 0.2 En-tête À propos
+
+Ordre visuel fixe :
+
+```text
+LOGO VSNT centré (~3 cm)
+À PROPOS / ABOUT centré
+🇫🇷   🇬🇧
+```
+
+Le logo définitif est rendu à `114 × 114 CSS px`, sans bordure ni halo CSS ajouté. Sur les écrans très étroits, il descend à 108 px. Les drapeaux sont agrandis à `48 × 34 px`. Le bouton fermer reste en haut à droite de la même zone.
+
+La zone est hors du conteneur `.cfg` et reste donc visible pendant le défilement.
+
+## 0.3 Langue
+
+La traduction FR/EN reste locale et instantanée. La préférence reste enregistrée sous `v7.aboutLang`.
+
+## 0.4 Référence versions
+
+```text
+APPV          3.2.3
+V2 engine     3.2.3
+stability     3.2.3
+versionCode   50
+schemaVersion 3200
+```
+
+Le patch `APPLIQUER_PATCH_3.2.3.cmd` est cumulatif et accepte 3.1.4, 3.2.0, 3.2.1, 3.2.2 ou 3.2.3.
+
+---
+
+# Delta historique 3.2.2
+
+# 0. Delta courant 3.2.2 — à lire en premier
+
+## 0.1 Position
+
+La 3.2.2 est une révision cumulative de présentation de la 3.2.1. Elle ne change ni le schéma 3200, ni la Continuité vivante, ni la mémoire, ni les données de Persona.
+
+Elle corrige le logo VSNT absent de l'APK 3.2.1 et transforme `À propos` en page bilingue FR/EN avec logo fixe.
+
+## 0.2 Logo À propos
+
+Le PNG définitif fourni par l'utilisateur est embarqué explicitement dans `www/media/vsnt-logo-full.png` et conservé dans `assets/branding/vsnt-logo-full-source.png`. Les deux fichiers doivent rester identiques.
+
+Le logo est affiché dans le bandeau fixe de la page `À propos` : **76 × 76 CSS px**, sans bordure/encadrement CSS. Le bandeau ne défile pas ; le logo reste donc visible pendant la lecture sans masquer les cartes techniques.
+
+## 0.3 Bilingue local
+
+Deux boutons drapeaux permettent de basculer instantanément :
+
+```text
+🇫🇷 Français
+🇬🇧 English
+```
+
+La traduction est entièrement embarquée dans l'application, sans appel réseau ni IA. La préférence est enregistrée sous `v7.aboutLang`. Sans préférence, la locale de l'appareil décide entre français et anglais.
+
+## 0.4 Référence versions
+
+```text
+APPV          3.2.2
+V2 engine     3.2.2
+stability     3.2.2
+versionCode   49
+schemaVersion 3200
+```
+
+Le patch `APPLIQUER_PATCH_3.2.2.cmd` est cumulatif et accepte 3.1.4, 3.2.0, 3.2.1 ou 3.2.2.
+
+---
+
+# Delta historique 3.2.1
+
+# 0. Delta courant 3.2.1 — à lire en premier
+
+## 0.1 Position
+
+La 3.2.1 est une révision de présentation cumulative de la 3.2.0. Elle **ne modifie pas la Persona, la mémoire, la continuité ou le schéma de données**.
+
+Elle remplace entièrement l'ancienne page `À propos` par une fiche système VSim NeuroTek plus cohérente avec le niveau actuel de Holophone.
+
+## 0.2 Identité produit
+
+```text
+Holophone™
+VSim NeuroTek (VSNT)
+Synthetic Presence Systems
+Connecting Minds & Bytes.
+```
+
+Le héros de la page affiche :
+
+```text
+Holophone™ · Adaptive Persona Interface
+Persistent Persona
+Temporal Continuity
+Local-First
+Multimodal Runtime
+```
+
+Les six modules présentés sont :
+
+```text
+Persona Runtime
+Memory Fabric
+Temporal Engine
+Interaction Layer
+Initiative Core
+Privacy Architecture
+```
+
+Le texte doit rester techniquement fidèle au produit : aucune prétention à une interface cerveau-machine ou à des fonctions absentes. Les données persistantes sont locales ; les services externes reçoivent uniquement les informations nécessaires aux fonctions appelées. Les clés API/service ne sont pas embarquées dans la distribution.
+
+Le logo `www/media/vsnt-logo-full.png` reste orange sur fond noir et ne suit pas la recoloration des thèmes.
+
+## 0.3 Référence versions
+
+```text
+APPV          3.2.1
+V2 engine     3.2.1
+stability     3.2.1
+versionCode   48
+schemaVersion 3200
+```
+
+Le patch `APPLIQUER_PATCH_3.2.1.cmd` est cumulatif et accepte 3.1.4 ou 3.2.0.
+
+---
+
+# 1. Socle fonctionnel 3.2.0 — Continuité vivante
+
+## 0.1 Position dans le projet
+
+La 3.0.0 a gelé le Lot 1 (stabilité/sécurité). La 3.1.0 a démarré le Lot 2 avec une présence intérieure simple. Les 3.1.1 à 3.1.4 ont consolidé boot/branding, médias, Persona neutre et Android immersif.
+
+La **3.2.0** reprend l'évolution de la Persona avec quatre axes liés :
+
+```text
+humeur avec continuité
++ temps écoulé
++ vie hors conversation
++ initiatives causales
+```
+
+Cette version n'ajoute volontairement **aucune jauge d'amour** et ne refond pas encore la mémoire longue ou la relation. Ces mécanismes sont gardés pour une évolution séparée afin de pouvoir observer ce que chaque couche change réellement.
+
+## 0.2 Versions de référence
+
+```text
+APPV                3.2.0
+V2 engine           3.2.0
+stability           3.2.0
+versionCode         47
+schemaVersion       3200
+presence.version    2
+emotion.version     1
+life.version        2
+auto snapshot       v4 / schema 3200
+```
+
+Release recommandée :
+
+```text
+APPLIQUER_PATCH_3.2.0.cmd
+RELEASE_3.2.0.cmd
+```
+
+Ne pas modifier `android/app/build.gradle` à la main : `scripts/release-safe.ps1` applique et contrôle `versionName/versionCode`, fait le backup du Gradle, synchronise Capacitor, restaure les patches natifs puis relance la recette.
+
+## 0.3 Émotion vécue
+
+Le moteur historique `mood/fond` reste en place. La 3.2 ajoute autour de lui un état persistant explicite :
+
+```text
+contact.emotion
+  family
+  nuance
+  level
+  startedAt
+  updatedAt
+  causeType
+  cause
+  undertone
+  undertoneLevel
+  stability
+  lastTransitionAt
+```
+
+Fonctions de référence :
+
+```text
+emotion(c, conv)
+emotionSync(c, conv, causeType, causeText, meaningful)
+emotionCauseFromConversation(c, conv)
+emotionDuration(e)
+emotionLabel(e)
+```
+
+Les causes sont uniquement des faits/contextes gérés par Holophone : dernier échange, activité, Refuge, silence, temps écoulé, expression de la persona. Elles ne représentent pas et n'exposent pas une chaîne de pensée privée du modèle.
+
+Les wrappers de `moodStep`, `decayMood` et `degradeMood` synchronisent l'émotion vécue lorsque l'humeur évolue.
+
+## 0.4 Présence v2
+
+`contact.presence` passe à `version:2` et conserve notamment :
+
+```text
+energy
+connection
+curiosity
+autonomy
+focus
+thought
+motive / motiveTs
+lastObservedAt
+offlineGapMs
+lastGapEventTs
+lastLifeCatchupAt
+lastDecision / lastDecisionTs
+recent[]
+```
+
+`connection` signifie **envie momentanée de contact**, jamais amour/affection/niveau de relation.
+
+Le bloc de contexte `presenceBlock()` peut fournir au modèle l'état du moment, l'émotion vécue et quelques activités récentes. Il doit rester concis et le prompt demande au personnage de ne pas réciter les jauges ni expliquer mécaniquement sa cause émotionnelle.
+
+## 0.5 Vie hors conversation
+
+L'ancienne activité aléatoire instantanée est remplacée par une continuité persistante :
+
+```text
+contact.life
+contact.lifeTrail[]
+```
+
+Fonctions de référence :
+
+```text
+activityPool(ts)
+lifeTrail(c)
+lifeScheduledName(c, ts)
+lifeMakeBlock(c, start, previous)
+lifeRemember(c, block)
+lifeRecent(c, hours)
+updateActivity(c, force)
+activityContinuityText(c)
+activityBlock(c)
+```
+
+Au retour dans l'app, `updateActivity()` rattrape les blocs écoulés pendant la fermeture. Le rattrapage est borné (`guard`) et l'historique est limité afin de ne pas faire gonfler les données ou les prompts.
+
+Les horaires configurés sont évaluables à un timestamp arbitraire grâce à :
+
+```text
+schedState(c, ts)
+```
+
+Sommeil et travail sont donc reconstruits dans le passé au lieu d'être évalués uniquement au moment de la réouverture.
+
+La vie générée doit rester **ordinaire, cohérente et autonome**. Ne pas réintroduire un prompt qui force l'invention d'un événement spectaculaire pour justifier une initiative.
+
+## 0.6 Temps logique
+
+La présence mémorise la dernière observation et la durée d'absence. Une absence significative peut produire un événement local `time`, y compris lorsqu'une journée a changé.
+
+Cela complète les utilitaires historiques de date/heure (`dateLabel`, `whenLabel`, `aiClock`, etc.) sans les remplacer.
+
+## 0.7 Initiatives causales
+
+Nouvelle fonction centrale :
+
+```text
+initiativeDecision(c, conv)
+```
+
+Elle produit :
+
+```text
+{
+  allow,
+  score,
+  reason,
+  category,
+  ts,
+  gapMs
+}
+```
+
+Les facteurs incluent :
+
+- envie de contact ;
+- curiosité ;
+- énergie ;
+- autonomie ;
+- temps depuis le dernier échange ;
+- sommeil/travail ;
+- délai depuis la dernière initiative ;
+- activité/focus ;
+- continuité de vie récente.
+
+Le moteur peut et doit parfois conclure : **pas de raison forte d'écrire maintenant**.
+
+Les règles utilisateur restent au-dessus de ce moteur. `mayInit()` applique d'abord les réglages historiques, puis la décision causale. Une option initiative désactivée ne peut donc jamais être contournée.
+
+Hooks disponibles :
+
+```text
+window.holoPresenceDecision
+window.holoPresenceInitiative
+window.holoPresenceScheduled
+window.holoPresenceDelivered
+```
+
+`spontaneous()` et `planPushes()` peuvent recevoir la raison interne retenue. La formulation reste faite par Gemini.
+
+## 0.8 Écran Vie de la Persona
+
+`Réglages > Persona > Vie de <prénom>` affiche désormais des états explicites entretenus par Holophone :
+
+```text
+Humeur vivante
+- émotion
+- intensité
+- durée
+- sous-ton
+- cause
+- stabilité
+
+Vie entre les messages
+- activité courante
+- prochaine activité
+- activités récentes
+
+Élan du moment
+- initiative plausible / non
+- raison locale
+
+Présence
+- énergie
+- envie momentanée de contact
+- curiosité
+- autonomie
+```
+
+Ce panneau n'est **pas** un accès aux pensées cachées du modèle. Ne jamais le présenter comme tel.
+
+## 0.9 Migration et restauration
+
+Migration `holophone-stability.js` :
+
+```text
+living-continuity-3.2.0 → schema 3200
+```
+
+Elle normalise :
+
+```text
+presence.version = 2
+emotion.version = 1
+life.version = 2
+lifeTrail = [] si absent
+```
+
+`migrateData()` dans V2 répète volontairement une normalisation légère. Raison : une restauration d'un snapshot ancien peut injecter des contacts anciens dans une session déjà démarrée ; ces données doivent être remises au format courant sans attendre un redémarrage complet.
+
+Les snapshots automatiques passent à :
+
+```text
+app: holophone-auto-snapshot
+v: 4
+schemaVersion: 3200
+```
+
+Les sauvegardes complètes v12 restent le mécanisme principal et continuent de bénéficier du SHA-256 + rollback introduits en 3.0.0.
+
+## 0.10 Reset de l'esprit
+
+Le reset ciblé de l'esprit efface maintenant aussi les états acquis de continuité :
+
+```text
+aff
+timeline
+life
+lifeTrail
+presence
+emotion
+threads
+```
+
+L'identité/persona configurée et les médias sont conservés conformément à l'objectif historique du reset.
+
+## 0.11 Persona neutre : règle toujours impérative
+
+La règle 3.1.4 reste absolue : **aucun prénom historique ne doit être codé en dur dans le code de production**.
+
+Le nom visible vient de :
+
+```text
+characterName(c)
+characterFullName(c)
+```
+
+Fallback neutre : `Persona`.
+
+Les rôles persistés restent `character`. Les clés et IndexedDB restent neutres. Les migrations historiques assurent la compatibilité.
+
+## 0.12 Android / identité / médias : invariants 3.1.x à conserver
+
+Toujours actifs :
+
+- boot : PIN/biométrie avant splash ; splash devant tout écran métier ;
+- identité : Holophone™ / VSim NeuroTek (VSNT) / `Connecting Minds & Bytes` ;
+- logo À propos : visuel néon orange sur fond noir ;
+- launcher : symbole VSNT blanc sur fond transparent ;
+- 4 styles de splash animés ;
+- Android full immersive status+navigation bars, barres transitoires par swipe ;
+- safe areas/cutout ;
+- `FLAG_SECURE` ;
+- catalogue Vidéos/Musique transactionnel + IndexedDB dédiée ;
+- notifications anonymisées ;
+- bibliothèque MP3 et sons Android personnalisés ;
+- thèmes 2.9 ;
+- Braindance isolée du chat ;
+- rôles d'interaction configurables ;
+- sauvegardes v12 transactionnelles.
+
+## 0.13 Validation de référence 3.2.0
+
+Recette :
+
+```text
+scripts/test-stable-v320.js
+56/56 contrôles OK
+```
+
+Résultat obtenu avant et après `cap sync android` : **56/56 OK**.
+
+Capacitor détecte les cinq plugins attendus :
+
+```text
+@capacitor/app@8.1.1
+@capacitor/filesystem@8.1.3
+@capacitor/keyboard@8.0.5
+@capacitor/local-notifications@8.3.1
+@mindlib-capacitor/send-intent@8.0.6
+```
+
+Le test Gradle ne peut pas atteindre la compilation dans l'environnement de génération car `services.gradle.org` est inaccessible lors du téléchargement de Gradle 8.14.3. Ne jamais présenter ce blocage réseau comme une réussite ou un échec de compilation du code.
+
+## 0.14 Suite prévue du Lot 2
+
+La prochaine grande évolution logique doit rester distincte de 3.2.0 :
+
+1. **Mémoire plus humaine** : importance, certitude, caractère vague/précis, associations émotionnelles, goûts qui évoluent.
+2. **Relation évolutive** : dimensions lentes et indépendantes (familiarité, confiance, complicité, sécurité, curiosité, désir, etc.), sans score global d'amour ni gamification.
+3. **Présence visuelle** ensuite : micro-transitions/avatar basées sur des états internes déjà stabilisés.
+
+Ne pas fusionner ces trois étapes dans une seule modification non mesurable.
+
+---
+
+# Historique consolidé jusqu'à 3.1.4
+
+# H1. Historique 3.1.4 — Persona neutre & Android full immersive
+
+## Persona neutre
+
+Le code métier/UI ne contient plus de prénom de personnage codé en dur. Le personnage actif est nommé par `characterName(c)` / `characterFullName(c)`. Le fallback est `Persona` uniquement lorsqu'aucun prénom n'est renseigné.
+
+Les rôles persistés utilisent `character` au lieu d'un prénom. La migration `persona-neutral-3.1.4` passe le schéma à **3140** et normalise les anciennes conversations, réponses, propositions Refuge et propriétaires de mémoire sans effacer les données.
+
+Les anciennes clés SecureStore/localStorage, l'ancien nom IndexedDB et les identifiants d'anciens formats de sauvegarde restent lisibles via une compatibilité construite dynamiquement, puis sont migrés vers des identifiants neutres. Ne jamais réintroduire un prénom comme clé, rôle, ID ou nom de base.
+
+Audit de référence : **zéro occurrence du prénom historique dans le code de production Web + Android + scripts**. Les documents historiques et les données saisies par l'utilisateur peuvent évidemment contenir un prénom.
+
+## Réglages
+
+La catégorie `Personnage` est renommée **Persona**. Les sous-écrans utilisent le prénom configuré lorsqu'ils s'adressent explicitement au personnage.
+
+## Android full immersive
+
+`MainActivity` masque désormais **barre de statut + barre de navigation** et étend Holophone aux bords physiques avec AndroidX WindowInsets. Le mode est réappliqué à `onCreate`, `onResume`, `onPostResume` et au retour de focus.
+
+Android peut faire apparaître temporairement ses barres par un swipe depuis un bord (`BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE`) ; Holophone ne doit pas passer en mode kiosque.
+
+Le cutout/poinçon est autorisé en `SHORT_EDGES`, tandis que le contenu Web respecte les `safe-area-inset-*` : cadre au bord, commandes protégées.
+
+Patch natif canonique :
+
+```text
+scripts/patches/android/MainActivity.java
+```
+
+`prepare-android-v20.ps1` le restaure après `cap sync android`.
+
+## Release
+
+```text
+versionName 3.1.4
+versionCode 46
+schemaVersion 3140
+```
+
+Utiliser `RELEASE_3.1.4.cmd`. Recette de référence : **50/50 OK avant/après synchro Capacitor**.
+
+---
+
+# Historique consolidé antérieur
+
+
+# 0. Delta courant 3.1.3 — à lire en premier
+
+La 3.1.3 conserve intégralement le moteur Judy / présence 3.1.0, le boot atomique 3.1.1 et le branding VSNT / launcher 3.1.2. Elle corrige la persistance du catalogue **Vidéos YouTube / Musique Spotify** et remplace le visuel de la page À propos.
+
+## 0.1 Catalogue Vidéos & musique
+
+Avant 3.1.3, `c.bd` et `c.mus` étaient persistés uniquement dans `v7.contacts`. L'interface ne relisait pas le stockage après ajout ; un échec pouvait donc laisser l'objet visible en RAM sans garantie après redémarrage.
+
+La 3.1.3 ajoute une copie dédiée IndexedDB :
+
+```text
+meta_media_catalog_v1
+```
+
+Chaque mutation suit désormais :
+
+```text
+RAM
+→ saveContacts()
+→ copie IndexedDB dédiée
+→ relecture IndexedDB
+→ validation
+```
+
+Fonctions de référence :
+
+```text
+mediaCatalogRead()
+mediaCatalogWriteFor(c)
+persistMediaCatalog(c)
+mediaCatalogHydrate()
+mediaCatalogSyncAll()
+```
+
+Au démarrage, `mediaCatalogHydrate()` restaure le catalogue avant l'affichage métier. Lors d'une restauration complète, `mediaCatalogSyncAll()` aligne la copie dédiée avec la sauvegarde restaurée.
+
+La clé `meta_media_catalog_v1` est considérée comme référencée par l'inventaire média afin de ne pas créer de faux orphelin.
+
+## 0.2 Branding À propos
+
+Le logo complet néon orange sur fond noir nouvellement validé est la référence pour la page À propos :
+
+```text
+www/media/vsnt-logo-full.png
+assets/branding/vsnt-logo-full-source.png
+```
+
+SHA-256 de la source fournie :
+
+```text
+192f7602273ff15de32a06bf105eedec999579dd41ed4ff0755acb913fbc3071
+```
+
+Le splash garde l'animation SVG VSNT 3.1.2 et l'icône Android reste le symbole blanc transparent.
+
+## 0.3 Identité officielle
+
+```text
+Holophone™
+VSim NeuroTek (VSNT)
+Connecting Minds & Bytes
+```
+
+## 0.4 Release
+
+```text
+versionName 3.1.3
+versionCode 45
+schéma 3100
+```
+
+Utiliser :
+
+```text
+APPLIQUER_PATCH_3.1.3.cmd
+RELEASE_3.1.3.cmd
+```
+
+La recette de release est `scripts/test-stable-v313.js`.
+
+## 0.5 Fichiers nouveaux 3.1.3
+
+```text
+ARCHITECTURE_MEDIA_3.1.3.md
+CHANGEMENTS_3.1.3.md
+RELEASE_3.1.3.md
+VALIDATION_3.1.3.md
+TESTER_STABLE_3.1.3.cmd
+RELEASE_3.1.3.cmd
+scripts/test-stable-v313.js
+```
 
 ---
 
@@ -2209,3 +2916,89 @@ Leur contenu utile et encore applicable est consolidé dans ce document. Les ré
 ---
 
 **Fin du document maître — Holophone 2.9.0**
+
+
+---
+
+# Addendum 3.1.0 — Lot 2 / Présence de Judy
+
+## État de référence
+
+- Version applicative : **3.1.0**
+- Android `versionCode` : **42**
+- Schéma de données : **3100**
+- Socle 3.0.0 conservé ; aucune réinitialisation mémoire/personnage.
+
+## Présence intérieure
+
+La 3.1.0 ajoute une couche persistante `contact.presence` qui maintient entre les messages : énergie, envie momentanée de contact, curiosité, autonomie, focus, fil intérieur synthétique, motif possible d'initiative et chronologie récente.
+
+Important : `connection` n'est **pas** une jauge d'amour ou de relation. Elle représente uniquement l'envie de contact à un instant donné. L'autonomie sert notamment à éviter que Judy soit constamment centrée sur l'utilisateur.
+
+Le bloc `PRÉSENCE INTÉRIEURE` injecté dans le prompt est un contexte doux : il ne doit jamais être récité ni transformer une valeur locale en fait narratif.
+
+## Vie de Judy
+
+Nouvel écran : `Réglages > Personnage > Vie de <prénom>`. Il montre les états calculés, l'activité et la chronologie locale sans exposer de raisonnement privé du modèle.
+
+## Initiatives
+
+Le moteur d'initiative peut désormais s'appuyer sur un motif issu de la présence. Le motif est facultatif et doit rester compatible avec les faits persistés. Les événements planifiés/envoyés sont consignés dans la chronologie.
+
+## Migration
+
+Migration `judy-presence-3.1.0` vers schéma 3100. Elle est idempotente et complète les contacts existants sans toucher aux conversations, goûts, souvenirs, médias ni Interaction IDs.
+
+## Corrections Santé depuis le diagnostic 3.0.0
+
+- `refuge` est un type de message valide ;
+- `builtin` est un son de notification valide ;
+- les blobs MP3 de la bibliothèque audio sont référencés par l'inventaire médias ;
+- l'âge d'un snapshot ne passe en avertissement qu'au-delà d'un seuil cohérent avec la cadence maximale de 6 h.
+
+## Recette
+
+La recette statique 3.1.0 contient **31 contrôles**. Après `cap sync android`, le résultat de référence est **31/31 OK**.
+
+## Release
+
+Utiliser `RELEASE_3.1.0.cmd`, qui délègue au workflow sécurisé `RELEASE.cmd 3.1.0 42`. Ne pas recréer le keystore Android.
+
+---
+
+# Addendum 3.1.1 — VSim NeuroTek & boot splash atomique
+
+## État de référence
+
+- Version applicative : **3.1.1**
+- Android `versionCode` : **43**
+- Schéma de données : **3100** inchangé
+- Base : 3.1.0, présence intérieure de Judy conservée sans modification.
+
+## Identité produit
+
+Holophone porte désormais l'identité fictive suivante :
+
+- **Holophone™**
+- conçu par **VSim NeuroTek (VSNT)**
+- slogan exact : **Connecting Mind & Bytes.**
+
+Cette identité est visible dans le splash et dans `Réglages > Application > À propos`.
+
+## Démarrage
+
+Le splash devient un véritable écran de boot bloquant. `#app.preboot` masque tous les écrans métier ; seuls le verrou et le splash peuvent être visibles.
+
+Après validation PIN ou biométrique, le splash est peint sous le verrou avant que celui-ci soit retiré. L'ancien délai programmé de 120 ms est supprimé. L'interface n'est libérée qu'après la fin du jingle et la disparition du splash.
+
+Chemin attendu :
+
+`lancement -> PIN/biométrie -> splash Holophone™ / VSNT -> fin du jingle -> interface`.
+
+## Non-régression
+
+Ne pas réintroduire un `setTimeout` entre la réussite du déverrouillage et l'affichage du splash. Le module biométrique doit continuer à appeler `window.holoUnlockAfterAuth` afin de partager exactement le même chemin que le PIN.
+
+## Recette
+
+La recette statique 3.1.1 contient **33 contrôles** et doit rester entièrement verte avant et après `cap sync android`.

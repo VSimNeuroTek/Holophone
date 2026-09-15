@@ -1,0 +1,22 @@
+{
+  "meta": {
+    "code": "es-ES",
+    "name": "Spanish",
+    "nativeName": "Español",
+    "version": 1,
+    "holophoneMinVersion": "3.3.0",
+    "author": "GitHub contributor"
+  },
+  "strings": {
+    "language.title": "Idioma",
+    "settings.language": "Idioma",
+    "privacy.title": "Privacidad"
+  },
+  "legacyText": {
+    "Réglages": "Ajustes",
+    "Sauvegarde": "Copia de seguridad"
+  },
+  "legacyAttrs": {
+    "Fermer": "Cerrar"
+  }
+}

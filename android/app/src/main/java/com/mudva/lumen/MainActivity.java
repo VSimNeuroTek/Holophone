@@ -19,6 +19,7 @@ public class MainActivity extends BridgeActivity {
         registerPlugin(VoiceCapturePlugin.class);
         registerPlugin(SecureStorePlugin.class);
         registerPlugin(AudioRoutePlugin.class);
+        registerPlugin(PrivacyControlPlugin.class);
 
         super.onCreate(savedInstanceState);
 

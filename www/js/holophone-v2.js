@@ -3,7 +3,7 @@
    les nouveaux sous-systèmes vivent ici afin de commencer la modularisation. */
 (() => {
   const V2 = window.HolophoneV2 = {
-    version: '3.2.3',
+    version: '3.3.0',
     cfg: { biometric:false, handsFree:false, route:'speaker', autoBackup:true,
       interactionRetentionDays:55, interactionRotateTokens:60000, interactionRotateTurns:110,
       imageContextTtlHours:2 },

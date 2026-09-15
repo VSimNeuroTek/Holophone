@@ -959,13 +959,19 @@ select{font-family:'Share Tech Mono';font-size:11px}
 .presenceevent b{display:block;font:600 13px/1.15 'Rajdhani',system-ui,sans-serif;color:var(--text)}
 .presenceevent i{display:block;margin-top:3px;font-style:normal;font-size:12px;line-height:1.3;color:var(--muted)}
 .presencequiet{color:var(--dim);font-size:12px;line-height:1.4}
+
+/* 3.3.0 — langue globale et confidentialité dynamique */
+.langhero{padding:13px 14px;border:1px solid var(--theme-border,#324047);background:rgba(255,255,255,.015);font-size:13px;line-height:1.45;color:var(--dim)}
+.langlist{display:flex;flex-direction:column;gap:7px;margin-top:8px}.langrow{display:flex;align-items:center;gap:10px;padding:10px 11px;border:1px solid var(--line);background:#080d0f}.langrow.on{border-color:var(--theme-accent,var(--teal));box-shadow:0 0 10px color-mix(in srgb,var(--theme-accent,var(--teal)) 18%,transparent)}
+.langrow .langpick{flex:1;text-align:left;background:transparent;border:0;color:var(--txt);cursor:pointer}.langrow .langpick b{display:block;font:700 15px/1.15 'Rajdhani',system-ui,sans-serif}.langrow .langpick i{display:block;margin-top:3px;font:9.5px/1.2 'Share Tech Mono',monospace;letter-spacing:.07em;color:var(--dim);font-style:normal;text-transform:uppercase}.langrow .langdel{flex:0 0 auto}
+.privacyblock{margin-top:15px;padding-top:2px}.privacychoices{display:grid;grid-template-columns:1fr;gap:7px;margin-top:8px}.privacychoice{display:flex;align-items:flex-start;gap:10px;padding:10px 11px;border:1px solid var(--line);background:#080d0f;color:var(--txt);text-align:left;cursor:pointer}.privacychoice .dot{width:13px;height:13px;margin-top:3px;border:1px solid var(--dim);border-radius:50%;flex:0 0 auto}.privacychoice.on{border-color:var(--theme-accent,var(--teal))}.privacychoice.on .dot{border-color:var(--theme-accent,var(--teal));background:var(--theme-accent,var(--teal));box-shadow:0 0 8px color-mix(in srgb,var(--theme-accent,var(--teal)) 35%,transparent)}.privacychoice b{display:block;font-size:14px}.privacychoice i{display:block;margin-top:2px;font-style:normal;font-size:12px;color:var(--dim)}
 </style>
  <link rel="stylesheet" href="css/holophone-v2.css">
 </head>
 <body>
 <div id="app" class="preboot">
  <div id="perfbar" class="perfbar" aria-label="Consommation de Holophone">
-  <span class="appver" id="appVersionBadge">Holophone v3.1.4</span>
+  <span class="appver" id="appVersionBadge">Holophone v3.3.0</span>
   <div class="perfmetrics">
    <div class="perfmetric cpu" id="perfCpu">
     <span class="plabel">CPU</span><span class="perfgauge"><b id="perfCpuBar"></b></span><em class="pval" id="perfCpuVal">--%</em>
@@ -1157,6 +1163,7 @@ select{font-family:'Share Tech Mono';font-size:11px}
      <button class="hubrow" id="goSave"><span class="ic">💾</span><span class="tt"><b>Sauvegarde</b><i id="saveState">à faire avant chaque nouvelle version</i></span><span class="chev">▸</span></button>
      <button class="hubrow" id="goStartup"><span class="ic">◉</span><span class="tt"><b>Démarrage & sons</b><i id="startupState">splash, jingle et notifications</i></span><span class="chev">▸</span></button>
      <button class="hubrow" id="goAppearance"><span class="ic">◇</span><span class="tt"><b>Apparence</b><i id="appearanceState">Holophone Original</i></span><span class="chev">▸</span></button>
+     <button class="hubrow" id="goLanguage"><span class="ic">文</span><span class="tt"><b>Langue</b><i id="langState">Français</i></span><span class="chev">▸</span></button>
      <button class="hubrow" id="goTheme"><span class="ic">⌨</span><span class="tt"><b>Clavier</b><i id="thState">—</i></span><span class="chev">▸</span></button>
      <button class="hubrow" id="goLock"><span class="ic">▤</span><span class="tt"><b>Verrouillage</b><i id="lockState">—</i></span><span class="chev">▸</span></button>
      <button class="hubrow" id="goHood"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 7h16"/><path d="M6 7l2-3h8l2 3"/><path d="M5 7v11h14V7"/><circle cx="9" cy="12" r="1.4"/><circle cx="15" cy="12" r="1.4"/><path d="M8 16h8"/></svg></span><span class="tt"><b>Sous le capot</b><i id="hoodState">diagnostic, stockage, génération</i></span><span class="chev">▸</span></button>
@@ -1397,14 +1404,37 @@ select{font-family:'Share Tech Mono';font-size:11px}
   </div>
  </div>
 
+ <!-- LANGUE -->
+ <div id="screenLanguage" class="hide" style="flex:1;display:flex;flex-direction:column;min-height:0">
+  <div class="title"><span id="langTitle">Langue</span><small id="langSub">Interface &amp; packs communautaires</small><button class="iconbtn" id="langBack">✕</button></div>
+  <div class="cfg">
+   <div class="langhero" id="langHelp">Le Français est la langue de référence de Holophone. Les packs communautaires peuvent traduire l’interface sans modifier le code. Toute clé absente retombe automatiquement sur le Français.</div>
+   <div class="sect" id="langInstalledTitle">Langues installées</div>
+   <div class="langlist" id="langList"></div>
+   <div class="rowb"><button class="mini g" id="langImport">Importer un fichier langue…</button><button class="mini" id="langTemplate">Exporter le modèle</button></div>
+   <input type="file" id="langFile" accept=".json,application/json" class="hide">
+   <div class="ok" id="langMsg"></div>
+  </div>
+ </div>
+
  <!-- VERROUILLAGE -->
  <div id="screenLock" class="hide" style="flex:1;display:flex;flex-direction:column;min-height:0">
-  <div class="title">Verrouillage<small>Code d'accès</small><button class="iconbtn" id="lkBack">✕</button></div>
+  <div class="title">Verrouillage<small>Code d'accès &amp; confidentialité</small><button class="iconbtn" id="lkBack">✕</button></div>
   <div class="cfg">
-   <div class="note">Un code à quatre chiffres demandé à l'ouverture, et au retour dans l'application après une minute d'absence. Le cadenas du bandeau permet de verrouiller à tout moment.</div>
+   <div class="note">Un code à quatre chiffres demandé à l'ouverture, et au retour dans l'application après une absence. Le cadenas du bandeau permet de verrouiller à tout moment.</div>
    <div class="note" style="color:var(--magenta);font-size:13.5px">À savoir : c'est un rideau, pas un coffre-fort. Le code empêche un regard curieux, il ne chiffre pas tes conversations.</div>
    <div class="rowb"><button class="mini g" id="lkSet">Définir un code</button>
     <button class="mini" id="lkOff">Retirer le code</button></div>
+   <div class="privacyblock">
+    <div class="sect" id="privacyTitle">Confidentialité</div>
+    <button class="chk on" id="privacyAnon" type="button" style="width:100%"><span class="bx">✓</span><span class="lb2"><b id="privacyAnonTitle">Notifications anonymes</b><i id="privacyAnonHint">nom et contenu masqués</i></span></button>
+    <div class="sect" id="privacyRecentsTitle">Aperçu dans les applications récentes</div>
+    <div class="privacychoices" id="privacyRecentsChoices">
+     <button class="privacychoice" type="button" data-recents="auto"><span class="dot"></span><span><b id="privacyAutoTitle">Automatique</b><i id="privacyAutoHint">masqué si le code PIN est actif</i></span></button>
+     <button class="privacychoice" type="button" data-recents="hide"><span class="dot"></span><span><b id="privacyHideTitle">Toujours masquer</b></span></button>
+     <button class="privacychoice" type="button" data-recents="show"><span class="dot"></span><span><b id="privacyShowTitle">Toujours afficher</b></span></button>
+    </div>
+   </div>
    <div class="ok" id="lkMsg"></div>
   </div>
  </div>
@@ -1504,7 +1534,7 @@ select{font-family:'Share Tech Mono';font-size:11px}
 
    <div class="sect">Son des notifications</div>
    <select id="notifAudioSelect"></select>
-   <div class="note" style="font-size:12.5px">Les notifications restent anonymes : <b>Holophone — X nouveau(x) message(s)</b>. Sur Android 8+, chaque morceau utilise son propre canal sonore afin que le changement soit réellement pris en compte.</div>
+   <div class="note" style="font-size:12.5px">Le contenu des notifications se règle dans <b>Application → Verrouillage</b>. Sur Android 8+, chaque morceau utilise son propre canal sonore afin que le changement soit réellement pris en compte.</div>
 
    <div class="sect">Bibliothèque audio</div>
    <input type="file" id="audioLibraryFile" accept=".mp3,audio/mpeg" class="hide" multiple>
@@ -1708,6 +1738,7 @@ select{font-family:'Share Tech Mono';font-size:11px}
  <div id="zoom"><div id="zoomBox"></div><div id="zoomCap"></div></div>
 </div>
 
+<script src="js/holophone-i18n.js"></script>
 <script>
 
 /* ===================== STOCKAGE ===================== */
@@ -1882,7 +1913,9 @@ const TTS={
 let audioEl=null;
 let AUTO={on:true};
 const saveAuto=()=>Store.set('v7.auto',JSON.stringify(AUTO));
-const APPV='3.2.3';
+const APPV='3.3.0';
+const uiT=(key,vars)=>window.HolophoneI18n?window.HolophoneI18n.t(key,vars):key;
+const appLang=()=>window.HolophoneI18n?window.HolophoneI18n.current():'fr-FR';
 /* --- FAMILLES : clé, nom, couleur, valence, énergie --- */
 const FAM=[
  ['calme','Calme','#8aa0a8', 0.20,-0.60],
@@ -4250,7 +4283,9 @@ function refreshSys(){
  $('#sysSub').textContent=fullName(c)||'—';
  $('#idState').textContent=[c.age?c.age+' ans':'',c.relation||''].filter(Boolean).join(' · ')||'nom, relation, emploi du temps';
  $('#brainState').textContent=API.key?PROVIDERS[API.prov].name.split(' —')[0]+' · '+API.model:'aucune clé';
- $('#lockState').textContent=PIN.on?'code actif':'aucun code';
+ $('#lockState').textContent=(PIN.on?'code actif':'aucun code')+' · '+(privacyRecentsVisible()?uiT('privacy.previewVisible'):uiT('privacy.previewHidden'));
+ if($('#langState')&&window.HolophoneI18n){const li=window.HolophoneI18n.list().find(x=>x.code===window.HolophoneI18n.current());$('#langState').textContent=li?(li.nativeName||li.name||li.code):window.HolophoneI18n.current()}
+ paintPrivacySettings();
  if($('#appearanceState'))$('#appearanceState').textContent=UI_THEMES[uiThemeId(THEME.ui)].name;
  $('#thState').textContent=THEME.kb==='holophone'?'Clavier Holophone':'Clavier Android';
  $('#meState').textContent=USER.name+(USER.sex?' · '+USER.sex:'');
@@ -7699,9 +7734,8 @@ async function planPushes(){
    const at=nowTs()+((25+Math.random()*125)*60000);
    ct.push={convId:conv?conv.id:null,m:o.m,c:o.c,at,motive:presenceHint||''};
    try{if(window.holoPresenceScheduled)window.holoPresenceScheduled(ct,presenceHint||'',at)}catch(e){}
-   const count=Math.max(1,o.m.length),notif={id:id++,title:'Holophone',
-    body:count+' nouveau'+(count>1?'x':'')+' message'+(count>1?'s':''),
-    schedule:{at:new Date(at)},extra:{ctId:ct.id}};
+   const count=Math.max(1,o.m.length),np=privacyNotificationPayload(ct,o.m,count),notif={id:id++,title:np.title,
+    body:np.body,schedule:{at:new Date(at)},extra:{ctId:ct.id}};
    if(notifSound)notif.sound=notifSound;
    notifs.push(notif);
   }catch(e){}
@@ -7774,6 +7808,15 @@ function wireBack(){
 
 /* ===================== VERROUILLAGE ===================== */
 let PIN={code:'',on:false},pinBuf='',pinMode='',pinFirst='',lastHide=0,bootReady=false,unlockPending=false;
+let PRIVACYCFG={anonymousNotifications:true,recentsPreview:'auto'};
+function privacyNormalize(){PRIVACYCFG=PRIVACYCFG&&typeof PRIVACYCFG==='object'?PRIVACYCFG:{};PRIVACYCFG.anonymousNotifications=PRIVACYCFG.anonymousNotifications!==false;PRIVACYCFG.recentsPreview=['auto','hide','show'].includes(String(PRIVACYCFG.recentsPreview||''))?String(PRIVACYCFG.recentsPreview):'auto';return PRIVACYCFG}
+const savePrivacy=()=>Store.set('v7.privacy',JSON.stringify(privacyNormalize()));
+function privacyRecentsVisible(){privacyNormalize();if(PRIVACYCFG.recentsPreview==='show')return true;if(PRIVACYCFG.recentsPreview==='hide')return false;return !(PIN.on&&PIN.code)}
+function privacyNativePlugin(){const C=window.Capacitor;if(!C)return null;if(C.Plugins&&C.Plugins.PrivacyControl)return C.Plugins.PrivacyControl;if(C.registerPlugin){try{return C.registerPlugin('PrivacyControl')}catch(e){}}return null}
+async function applyPrivacyNative(){const P=privacyNativePlugin();const visible=privacyRecentsVisible();if(P&&P.setRecentsPreview)try{await P.setRecentsPreview({visible})}catch(e){console.warn('Privacy preview',e)}return visible}
+function privacyNotificationPayload(ct,messages,count){privacyNormalize();count=Math.max(1,Number(count)||1);if(PRIVACYCFG.anonymousNotifications)return{title:'Holophone',body:count===1?uiT('notif.new.one'):uiT('notif.new.many',{count})};const title=characterName(ct)||'Persona',parts=(Array.isArray(messages)?messages:[]).map(x=>String(x||'').trim()).filter(Boolean),first=parts[0]||uiT('notif.new.one');let body=first.replace(/\s+/g,' ').trim();if(body.length>140)body=body.slice(0,137)+'…';if(count>1&&parts.length>1)body+=' · +'+(count-1);return{title,body}}
+function paintPrivacySettings(){privacyNormalize();const anon=$('#privacyAnon');if(anon)anon.classList.toggle('on',PRIVACYCFG.anonymousNotifications);if($('#privacyAnonTitle'))$('#privacyAnonTitle').textContent=uiT('privacy.notifications');if($('#privacyAnonHint'))$('#privacyAnonHint').textContent=uiT(PRIVACYCFG.anonymousNotifications?'privacy.notificationsHintOn':'privacy.notificationsHintOff');if($('#privacyRecentsTitle'))$('#privacyRecentsTitle').textContent=uiT('privacy.recents');if($('#privacyAutoTitle'))$('#privacyAutoTitle').textContent=uiT('privacy.recentsAuto');if($('#privacyAutoHint'))$('#privacyAutoHint').textContent=uiT('privacy.recentsAutoHint');if($('#privacyHideTitle'))$('#privacyHideTitle').textContent=uiT('privacy.recentsHide');if($('#privacyShowTitle'))$('#privacyShowTitle').textContent=uiT('privacy.recentsShow');document.querySelectorAll('#privacyRecentsChoices .privacychoice').forEach(b=>b.classList.toggle('on',b.dataset.recents===PRIVACYCFG.recentsPreview))}
+
 let lockOnReturn=false,trustedExternalUntil=0,resumeLifecycleBusy=false,lastLifecycleResume=0;
 function markTrustedExternalFlow(ms=180000){trustedExternalUntil=Math.max(trustedExternalUntil,Date.now()+Math.max(5000,Number(ms)||180000))}
 function markHolophoneBackground(){lastHide=Date.now();if(PIN.on&&PIN.code)lockOnReturn=true}
@@ -7786,6 +7829,7 @@ async function resumeHolophoneLifecycle(){
   const shouldLock=lockOnReturn&&!trusted&&!shared;
   lockOnReturn=false;trustedExternalUntil=0;
   if(shouldLock)lockNow();
+  await applyPrivacyNative();
   await collectPushes();tickClock();await reloadIfStale();
   if(!shared)try{await takeShared()}catch(e){}
   if(!$('#screenHome').classList.contains('hide'))buildHome();
@@ -7997,10 +8041,11 @@ async function audioDeleteTrack(id){
  const st=audioTrack(STARTCFG.audioId)||audioBuiltinTrack();STARTCFG.source=st.builtin?'builtin':'custom';STARTCFG.name=st.name;STARTCFG.duration=st.duration;STARTCFG.size=st.size;
  await saveAudioLibrary();await saveStartup();await cancelAll();startupPaintSettings();flash($('#startupMsg'),'MP3 supprimé.','var(--teal)',12000);
 }
-async function testAnonymousNotification(){
+async function testPrivacyNotification(){
  const N=CAP().LocalNotifications;if(!N){flash($('#startupMsg'),'Notifications indisponibles sur cet appareil.','var(--magenta)',15000);return}
  const ok=await askNotif();if(!ok){flash($('#startupMsg'),'Permission de notification refusée.','var(--magenta)',15000);return}
- const sound=await notificationSoundName(),n={id:880000+Math.floor(Math.random()*9999),title:'Holophone',body:'1 nouveau message',extra:{test:true}};if(sound)n.sound=sound;
+ const ct=C(),np=PRIVACYCFG.anonymousNotifications?privacyNotificationPayload(ct,[],1):{title:characterName(ct)||'Persona',body:uiT('notif.test')};
+ const sound=await notificationSoundName(),n={id:880000+Math.floor(Math.random()*9999),title:np.title,body:np.body,extra:{test:true}};if(sound)n.sound=sound;
  try{await N.schedule({notifications:[n]});flash($('#startupMsg'),'Notification de test envoyée.','var(--teal)',12000)}catch(e){flash($('#startupMsg'),'Test impossible — '+((e&&e.message)||e),'var(--magenta)',20000)}
 }
 function padBuild(){
@@ -8028,7 +8073,7 @@ async function padDone(){
  if(pinMode==='set1'){pinFirst=pinBuf;pinBuf='';padDots();
   pinMode='set2';$('#lockMsg').textContent='Confirme le code';return}
  if(pinMode==='set2'){
-  if(pinBuf===pinFirst){PIN.code=pinBuf;PIN.on=true;await savePin();
+  if(pinBuf===pinFirst){PIN.code=pinBuf;PIN.on=true;await savePin();await applyPrivacyNative();
    L.classList.remove('on');pinMode='';flash($('#lkMsg'),'Code enregistré.');refreshSys()}
   else{L.classList.add('err');$('#lockMsg').textContent='Les deux codes diffèrent';
    setTimeout(()=>{L.classList.remove('err');pinBuf='';pinFirst='';pinMode='set1';
@@ -8053,8 +8098,10 @@ function lockNow(){
  padBuild();pinBuf='';pinMode='';$('#lockMsg').textContent="Code d'accès";
  padDots();L.classList.add('on');
 }
-$('#goLock').onclick=()=>{show($('#screenLock'));
+$('#goLock').onclick=()=>{show($('#screenLock'));paintPrivacySettings();
  $('#lkMsg').textContent=PIN.on?'Code actif.':'Aucun code.'};
+$('#privacyAnon').onclick=async()=>{PRIVACYCFG.anonymousNotifications=!PRIVACYCFG.anonymousNotifications;await savePrivacy();await cancelAll();paintPrivacySettings();flash($('#lkMsg'),uiT('privacy.recentsApplied'),'var(--teal)',9000)};
+document.querySelectorAll('#privacyRecentsChoices .privacychoice').forEach(b=>b.onclick=async()=>{PRIVACYCFG.recentsPreview=b.dataset.recents||'auto';privacyNormalize();await savePrivacy();await applyPrivacyNative();paintPrivacySettings();flash($('#lkMsg'),uiT('privacy.recentsApplied'),'var(--teal)',9000)});
 $('#lkBack').onclick=()=>{show($('#screenSys'));refreshSys()};
 $('#goStartup').onclick=()=>{show($('#screenStartup'));startupPaintSettings()};
 $('#startupBack').onclick=()=>{show($('#screenSys'));refreshSys()};
@@ -8064,10 +8111,10 @@ $('#notifAudioSelect').onchange=async e=>{AUDIOCFG.notificationId=e.target.value
 $('#audioLibraryImport').onclick=()=>$('#audioLibraryFile').click();
 $('#audioLibraryFile').onchange=async e=>{const files=Array.from((e.target&&e.target.files)||[]);if(e.target)e.target.value='';if(!files.length)return;flash($('#startupMsg'),'Import de '+files.length+' MP3…','var(--teal)',60000);try{const n=await audioImportFiles(files);flash($('#startupMsg'),n+' MP3 ajouté'+(n>1?'s':'')+' à la bibliothèque.','var(--teal)',20000)}catch(err){flash($('#startupMsg'),'Import impossible — '+((err&&err.message)||err),'var(--magenta)',30000)}};
 $('#startupPreview').onclick=async()=>{if(STARTUP.running)return;flash($('#startupMsg'),'Lecture du splash…','var(--teal)',10000);await runStartupSplash({force:true})};
-$('#notifPreview').onclick=()=>testAnonymousNotification();
+$('#notifPreview').onclick=()=>testPrivacyNotification();
 $('#lkSet').onclick=()=>{padBuild();pinBuf='';pinFirst='';pinMode='set1';
  $('#lockMsg').textContent='Choisis un code';padDots();$('#lock').classList.add('on')};
-$('#lkOff').onclick=async()=>{PIN.on=false;PIN.code='';await savePin();
+$('#lkOff').onclick=async()=>{PIN.on=false;PIN.code='';await savePin();await applyPrivacyNative();paintPrivacySettings();
  flash($('#lkMsg'),'Code retiré.','var(--magenta)',10000);refreshSys()};
 
 
@@ -8278,69 +8325,42 @@ $('#hoodOrphans').onclick=async()=>{
  }catch(e){flash($('#hoodMsg'),'Nettoyage impossible — '+e.message,'var(--magenta)',30000)}
 };
 
+/* ===================== LANGUE GLOBALE 3.3 ===================== */
+async function buildLanguageScreen(){
+ const I=window.HolophoneI18n;if(!I)return;const L=$('#langList');if(!L)return;
+ $('#langTitle').textContent=uiT('language.title');$('#langSub').textContent=uiT('language.subtitle');$('#langHelp').textContent=uiT('language.description');$('#langInstalledTitle').textContent=uiT('language.installed');$('#langImport').textContent=uiT('language.import');$('#langTemplate').textContent=uiT('language.template');
+ L.innerHTML='';const active=I.current();I.list().forEach(info=>{
+  const row=document.createElement('div');row.className='langrow'+(info.code===active?' on':'');
+  const pick=document.createElement('button');pick.type='button';pick.className='langpick';
+  const b=document.createElement('b');b.textContent=info.nativeName||info.name||info.code;const meta=document.createElement('i');meta.textContent=info.code+' · '+(info.builtin?uiT('language.builtin'):uiT('language.community'))+(info.author?' · '+info.author:'');pick.append(b,meta);
+  pick.onclick=async()=>{try{await I.setLanguage(info.code);await buildLanguageScreen();refreshSys();renderAboutI18n();}catch(e){flash($('#langMsg'),uiT('language.invalid',{error:e.message||e}),'var(--magenta)',18000)}};row.appendChild(pick);
+  if(!info.builtin){const del=document.createElement('button');del.type='button';del.className='mini langdel';del.textContent=uiT('language.delete');del.onclick=()=>askConfirm(uiT('language.delete')+' '+(info.nativeName||info.code)+' ?','',uiT('language.delete'),async()=>{I.removePack(info.code);await buildLanguageScreen();refreshSys();flash($('#langMsg'),uiT('language.removed',{name:info.nativeName||info.code}),'var(--teal)',12000)});row.appendChild(del)}
+  L.appendChild(row);
+ });
+ if($('#langState')){const cur=I.list().find(x=>x.code===active);$('#langState').textContent=cur?(cur.nativeName||cur.name||active):active}
+}
+$('#goLanguage').onclick=async()=>{show($('#screenLanguage'));await buildLanguageScreen()};
+$('#langBack').onclick=()=>{show($('#screenSys'));refreshSys()};
+$('#langImport').onclick=()=>$('#langFile').click();
+$('#langFile').onchange=async e=>{const f=e.target.files&&e.target.files[0];e.target.value='';if(!f)return;try{const p=await window.HolophoneI18n.importPack(f);await buildLanguageScreen();flash($('#langMsg'),uiT('language.imported',{name:p.meta.nativeName||p.meta.name||p.meta.code}),'var(--teal)',16000)}catch(err){flash($('#langMsg'),uiT('language.invalid',{error:err.message||err}),'var(--magenta)',24000)}};
+$('#langTemplate').onclick=async()=>{try{const r=await fetch('lang/language-pack.template.json',{cache:'no-store'}),txt=await r.text();await saveFile('holophone-language-pack-template.json',txt,'Langues');flash($('#langMsg'),'Template JSON exporté.','var(--teal)',12000)}catch(e){flash($('#langMsg'),'Export impossible — '+(e.message||e),'var(--magenta)',18000)}};
+window.addEventListener('holophone-language-changed',async()=>{try{await buildLanguageScreen()}catch(e){}try{refreshSys()}catch(e){}try{renderAboutI18n()}catch(e){}try{paintPrivacySettings()}catch(e){}});
+
 /* ===================== À PROPOS ===================== */
-const ABOUT_LANG_KEY='v7.aboutLang';
-const ABOUT_I18N={
- fr:{
-  title:'À propos',subtitle:'VSim NeuroTek · Synthetic Presence Systems',kicker:'VSNT // Synthetic Presence Systems',
-  product:'Holophone™ · Adaptive Persona Interface',
-  lead:'Une architecture de présence synthétique conçue pour maintenir une persona persistante, contextuelle et multimodale — avec identité, mémoire, continuité temporelle, états internes, initiatives, voix, médias et environnement partagé.',
-  badges:['Persistent Persona','Temporal Continuity','Local-First','Multimodal Runtime'],core:'Core systems',
-  persona:'Identité, personnalité, comportement, humeur et présence sont maintenus comme un état cohérent plutôt que reconstruits à chaque message.',
-  memory:"Souvenirs persistants, contexte conversationnel, goûts, événements et protections anti-répétition assurent une continuité au-delà d'une seule session.",
-  temporal:"Holophone suit le temps écoulé, les rythmes de vie, les activités et les changements d'état afin que plusieurs heures ou plusieurs jours aient un sens.",
-  interaction:'Texte, voix, images, musique, Braindance, Refuge et interactions structurées sont coordonnés autour de la même persona.',
-  initiative:"La persona peut prendre l'initiative selon son contexte, son activité et ses états internes — ou décider qu'elle n'a aucune raison pertinente d'intervenir.",
-  privacy:"Stockage local, verrouillage, protection de l'aperçu Android, sauvegardes contrôlées et secrets configurés localement par l'utilisateur.",
-  dataTitle:'Architecture des données',
-  data:'<strong>Local-first.</strong> Les données persistantes de Holophone résident sur l’appareil. Lorsqu’une fonction fait appel à un service externe, seules les informations nécessaires à cette fonction sont transmises au fournisseur concerné. Les clés de service ne sont pas intégrées à l’application distribuée : elles sont ajoutées et conservées localement par l’utilisateur.',
-  packageTitle:'Persona packages',package:'Une persona importée peut contenir des consignes de comportement destinées au moteur d’IA. Holophone présente ces informations avant validation afin que l’utilisateur conserve le contrôle sur ce qu’il installe.',
-  companyTitle:'VSim NeuroTek',company:'<strong>Holophone™</strong> est présenté comme une technologie de VSim NeuroTek (VSNT), division Synthetic Presence Systems. <i>Connecting Minds &amp; Bytes.</i>',
-  legal:'PERSONAL RUNTIME · NO EMBEDDED SERVICE KEYS · USER-CONTROLLED DATA<br>HOLOPHONE™ / VSIM NEUROTEK (VSNT)',init:'Initialisation du runtime…'
- },
- en:{
-  title:'About',subtitle:'VSim NeuroTek · Synthetic Presence Systems',kicker:'VSNT // Synthetic Presence Systems',
-  product:'Holophone™ · Adaptive Persona Interface',
-  lead:'A synthetic-presence architecture designed to maintain a persistent, contextual and multimodal persona — combining identity, memory, temporal continuity, internal state, initiative, voice, media and a shared environment.',
-  badges:['Persistent Persona','Temporal Continuity','Local-First','Multimodal Runtime'],core:'Core systems',
-  persona:'Identity, personality, behaviour, mood and presence are maintained as a coherent state instead of being reconstructed for every message.',
-  memory:'Persistent memories, conversational context, tastes, events and anti-repetition safeguards provide continuity beyond a single session.',
-  temporal:'Holophone tracks elapsed time, life rhythms, activities and state changes so that hours — or days — of absence retain meaning.',
-  interaction:'Text, voice, images, music, Braindance, Refuge and structured interactions are coordinated around the same persona.',
-  initiative:'The persona can take initiative according to context, activity and internal state — or decide there is no relevant reason to intervene.',
-  privacy:'Local storage, application locking, Android preview protection, controlled backups and service secrets configured locally by the user.',
-  dataTitle:'Data architecture',
-  data:'<strong>Local-first.</strong> Holophone persistent data resides on the device. When a feature uses an external service, only the information required for that feature is transmitted to the relevant provider. Service keys are not embedded in the distributed application: they are supplied and stored locally by the user.',
-  packageTitle:'Persona packages',package:'An imported persona may contain behavioural instructions intended for the AI runtime. Holophone presents this information before validation so the user remains in control of what is installed.',
-  companyTitle:'VSim NeuroTek',company:'<strong>Holophone™</strong> is presented as a VSim NeuroTek (VSNT) technology from the Synthetic Presence Systems division. <i>Connecting Minds &amp; Bytes.</i>',
-  legal:'PERSONAL RUNTIME · NO EMBEDDED SERVICE KEYS · USER-CONTROLLED DATA<br>HOLOPHONE™ / VSIM NEUROTEK (VSNT)',init:'Runtime initialization…'
- }
-};
-function aboutLang(){
- try{const v=localStorage.getItem(ABOUT_LANG_KEY);if(v==='fr'||v==='en')return v}catch(e){}
- return String((navigator.languages&&navigator.languages[0])||navigator.language||'fr').toLowerCase().startsWith('fr')?'fr':'en';
-}
-function renderAboutMeta(lang){
- const fr=lang==='fr',nb=CONTACTS.length,cv=CONVS.length,ms=CONVS.reduce((a,v)=>a+v.msgs.length,0);
+function renderAboutMeta(){
+ const fr=appLang()==='fr-FR',nb=CONTACTS.length,cv=CONVS.length,ms=CONVS.reduce((a,v)=>a+(v.msgs||[]).length,0);
  $('#abV').textContent='HOLOPHONE '+APPV+(isNative()?' · ANDROID RUNTIME':' · WEB RUNTIME');
- $('#abStat').textContent=(fr?'ÉTAT LOCAL':'LOCAL STATE')+' · '+nb+' '+(fr?'persona':'persona')+(nb>1?'s':'')+' · '+cv+' '+(fr?'conversation':'conversation')+(cv>1?'s':'')+' · '+ms+' '+(fr?'message':'message')+(ms>1?'s':'');
+ $('#abStat').textContent=(fr?'ÉTAT LOCAL':'LOCAL STATE')+' · '+nb+' persona'+(nb>1?'s':'')+' · '+cv+' '+(fr?'conversation':'conversation')+(cv>1?'s':'')+' · '+ms+' message'+(ms>1?'s':'');
 }
-function setAboutLang(lang,persist=true){
- lang=lang==='en'?'en':'fr';const t=ABOUT_I18N[lang];
- const text=(id,v)=>{const e=$(id);if(e)e.textContent=v};
- text('#abTitle',t.title);text('#abKicker',t.kicker);text('#abProduct',t.product);text('#abLead',t.lead);
- text('#abBadgePersona',t.badges[0]);text('#abBadgeTemporal',t.badges[1]);text('#abBadgeLocal',t.badges[2]);text('#abBadgeMulti',t.badges[3]);text('#abCoreTitle',t.core);
- text('#abPersonaDesc',t.persona);text('#abMemoryDesc',t.memory);text('#abTemporalDesc',t.temporal);text('#abInteractionDesc',t.interaction);text('#abInitiativeDesc',t.initiative);text('#abPrivacyDesc',t.privacy);
- text('#abDataTitle',t.dataTitle);text('#abPackageTitle',t.packageTitle);text('#abCompanyTitle',t.companyTitle);
- if($('#abDataText'))$('#abDataText').innerHTML=t.data;if($('#abPackageText'))$('#abPackageText').textContent=t.package;if($('#abCompanyText'))$('#abCompanyText').innerHTML=t.company;if($('#abLegal'))$('#abLegal').innerHTML=t.legal;
- if(persist)try{localStorage.setItem(ABOUT_LANG_KEY,lang)}catch(e){}
- document.documentElement.setAttribute('data-about-lang',lang);
- if($('#abLangFr'))$('#abLangFr').classList.toggle('on',lang==='fr');if($('#abLangEn'))$('#abLangEn').classList.toggle('on',lang==='en');
- renderAboutMeta(lang);
+function renderAboutI18n(){
+ const text=(id,key)=>{const e=$(id);if(e)e.textContent=uiT(key)};
+ text('#abTitle','about.title');text('#abKicker','about.kicker');text('#abProduct','about.product');text('#abLead','about.lead');text('#abBadgePersona','about.badgePersona');text('#abBadgeTemporal','about.badgeTemporal');text('#abBadgeLocal','about.badgeLocal');text('#abBadgeMulti','about.badgeMulti');text('#abCoreTitle','about.core');text('#abPersonaDesc','about.persona');text('#abMemoryDesc','about.memory');text('#abTemporalDesc','about.temporal');text('#abInteractionDesc','about.interaction');text('#abInitiativeDesc','about.initiative');text('#abPrivacyDesc','about.privacy');text('#abDataTitle','about.dataTitle');text('#abPackageTitle','about.packageTitle');text('#abCompanyTitle','about.companyTitle');
+ if($('#abDataText'))$('#abDataText').innerHTML=uiT('about.data');if($('#abPackageText'))$('#abPackageText').textContent=uiT('about.package');if($('#abCompanyText'))$('#abCompanyText').innerHTML=uiT('about.company');if($('#abLegal'))$('#abLegal').innerHTML=uiT('about.legal');
+ const lang=appLang();if($('#abLangFr'))$('#abLangFr').classList.toggle('on',lang==='fr-FR');if($('#abLangEn'))$('#abLangEn').classList.toggle('on',lang==='en');renderAboutMeta();
 }
-$('#goAbout').onclick=()=>{show($('#screenAbout'));setAboutLang(aboutLang(),false)};
-$('#abLangFr').onclick=()=>setAboutLang('fr');
-$('#abLangEn').onclick=()=>setAboutLang('en');
+$('#goAbout').onclick=()=>{show($('#screenAbout'));renderAboutI18n()};
+$('#abLangFr').onclick=async()=>{await window.HolophoneI18n.setLanguage('fr-FR');renderAboutI18n()};
+$('#abLangEn').onclick=async()=>{await window.HolophoneI18n.setLanguage('en');renderAboutI18n()};
 $('#abBack').onclick=()=>{show($('#screenSys'));refreshSys()};
 
 /* ===================== APPARENCE GLOBALE ===================== */
@@ -9682,7 +9702,8 @@ async function buildBackup(withImg,withKeys){
  }
  const out={app:'holophone-backup',v:12,date:new Date().toISOString(),contacts:cts,convs:CONVS,
   auto:AUTO,voice:VOICE,search:SEARCH,gen:GEN,braindance:BDCFG,braindanceReplays:bdReplayRecords,actions:ACTCFG,user:USER,spot:SPOT,theme:THEME,
-  startup:await startupBackupExport(),audioLibrary:await audioLibraryBackupExport(withImg),
+  startup:await startupBackupExport(),audioLibrary:await audioLibraryBackupExport(withImg),privacy:privacyNormalize(),
+  language:window.HolophoneI18n?window.HolophoneI18n.exportState():null,
   v2:(window.HolophoneV2&&window.HolophoneV2.cfg)?window.HolophoneV2.cfg:null,
   api:{prov:API.prov,model:API.model,keys:withKeys?API.keys:{}}};
  if(window.HolophoneStability&&window.HolophoneStability.decorateBackup)return await window.HolophoneStability.decorateBackup(out);
@@ -9745,6 +9766,8 @@ async function applyBackup(o){
  if(o.actions&&typeof o.actions==='object'){ACTCFG=o.actions;normalizeActions();await saveActions()}
  if(o.search)Object.assign(SEARCH,o.search);
  if(o.theme&&typeof o.theme==='object')Object.assign(THEME,o.theme);
+ if(o.privacy&&typeof o.privacy==='object'){PRIVACYCFG={...PRIVACYCFG,...o.privacy};privacyNormalize();await savePrivacy()}
+ if(o.language&&window.HolophoneI18n)try{await window.HolophoneI18n.importState(o.language)}catch(e){}
  if(o.audioLibrary&&typeof o.audioLibrary==='object')await audioLibraryBackupImport(o.audioLibrary);
  if(o.startup&&typeof o.startup==='object')await startupBackupImport(o.startup);
  await audioLibraryHydrate();
@@ -9755,7 +9778,7 @@ async function applyBackup(o){
  if(o.api){if(o.api.prov&&PROVIDERS[o.api.prov])API.prov=o.api.prov;
   if(o.api.model)API.model=o.api.model;
   if(o.api.keys&&Object.keys(o.api.keys).length)API.keys=o.api.keys}
- await saveContacts();await mediaCatalogSyncAll();await saveConvs();await saveAuto();await saveVoice();await saveSearch();await saveUser();await saveGen();await saveBDCfg();
+ await saveContacts();await mediaCatalogSyncAll();await saveConvs();await saveAuto();await saveVoice();await saveSearch();await saveUser();await saveGen();await saveBDCfg();await savePrivacy();await applyPrivacyNative();
  await Store.set(K.key,JSON.stringify(API.keys));await Store.set(K.model,API.model);await Store.set(K.prov,API.prov);
  curCt=CONTACTS[0].id;
  return CONTACTS.length;
@@ -9955,6 +9978,7 @@ $('#auMaster').onclick=async()=>{
 /* ===================== DÉMARRAGE + MIGRATION ===================== */
 async function boot(){
  await migrateLegacyStoreKeys();
+ try{if(window.HolophoneI18n)await window.HolophoneI18n.init()}catch(e){console.warn('I18n init',e)}
  /* Si on est la fenêtre ouverte par un partage, on dépose et on s'arrête là :
     pas d'interface métier, pas d'appel au modèle dans une fenêtre qui va se
     refermer d'elle-même. */
@@ -9963,6 +9987,7 @@ async function boot(){
  /* Le verrou est relu AVANT contacts, conversations et écrans. Le HTML démarre
     en mode preboot : aucun écran métier n'a donc le temps d'apparaître. */
  try{const pn=await Store.get('v7.pin');if(pn)Object.assign(PIN,JSON.parse(pn))}catch(e){}
+ try{const pv=await Store.get('v7.privacy');if(pv)PRIVACYCFG=JSON.parse(pv)}catch(e){}privacyNormalize();await applyPrivacyNative();
  if(PIN.on&&PIN.code)lockNow();
  /* 3.1.1 : garder preboot jusqu'au splash afin qu'aucun écran métier ne fuite. */
 
