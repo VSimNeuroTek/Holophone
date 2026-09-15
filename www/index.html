@@ -874,7 +874,14 @@ select{font-family:'Share Tech Mono';font-size:11px}
 .startup[data-style="wallace"] .vsntlogo{filter:drop-shadow(0 0 10px rgba(255,223,169,.24))}
 .startup[data-style="cyber"] .vsntbrand .slogan{color:#2ee6c8}
 .startup[data-style="cyber"] .vsntlogo{filter:drop-shadow(0 0 10px rgba(255,48,61,.34))}
-.aboutvsntlogo{display:block;width:min(100%,430px);height:auto;margin:0 auto 14px;background:#000;object-fit:contain;border:1px solid rgba(255,75,31,.28);box-shadow:0 0 30px rgba(255,75,31,.12)}
+#screenAbout .title{min-height:112px;padding-right:158px}
+.aboutfloatdock{position:absolute;right:64px;top:7px;width:76px;z-index:8;display:flex;flex-direction:column;align-items:center;gap:3px;pointer-events:auto}
+.aboutfloatlogo{display:block;width:76px;height:76px;object-fit:contain;background:#000;border:0;outline:0;box-shadow:none}
+.aboutlangs{display:flex;align-items:center;justify-content:center;gap:4px;height:23px}
+.aboutlang{width:32px;height:21px;padding:0;border:1px solid color-mix(in srgb,var(--theme-border,#324047) 72%,transparent);background:rgba(0,0,0,.76);font-size:15px;line-height:19px;cursor:pointer;opacity:.55;filter:saturate(.55);transition:opacity .15s ease,filter .15s ease,border-color .15s ease,transform .15s ease}
+.aboutlang:active{transform:scale(.95)}
+.aboutlang.on{opacity:1;filter:none;border-color:var(--theme-accent,var(--yellow));box-shadow:0 0 9px color-mix(in srgb,var(--theme-accent,var(--yellow)) 28%,transparent)}
+@media(max-width:390px){#screenAbout .title{min-height:104px;padding-right:143px}.aboutfloatdock{right:58px;top:8px;width:68px}.aboutfloatlogo{width:68px;height:68px}.aboutlang{width:29px}}
 .abouttechhero{position:relative;overflow:hidden;padding:16px 15px 15px;border:1px solid var(--theme-border,#324047);background:linear-gradient(180deg,rgba(255,255,255,.022),rgba(255,255,255,.008));box-shadow:inset 0 0 28px rgba(0,0,0,.34)}
 .abouttechhero:before{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,transparent 0 49.7%,color-mix(in srgb,var(--theme-accent,var(--teal)) 9%,transparent) 50%,transparent 50.3%),linear-gradient(0deg,transparent 0 49.7%,color-mix(in srgb,var(--theme-accent,var(--teal)) 7%,transparent) 50%,transparent 50.3%);background-size:46px 46px;opacity:.28}
 .abouttechhero>*{position:relative}
@@ -1433,38 +1440,46 @@ select{font-family:'Share Tech Mono';font-size:11px}
 
  <!-- À PROPOS -->
  <div id="screenAbout" class="hide" style="flex:1;display:flex;flex-direction:column;min-height:0">
-  <div class="title">À propos<small>VSim NeuroTek · Synthetic Presence Systems</small><button class="iconbtn" id="abBack">✕</button></div>
+  <div class="title"><span id="abTitle">À propos</span><small id="abSubtitle">VSim NeuroTek · Synthetic Presence Systems</small>
+   <div class="aboutfloatdock" aria-label="VSim NeuroTek">
+    <img class="aboutfloatlogo" src="media/vsnt-logo-full.png" alt="VSim NeuroTek — Connecting Minds &amp; Bytes">
+    <div class="aboutlangs" role="group" aria-label="Language">
+     <button class="aboutlang" id="abLangFr" type="button" data-about-lang="fr" aria-label="Français" title="Français">🇫🇷</button>
+     <button class="aboutlang" id="abLangEn" type="button" data-about-lang="en" aria-label="English" title="English">🇬🇧</button>
+    </div>
+   </div>
+   <button class="iconbtn" id="abBack">✕</button>
+  </div>
   <div class="cfg">
    <div class="abouttechhero">
-    <img class="aboutvsntlogo" src="media/vsnt-logo-full.png" alt="VSim NeuroTek — Connecting Minds &amp; Bytes">
-    <div class="abouttechkicker">VSNT // Synthetic Presence Systems</div>
-    <div class="abouttechtitle">Holophone™ · Adaptive Persona Interface</div>
-    <div class="abouttechlead">Une architecture de présence synthétique conçue pour maintenir une persona persistante, contextuelle et multimodale — avec identité, mémoire, continuité temporelle, états internes, initiatives, voix, médias et environnement partagé.</div>
+    <div class="abouttechkicker" id="abKicker">VSNT // Synthetic Presence Systems</div>
+    <div class="abouttechtitle" id="abProduct">Holophone™ · Adaptive Persona Interface</div>
+    <div class="abouttechlead" id="abLead">Une architecture de présence synthétique conçue pour maintenir une persona persistante, contextuelle et multimodale — avec identité, mémoire, continuité temporelle, états internes, initiatives, voix, médias et environnement partagé.</div>
     <div class="aboutbadges">
-     <span class="aboutbadge">Persistent Persona</span><span class="aboutbadge">Temporal Continuity</span><span class="aboutbadge">Local-First</span><span class="aboutbadge">Multimodal Runtime</span>
+     <span class="aboutbadge" id="abBadgePersona">Persistent Persona</span><span class="aboutbadge" id="abBadgeTemporal">Temporal Continuity</span><span class="aboutbadge" id="abBadgeLocal">Local-First</span><span class="aboutbadge" id="abBadgeMulti">Multimodal Runtime</span>
     </div>
     <div class="aboutbuild"><span class="tag" id="abV">Version</span><div class="meta" id="abStat">Initialisation du runtime…</div></div>
    </div>
 
-   <div class="sect">Core systems</div>
+   <div class="sect" id="abCoreTitle">Core systems</div>
    <div class="aboutgrid">
-    <div class="aboutmodule"><b>Persona Runtime</b><span>Identité, personnalité, comportement, humeur et présence sont maintenus comme un état cohérent plutôt que reconstruits à chaque message.</span></div>
-    <div class="aboutmodule"><b>Memory Fabric</b><span>Souvenirs persistants, contexte conversationnel, goûts, événements et protections anti-répétition assurent une continuité au-delà d'une seule session.</span></div>
-    <div class="aboutmodule"><b>Temporal Engine</b><span>Holophone suit le temps écoulé, les rythmes de vie, les activités et les changements d'état afin que plusieurs heures ou plusieurs jours aient un sens.</span></div>
-    <div class="aboutmodule"><b>Interaction Layer</b><span>Texte, voix, images, musique, Braindance, Refuge et interactions structurées sont coordonnés autour de la même persona.</span></div>
-    <div class="aboutmodule"><b>Initiative Core</b><span>La persona peut prendre l'initiative selon son contexte, son activité et ses états internes — ou décider qu'elle n'a aucune raison pertinente d'intervenir.</span></div>
-    <div class="aboutmodule"><b>Privacy Architecture</b><span>Stockage local, verrouillage, protection de l'aperçu Android, sauvegardes contrôlées et secrets configurés localement par l'utilisateur.</span></div>
+    <div class="aboutmodule"><b>Persona Runtime</b><span id="abPersonaDesc">Identité, personnalité, comportement, humeur et présence sont maintenus comme un état cohérent plutôt que reconstruits à chaque message.</span></div>
+    <div class="aboutmodule"><b>Memory Fabric</b><span id="abMemoryDesc">Souvenirs persistants, contexte conversationnel, goûts, événements et protections anti-répétition assurent une continuité au-delà d'une seule session.</span></div>
+    <div class="aboutmodule"><b>Temporal Engine</b><span id="abTemporalDesc">Holophone suit le temps écoulé, les rythmes de vie, les activités et les changements d'état afin que plusieurs heures ou plusieurs jours aient un sens.</span></div>
+    <div class="aboutmodule"><b>Interaction Layer</b><span id="abInteractionDesc">Texte, voix, images, musique, Braindance, Refuge et interactions structurées sont coordonnés autour de la même persona.</span></div>
+    <div class="aboutmodule"><b>Initiative Core</b><span id="abInitiativeDesc">La persona peut prendre l'initiative selon son contexte, son activité et ses états internes — ou décider qu'elle n'a aucune raison pertinente d'intervenir.</span></div>
+    <div class="aboutmodule"><b>Privacy Architecture</b><span id="abPrivacyDesc">Stockage local, verrouillage, protection de l'aperçu Android, sauvegardes contrôlées et secrets configurés localement par l'utilisateur.</span></div>
    </div>
 
-   <div class="sect">Architecture des données</div>
-   <div class="aboutprotocol"><strong>Local-first.</strong> Les données persistantes de Holophone résident sur l'appareil. Lorsqu'une fonction fait appel à un service externe, seules les informations nécessaires à cette fonction sont transmises au fournisseur concerné. Les clés de service ne sont pas intégrées à l'application distribuée : elles sont ajoutées et conservées localement par l'utilisateur.</div>
+   <div class="sect" id="abDataTitle">Architecture des données</div>
+   <div class="aboutprotocol" id="abDataText"><strong>Local-first.</strong> Les données persistantes de Holophone résident sur l'appareil. Lorsqu'une fonction fait appel à un service externe, seules les informations nécessaires à cette fonction sont transmises au fournisseur concerné. Les clés de service ne sont pas intégrées à l'application distribuée : elles sont ajoutées et conservées localement par l'utilisateur.</div>
 
-   <div class="sect">Persona packages</div>
-   <div class="aboutprotocol">Une persona importée peut contenir des consignes de comportement destinées au moteur d'IA. Holophone présente ces informations avant validation afin que l'utilisateur conserve le contrôle sur ce qu'il installe.</div>
+   <div class="sect" id="abPackageTitle">Persona packages</div>
+   <div class="aboutprotocol" id="abPackageText">Une persona importée peut contenir des consignes de comportement destinées au moteur d'IA. Holophone présente ces informations avant validation afin que l'utilisateur conserve le contrôle sur ce qu'il installe.</div>
 
-   <div class="sect">VSim NeuroTek</div>
-   <div class="aboutprotocol"><strong>Holophone™</strong> est présenté comme une technologie de VSim NeuroTek (VSNT), division Synthetic Presence Systems. <i>Connecting Minds &amp; Bytes.</i></div>
-   <div class="aboutlegal">PERSONAL RUNTIME · NO EMBEDDED SERVICE KEYS · USER-CONTROLLED DATA<br>HOLOPHONE™ / VSIM NEUROTEK (VSNT)</div>
+   <div class="sect" id="abCompanyTitle">VSim NeuroTek</div>
+   <div class="aboutprotocol" id="abCompanyText"><strong>Holophone™</strong> est présenté comme une technologie de VSim NeuroTek (VSNT), division Synthetic Presence Systems. <i>Connecting Minds &amp; Bytes.</i></div>
+   <div class="aboutlegal" id="abLegal">PERSONAL RUNTIME · NO EMBEDDED SERVICE KEYS · USER-CONTROLLED DATA<br>HOLOPHONE™ / VSIM NEUROTEK (VSNT)</div>
   </div>
  </div>
 
@@ -1865,7 +1880,7 @@ const TTS={
 let audioEl=null;
 let AUTO={on:true};
 const saveAuto=()=>Store.set('v7.auto',JSON.stringify(AUTO));
-const APPV='3.2.1';
+const APPV='3.2.2';
 /* --- FAMILLES : clé, nom, couleur, valence, énergie --- */
 const FAM=[
  ['calme','Calme','#8aa0a8', 0.20,-0.60],
@@ -8262,11 +8277,68 @@ $('#hoodOrphans').onclick=async()=>{
 };
 
 /* ===================== À PROPOS ===================== */
-$('#goAbout').onclick=()=>{show($('#screenAbout'));
- $('#abV').textContent='HOLOPHONE '+APPV+(isNative()?' · ANDROID RUNTIME':' · WEB RUNTIME');
- const nb=CONTACTS.length,cv=CONVS.length,ms=CONVS.reduce((a,v)=>a+v.msgs.length,0);
- $('#abStat').textContent='LOCAL STATE · '+nb+' persona'+(nb>1?'s':'')+' · '+cv+' conversation'+(cv>1?'s':'')+' · '+ms+' message'+(ms>1?'s':'');
+const ABOUT_LANG_KEY='v7.aboutLang';
+const ABOUT_I18N={
+ fr:{
+  title:'À propos',subtitle:'VSim NeuroTek · Synthetic Presence Systems',kicker:'VSNT // Synthetic Presence Systems',
+  product:'Holophone™ · Adaptive Persona Interface',
+  lead:'Une architecture de présence synthétique conçue pour maintenir une persona persistante, contextuelle et multimodale — avec identité, mémoire, continuité temporelle, états internes, initiatives, voix, médias et environnement partagé.',
+  badges:['Persistent Persona','Temporal Continuity','Local-First','Multimodal Runtime'],core:'Core systems',
+  persona:'Identité, personnalité, comportement, humeur et présence sont maintenus comme un état cohérent plutôt que reconstruits à chaque message.',
+  memory:"Souvenirs persistants, contexte conversationnel, goûts, événements et protections anti-répétition assurent une continuité au-delà d'une seule session.",
+  temporal:"Holophone suit le temps écoulé, les rythmes de vie, les activités et les changements d'état afin que plusieurs heures ou plusieurs jours aient un sens.",
+  interaction:'Texte, voix, images, musique, Braindance, Refuge et interactions structurées sont coordonnés autour de la même persona.',
+  initiative:"La persona peut prendre l'initiative selon son contexte, son activité et ses états internes — ou décider qu'elle n'a aucune raison pertinente d'intervenir.",
+  privacy:"Stockage local, verrouillage, protection de l'aperçu Android, sauvegardes contrôlées et secrets configurés localement par l'utilisateur.",
+  dataTitle:'Architecture des données',
+  data:'<strong>Local-first.</strong> Les données persistantes de Holophone résident sur l’appareil. Lorsqu’une fonction fait appel à un service externe, seules les informations nécessaires à cette fonction sont transmises au fournisseur concerné. Les clés de service ne sont pas intégrées à l’application distribuée : elles sont ajoutées et conservées localement par l’utilisateur.',
+  packageTitle:'Persona packages',package:'Une persona importée peut contenir des consignes de comportement destinées au moteur d’IA. Holophone présente ces informations avant validation afin que l’utilisateur conserve le contrôle sur ce qu’il installe.',
+  companyTitle:'VSim NeuroTek',company:'<strong>Holophone™</strong> est présenté comme une technologie de VSim NeuroTek (VSNT), division Synthetic Presence Systems. <i>Connecting Minds &amp; Bytes.</i>',
+  legal:'PERSONAL RUNTIME · NO EMBEDDED SERVICE KEYS · USER-CONTROLLED DATA<br>HOLOPHONE™ / VSIM NEUROTEK (VSNT)',init:'Initialisation du runtime…'
+ },
+ en:{
+  title:'About',subtitle:'VSim NeuroTek · Synthetic Presence Systems',kicker:'VSNT // Synthetic Presence Systems',
+  product:'Holophone™ · Adaptive Persona Interface',
+  lead:'A synthetic-presence architecture designed to maintain a persistent, contextual and multimodal persona — combining identity, memory, temporal continuity, internal state, initiative, voice, media and a shared environment.',
+  badges:['Persistent Persona','Temporal Continuity','Local-First','Multimodal Runtime'],core:'Core systems',
+  persona:'Identity, personality, behaviour, mood and presence are maintained as a coherent state instead of being reconstructed for every message.',
+  memory:'Persistent memories, conversational context, tastes, events and anti-repetition safeguards provide continuity beyond a single session.',
+  temporal:'Holophone tracks elapsed time, life rhythms, activities and state changes so that hours — or days — of absence retain meaning.',
+  interaction:'Text, voice, images, music, Braindance, Refuge and structured interactions are coordinated around the same persona.',
+  initiative:'The persona can take initiative according to context, activity and internal state — or decide there is no relevant reason to intervene.',
+  privacy:'Local storage, application locking, Android preview protection, controlled backups and service secrets configured locally by the user.',
+  dataTitle:'Data architecture',
+  data:'<strong>Local-first.</strong> Holophone persistent data resides on the device. When a feature uses an external service, only the information required for that feature is transmitted to the relevant provider. Service keys are not embedded in the distributed application: they are supplied and stored locally by the user.',
+  packageTitle:'Persona packages',package:'An imported persona may contain behavioural instructions intended for the AI runtime. Holophone presents this information before validation so the user remains in control of what is installed.',
+  companyTitle:'VSim NeuroTek',company:'<strong>Holophone™</strong> is presented as a VSim NeuroTek (VSNT) technology from the Synthetic Presence Systems division. <i>Connecting Minds &amp; Bytes.</i>',
+  legal:'PERSONAL RUNTIME · NO EMBEDDED SERVICE KEYS · USER-CONTROLLED DATA<br>HOLOPHONE™ / VSIM NEUROTEK (VSNT)',init:'Runtime initialization…'
+ }
 };
+function aboutLang(){
+ try{const v=localStorage.getItem(ABOUT_LANG_KEY);if(v==='fr'||v==='en')return v}catch(e){}
+ return String((navigator.languages&&navigator.languages[0])||navigator.language||'fr').toLowerCase().startsWith('fr')?'fr':'en';
+}
+function renderAboutMeta(lang){
+ const fr=lang==='fr',nb=CONTACTS.length,cv=CONVS.length,ms=CONVS.reduce((a,v)=>a+v.msgs.length,0);
+ $('#abV').textContent='HOLOPHONE '+APPV+(isNative()?' · ANDROID RUNTIME':' · WEB RUNTIME');
+ $('#abStat').textContent=(fr?'ÉTAT LOCAL':'LOCAL STATE')+' · '+nb+' '+(fr?'persona':'persona')+(nb>1?'s':'')+' · '+cv+' '+(fr?'conversation':'conversation')+(cv>1?'s':'')+' · '+ms+' '+(fr?'message':'message')+(ms>1?'s':'');
+}
+function setAboutLang(lang,persist=true){
+ lang=lang==='en'?'en':'fr';const t=ABOUT_I18N[lang];
+ const text=(id,v)=>{const e=$(id);if(e)e.textContent=v};
+ text('#abTitle',t.title);text('#abSubtitle',t.subtitle);text('#abKicker',t.kicker);text('#abProduct',t.product);text('#abLead',t.lead);
+ text('#abBadgePersona',t.badges[0]);text('#abBadgeTemporal',t.badges[1]);text('#abBadgeLocal',t.badges[2]);text('#abBadgeMulti',t.badges[3]);text('#abCoreTitle',t.core);
+ text('#abPersonaDesc',t.persona);text('#abMemoryDesc',t.memory);text('#abTemporalDesc',t.temporal);text('#abInteractionDesc',t.interaction);text('#abInitiativeDesc',t.initiative);text('#abPrivacyDesc',t.privacy);
+ text('#abDataTitle',t.dataTitle);text('#abPackageTitle',t.packageTitle);text('#abCompanyTitle',t.companyTitle);
+ if($('#abDataText'))$('#abDataText').innerHTML=t.data;if($('#abPackageText'))$('#abPackageText').textContent=t.package;if($('#abCompanyText'))$('#abCompanyText').innerHTML=t.company;if($('#abLegal'))$('#abLegal').innerHTML=t.legal;
+ if(persist)try{localStorage.setItem(ABOUT_LANG_KEY,lang)}catch(e){}
+ document.documentElement.setAttribute('data-about-lang',lang);
+ if($('#abLangFr'))$('#abLangFr').classList.toggle('on',lang==='fr');if($('#abLangEn'))$('#abLangEn').classList.toggle('on',lang==='en');
+ renderAboutMeta(lang);
+}
+$('#goAbout').onclick=()=>{show($('#screenAbout'));setAboutLang(aboutLang(),false)};
+$('#abLangFr').onclick=()=>setAboutLang('fr');
+$('#abLangEn').onclick=()=>setAboutLang('en');
 $('#abBack').onclick=()=>{show($('#screenSys'));refreshSys()};
 
 /* ===================== APPARENCE GLOBALE ===================== */
