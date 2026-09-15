@@ -1,0 +1,18 @@
+node_modules/
+android/.gradle/
+android/build/
+android/app/build/
+releases/*.apk
+releases/*.aab
+signing/*
+!signing/README.txt
+*.jks
+*.keystore
+*.p12
+*.pfx
+local.properties
+signing-config.json
+# Sauvegardes temporaires des patches Holophone
+/_backup_patch_*/
+# Sorties de compilation Android
+/android/app/release/

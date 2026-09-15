@@ -1,0 +1,9 @@
+{
+  "appId": "com.mudva.lumen",
+  "appName": "Holophone",
+  "webDir": "www",
+  "server": {
+    "hostname": "localhost",
+    "androidScheme": "https"
+  }
+}

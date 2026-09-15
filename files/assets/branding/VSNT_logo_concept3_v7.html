@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>VSNT — Concept 03 v7</title>
+<style>
+:root{
+  --bg:#050506;
+  --accent:#ff4b1f;
+  --text:#f0f0f3;
+  --muted:#898993;
+  --speed:1;
+}
+*{box-sizing:border-box}
+html,body{
+  margin:0;
+  min-height:100%;
+  background:
+    radial-gradient(circle at 50% 10%,rgba(255,75,31,.065),transparent 36rem),
+    var(--bg);
+  color:var(--text);
+  font-family:Inter,Segoe UI,Arial,sans-serif;
+}
+body{
+  min-height:100vh;
+  display:grid;
+  place-items:center;
+  padding:24px;
+}
+.shell{width:min(920px,100%)}
+header{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:18px;
+  margin-bottom:16px;
+}
+h1{
+  margin:0;
+  font-size:clamp(24px,3vw,38px);
+  letter-spacing:.03em;
+}
+.sub{
+  margin-top:6px;
+  color:var(--muted);
+  font-size:14px;
+}
+.controls{
+  display:flex;
+  gap:9px;
+  flex-wrap:wrap;
+}
+button,select{
+  color:#f7f7f9;
+  background:#121216;
+  border:1px solid #34343b;
+  border-radius:999px;
+  padding:9px 14px;
+  font:inherit;
+  cursor:pointer;
+}
+button:hover{border-color:var(--accent)}
+.card{
+  border:1px solid #25252a;
+  border-radius:24px;
+  background:linear-gradient(180deg,#0e0e11,#080809);
+  box-shadow:0 22px 70px rgba(0,0,0,.38);
+  overflow:hidden;
+}
+.stage{
+  position:relative;
+  min-height:610px;
+  display:grid;
+  grid-template-rows:365px 1fr;
+  background:
+    radial-gradient(circle at 50% 31%,rgba(255,75,31,.055),transparent 31%),
+    linear-gradient(180deg,rgba(255,255,255,.012),transparent);
+}
+.visual{
+  display:grid;
+  place-items:center;
+  position:relative;
+  overflow:hidden;
+}
+.logo{
+  width:min(49vw,390px);
+  min-width:290px;
+  overflow:visible;
+  filter:drop-shadow(0 0 8px rgba(255,75,31,.38));
+}
+.symbol-line{
+  fill:none;
+  stroke:var(--accent);
+  stroke-width:14;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+
+/* Axe central */
+.center{
+  opacity:0;
+  transform:translateY(70px);
+  animation:centerRise calc(1s / var(--speed))
+            cubic-bezier(.2,.82,.2,1) forwards;
+}
+
+/* Mains : géométrie finale = arcs concentriques à la boule centrale */
+.hand-left,
+.hand-right{
+  transform-box:view-box;
+  opacity:0;
+}
+.hand-left{
+  transform-origin:142px 238px;
+  transform:rotate(-22deg);
+  animation:leftHand calc(2.35s / var(--speed))
+            cubic-bezier(.18,.74,.22,1) forwards;
+  animation-delay:calc(.72s / var(--speed));
+}
+.hand-right{
+  transform-origin:218px 238px;
+  transform:rotate(22deg);
+  animation:rightHand calc(2.35s / var(--speed))
+            cubic-bezier(.18,.74,.22,1) forwards;
+  animation-delay:calc(.72s / var(--speed));
+}
+
+/* Grand cercle */
+.outer{
+  stroke-dasharray:1;
+  stroke-dashoffset:1;
+  animation:outerDraw calc(1.62s / var(--speed))
+            cubic-bezier(.58,0,.18,1) forwards;
+  animation-delay:calc(2.70s / var(--speed));
+}
+
+/* Halo final */
+.halo-wide,
+.halo-core{
+  fill:none;
+  stroke-linecap:round;
+  stroke-dasharray:.075 .925;
+  stroke-dashoffset:1;
+  opacity:0;
+  animation:haloRun calc(1.45s / var(--speed)) linear forwards;
+  animation-delay:calc(4.48s / var(--speed));
+}
+.halo-wide{
+  stroke:#ff8b69;
+  stroke-width:21;
+  filter:blur(7px) drop-shadow(0 0 13px rgba(255,92,52,.95));
+}
+.halo-core{
+  stroke:#fff0e9;
+  stroke-width:4.5;
+  filter:drop-shadow(0 0 8px rgba(255,238,230,1));
+}
+
+@keyframes centerRise{
+  0%{opacity:0;transform:translateY(70px)}
+  28%{opacity:.15}
+  100%{opacity:1;transform:translateY(0)}
+}
+
+/* Fade plus long et rotation autour des poignets */
+@keyframes leftHand{
+  0%{opacity:0;transform:rotate(-22deg)}
+  28%{opacity:0;transform:rotate(-20deg)}
+  50%{opacity:.18}
+  72%{opacity:.66}
+  100%{opacity:1;transform:rotate(0deg)}
+}
+@keyframes rightHand{
+  0%{opacity:0;transform:rotate(22deg)}
+  28%{opacity:0;transform:rotate(20deg)}
+  50%{opacity:.18}
+  72%{opacity:.66}
+  100%{opacity:1;transform:rotate(0deg)}
+}
+@keyframes outerDraw{to{stroke-dashoffset:0}}
+@keyframes haloRun{
+  0%{opacity:0;stroke-dashoffset:1}
+  7%{opacity:1}
+  87%{opacity:1}
+  100%{opacity:0;stroke-dashoffset:0}
+}
+
+/* Bloc marque conservé */
+.brand{
+  text-align:center;
+  align-self:start;
+  padding-top:2px;
+}
+.vsim{
+  color:var(--accent);
+  font-size:clamp(38px,5vw,70px);
+  font-weight:650;
+  letter-spacing:-.025em;
+  line-height:.92;
+}
+.neurotek{
+  margin-top:14px;
+  color:var(--accent);
+  font-size:clamp(22px,2.8vw,38px);
+  font-weight:400;
+  letter-spacing:.42em;
+  padding-left:.42em;
+  line-height:1;
+}
+.rule{
+  width:min(510px,64%);
+  height:3px;
+  margin:22px auto 0;
+  border-radius:999px;
+  background:var(--accent);
+}
+.slogan{
+  margin-top:20px;
+  color:#c8c8cf;
+  font-size:clamp(12px,1.6vw,21px);
+  letter-spacing:.24em;
+  white-space:nowrap;
+}
+.note{
+  margin-top:22px;
+  text-align:center;
+  color:#777781;
+  font-size:12px;
+}
+.paused *{animation-play-state:paused!important}
+.reset *{animation:none!important}
+
+@media(max-width:650px){
+  header{align-items:flex-start;flex-direction:column}
+  .stage{
+    min-height:570px;
+    grid-template-rows:330px 1fr;
+  }
+  .logo{width:min(78vw,350px)}
+  .slogan{
+    white-space:normal;
+    padding:0 18px;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+<header>
+  <div>
+    <h1>VSNT — Concept 03 v7</h1>
+    <div class="sub">Mains concentriques à la sphère centrale</div>
+  </div>
+
+  <div class="controls">
+    <button id="replay">↻ Rejouer</button>
+    <button id="pause">⏸ Pause</button>
+    <select id="speed">
+      <option value=".72">Lent</option>
+      <option value="1" selected>Normal</option>
+      <option value="1.28">Rapide</option>
+    </select>
+  </div>
+</header>
+
+<div class="card" id="card">
+  <div class="stage">
+
+    <div class="visual">
+      <svg class="logo" viewBox="0 0 360 285" aria-label="Logo VSNT mains concentriques">
+
+        <!-- ==================================================
+             CENTRE
+             Boule : centre exact = (180,104), rayon = 25
+             ================================================== -->
+        <g class="center">
+          <circle fill="var(--accent)" cx="180" cy="104" r="25"/>
+          <path class="symbol-line" d="M180 128 L180 238"/>
+        </g>
+
+        <!-- ==================================================
+             MAIN GAUCHE
+             La paume est un VRAI ARC DE CERCLE :
+             même centre (180,104) que la boule,
+             rayon 60.
+             Donc distance parfaitement constante à la sphère.
+             ================================================== -->
+        <path class="symbol-line hand-left"
+          d="
+            M 135.4 63.9
+            A 60 60 0 0 0 135.4 144.1
+
+            Q 142 151 142 163
+            L 142 238
+          "/>
+
+        <!-- ==================================================
+             MAIN DROITE
+             Symétrie exacte.
+             ================================================== -->
+        <path class="symbol-line hand-right"
+          d="
+            M 224.6 63.9
+            A 60 60 0 0 1 224.6 144.1
+
+            Q 218 151 218 163
+            L 218 238
+          "/>
+
+        <!-- ==================================================
+             GRAND CERCLE
+             ================================================== -->
+        <path pathLength="1"
+              class="symbol-line outer"
+              d="
+                M 94.5 216.8
+                A 116 116 0 1 1 265.5 216.8
+              "/>
+
+        <!-- Halo -->
+        <path pathLength="1"
+              class="halo-wide"
+              d="
+                M 94.5 216.8
+                A 116 116 0 1 1 265.5 216.8
+              "/>
+
+        <path pathLength="1"
+              class="halo-core"
+              d="
+                M 94.5 216.8
+                A 116 116 0 1 1 265.5 216.8
+              "/>
+
+      </svg>
+    </div>
+
+    <div class="brand">
+      <div class="vsim">VSim</div>
+      <div class="neurotek">NEUROTEK</div>
+      <div class="rule"></div>
+      <div class="slogan">Connecting Minds &amp; Bytes</div>
+    </div>
+
+  </div>
+</div>
+
+<div class="note">
+  Prototype autonome HTML / SVG — arcs des mains concentriques à la boule centrale.
+</div>
+
+</div>
+
+<script>
+const card = document.getElementById('card');
+const replay = document.getElementById('replay');
+const pause = document.getElementById('pause');
+const speed = document.getElementById('speed');
+
+function restart(){
+  card.classList.remove('paused');
+  pause.textContent = '⏸ Pause';
+
+  card.classList.add('reset');
+  void card.offsetWidth;
+  card.classList.remove('reset');
+}
+
+replay.addEventListener('click', restart);
+
+pause.addEventListener('click', ()=>{
+  const paused = card.classList.toggle('paused');
+  pause.textContent = paused ? '▶ Reprendre' : '⏸ Pause';
+});
+
+speed.addEventListener('change', e=>{
+  document.documentElement.style.setProperty('--speed',e.target.value);
+  restart();
+});
+</script>
+
+</body>
+</html>

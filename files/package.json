@@ -1,0 +1,24 @@
+{
+  "name": "holophone",
+  "version": "3.1.2",
+  "private": true,
+  "description": "Holophone - application Android Capacitor",
+  "scripts": {
+    "sync": "cap sync android",
+    "open:android": "cap open android",
+    "assets:android": "@capacitor/assets generate --android"
+  },
+  "dependencies": {
+    "@capacitor/android": "8.5.1",
+    "@capacitor/app": "8.1.1",
+    "@capacitor/core": "8.5.1",
+    "@capacitor/filesystem": "8.1.3",
+    "@capacitor/keyboard": "8.0.5",
+    "@capacitor/local-notifications": "8.3.1",
+    "@mindlib-capacitor/send-intent": "8.0.6"
+  },
+  "devDependencies": {
+    "@capacitor/assets": "3.0.5",
+    "@capacitor/cli": "8.5.1"
+  }
+}

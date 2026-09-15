@@ -1,0 +1,625 @@
+/* Holophone 2.0 — couches ajoutées sans alourdir davantage index.html */
+.v2-testgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin:8px 0}
+.v2-testgrid .mini{width:100%;justify-content:center}
+.v2-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 7px;border:1px solid #254148;
+ color:#91b5ba;background:#071012;font:10px/1.2 'Share Tech Mono',monospace;text-transform:uppercase;letter-spacing:.06em}
+.v2-badge.ok{color:var(--teal);border-color:rgba(46,230,200,.45)}
+.v2-badge.warn{color:var(--yellow);border-color:rgba(252,238,10,.45)}
+.v2-badge.bad{color:#ff4c56;border-color:rgba(255,76,86,.48)}
+.v2-kv{display:grid;grid-template-columns:minmax(100px,.9fr) minmax(0,1.7fr);gap:5px 10px;padding:8px 0;border-bottom:1px solid #162126;font-size:12px}
+.v2-kv b{font-family:'Share Tech Mono',monospace;color:#769397;font-weight:400;text-transform:uppercase;letter-spacing:.05em}
+.v2-kv span{overflow-wrap:anywhere}
+.v2-timeline{display:flex;flex-direction:column;gap:6px}
+.v2-timeitem{border-left:2px solid #24454b;padding:5px 8px;background:#070a0c}
+.v2-timeitem b{display:block;color:var(--teal);font:11px/1.2 'Share Tech Mono',monospace}
+.v2-timeitem i{display:block;color:#809397;font-style:normal;font-size:12px;margin-top:2px}
+.v2-calltools{display:none;align-items:center;gap:6px;padding:0 10px;min-height:0}
+.homeactions.callmode .v2-calltools{display:flex}
+.v2-calltools button,.v2-calltools select{height:31px;border:1px solid #26383d;background:#070b0d;color:#a9bdc1;
+ font:10px/1 'Share Tech Mono',monospace;text-transform:uppercase;letter-spacing:.04em;padding:0 7px;min-width:0}
+.v2-calltools select{flex:1 1 auto}
+.v2-calltools button.on{color:#ff4b55;border-color:#ff4b55;box-shadow:0 0 7px rgba(255,75,85,.25)}
+.v2-calltimer{font:11px/1 'Share Tech Mono',monospace;color:var(--teal);min-width:43px;text-align:center}
+.v2-vu{height:5px;flex:1 1 60px;border:1px solid #183034;background:#050809;overflow:hidden;min-width:40px}
+.v2-vu b{display:block;height:100%;width:0;background:var(--teal);box-shadow:0 0 6px rgba(46,230,200,.55);transition:width .08s linear}
+.homeactions.callmode{grid-template-rows:.72fr .35fr 1.93fr}
+.v2-galmeta{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px}
+.v2-galmeta input,.v2-galmeta select{min-width:0}
+.v2-meta-note{font:10px/1.3 'Share Tech Mono',monospace;color:#70858a;margin-top:5px}
+.v2-lockbio{margin-top:12px;min-width:180px;height:42px;border:1px solid var(--teal);background:#071012;color:var(--teal);
+ font:12px/1 'Share Tech Mono',monospace;text-transform:uppercase;letter-spacing:.08em;box-shadow:0 0 10px rgba(46,230,200,.18)}
+#lock .v2-lockbio.hide{display:none!important}
+.v2-snaprow{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px}
+.v2-snaprow .mini{flex:1 1 140px}
+.v2-callmode-note{font-size:12px;color:#759095;margin-top:5px}
+.v2-route{max-width:128px}
+.v2-sectionline{height:1px;background:linear-gradient(90deg,transparent,rgba(46,230,200,.38),transparent);margin:11px 0}
+
+
+/* Correctif moteur 2.0.1 */
+.v2-resetbox{margin-top:20px;padding-top:12px;border-top:1px solid rgba(255,48,58,.24)}
+.mini.v2-danger{border-color:#ff303a;color:#ff5660;box-shadow:0 0 8px rgba(255,48,58,.16)}
+.mini.v2-danger:active{background:#ff303a;color:#030506}
+.v2-archive-note{border-color:rgba(255,157,50,.35)!important;color:#d7b284!important}
+
+
+/* Holophone 2.1 — mémoire sourcée / Gemini Interactions */
+.v2-sourcebox{margin:0 0 16px 0;padding:10px 0 14px;border-bottom:1px solid rgba(0,255,220,.18)}
+.v2-sourcebox .note{border-color:rgba(0,255,220,.28)}
+
+
+/* Holophone 2.2 — mémoire épisodique */
+.v2-epstat{margin:10px 0 12px;padding:9px 10px;border:1px solid rgba(62,246,255,.24);border-radius:10px;color:#bffcff;font-size:13px}
+.v2-episode{display:flex;flex-direction:column;gap:2px;margin:7px 0;padding:8px 9px;border-left:2px solid rgba(62,246,255,.42);background:rgba(0,0,0,.16)}
+.v2-episode b{font-size:12px;color:#d9feff}.v2-episode i{font-size:11px;color:#7faeb0;font-style:normal}
+#v22Retention{margin:8px 0 10px;width:100%}
+
+.v2-epsource{display:block;margin-top:5px;font-size:11px;line-height:1.35;color:#9bbfc1;opacity:.9}
+
+
+/* Holophone 2.3 — Spotify / playlists */
+.sptabs{display:flex;gap:6px;margin:2px 0 8px}
+.spresults{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:7px;max-height:48vh;overflow:auto}
+.spresult{min-width:0;display:flex!important;flex-direction:column;align-items:stretch!important;text-align:left;padding:8px!important;gap:7px!important}
+.spresult img{width:100%!important;height:auto!important;aspect-ratio:1/1;object-fit:contain!important;background:#070b0d}
+.spresult .tx b{font-size:13.5px!important;white-space:normal!important;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.spresult .tx i{font-size:11px!important;white-space:normal!important;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.spchosen{display:flex;align-items:center;gap:10px;border:1px solid #1d3a30;padding:9px;margin-top:6px}
+.spchosen img{width:64px;height:64px;object-fit:contain;background:#070b0d}
+.spchosen .tx{display:flex;flex-direction:column;gap:3px;min-width:0}
+.spchosen .tx b{font-size:15px}.spchosen .tx i{font-size:12px;color:var(--dim);font-style:normal}
+.spcoop{display:flex;flex-direction:column;gap:3px;border:1px solid #243137;padding:10px;margin:7px 0;background:#0a1114}
+.spcoop.on{border-left:3px solid #1DB954}
+.spcoop b{font-size:15px}.spcoop i{font-size:11px;color:var(--dim);font-style:normal}
+
+
+/* Holophone 2.4 — Braindance Studio */
+.bdov{position:fixed;inset:0;z-index:9500;background:rgba(0,0,0,.86);backdrop-filter:blur(7px);display:flex;align-items:flex-end;justify-content:center;padding:10px}
+.bdpanel{width:min(720px,100%);max-height:94vh;overflow:auto;background:#070b0e;border:1px solid rgba(255,48,56,.55);border-top:2px solid #ff3038;box-shadow:0 -14px 50px rgba(0,0,0,.7);padding:12px}
+.bdhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.bdhead>div{display:flex;flex-direction:column;gap:2px}
+.bdhead b{color:#ff5b63;letter-spacing:.14em;font-size:18px}.bdhead i{font-style:normal;color:var(--dim);font-size:11px}
+.bdquick{display:flex;flex-direction:column;gap:2px;margin-top:5px}
+.bdquickgroup .sect{margin-top:9px;margin-bottom:5px}
+.bdtoggles{display:flex;flex-wrap:wrap;gap:6px}
+.bdtoggle{border:1px solid #343d41;background:#0b1114;color:#a9b9bd;border-radius:18px;padding:7px 10px;font:inherit;font-size:12px}
+.bdtoggle.on{border-color:#ff3038;color:#fff;background:rgba(255,48,56,.18);box-shadow:0 0 12px rgba(255,48,56,.12)}
+.bdmedia{display:flex;flex-direction:column;gap:8px;margin-top:10px;border-top:1px solid #1d272b;padding-top:10px}
+.bdrange{display:grid;grid-template-columns:120px 1fr 24px;align-items:center;gap:8px;font-size:12px;color:#c8d3d6}
+.bdrange input{width:100%}.bdrange b{text-align:right;color:#ff6970}
+.bdage{font-size:11px;color:#74878c;margin:10px 0;border-left:2px solid #ff3038;padding-left:8px}
+.bdlaunchrow{position:sticky;bottom:-12px;background:#070b0e;padding:9px 0 4px;margin-top:6px}
+.bdagegrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.bdagegrid label{font-size:12px;color:var(--dim);display:flex;flex-direction:column;gap:4px}
+#screenBDCfg textarea{min-height:105px}
+@media(max-width:420px){.bdagegrid{grid-template-columns:1fr}.bdpanel{padding:10px}.bdrange{grid-template-columns:108px 1fr 22px}}
+
+
+/* Holophone 2.5 — Replay Braindance */
+.bdreplaycard{border:1px solid #263238;background:#080d10;padding:8px;display:flex;flex-direction:column;gap:7px}
+.bdreplayopen{border:0;background:transparent;color:inherit;text-align:left;padding:2px;display:flex;flex-direction:column;gap:3px}
+.bdreplayopen b{font-size:15px;color:#eef5f6}.bdreplayopen i{font-style:normal;font-size:11px;color:var(--dim)}
+.bdreplayrow{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.bdstars{display:flex;gap:2px}.bdstars button{border:0;background:transparent;color:#ffc857;font-size:22px;line-height:1;padding:2px}
+.bdrov{position:fixed;inset:0;z-index:9600;background:rgba(0,0,0,.9);backdrop-filter:blur(8px);display:flex;align-items:flex-end;justify-content:center;padding:8px}
+.bdrpanel{width:min(760px,100%);max-height:96vh;overflow:auto;background:#070b0e;border:1px solid rgba(255,48,56,.55);border-top:2px solid #ff3038;padding:12px}
+.bdreplayctx{margin:8px 0 14px;border-left:2px solid #ff3038;padding:8px 10px;color:#aab9bd;font-size:12px;white-space:pre-wrap}
+.bdreplaysep{font-size:10px;letter-spacing:.16em;color:#ff6970;margin:18px 0 7px;border-bottom:1px solid #182125;padding-bottom:4px}
+.bdreplaytext{white-space:pre-wrap;font-size:15px;line-height:1.62;color:#e5ecee}
+.bdreplaymedia{display:flex;flex-wrap:wrap;gap:7px;align-items:center;margin:10px 0 18px}
+.bdreplaymedia img{width:min(220px,100%);max-height:280px;object-fit:contain;background:#030506;border:1px solid #1d292e}
+.bdreplaymedia span,.bdreplaymusic{border:1px solid #24343a;background:#0a1114;color:#9fc6ca;padding:7px 9px;font:inherit;font-size:12px}
+#screenBDElems textarea{min-height:120px}
+
+
+/* Holophone 2.6 — barre compacte, Actions, Refuge */
+.deckglyph{font-family:'Share Tech Mono',monospace;font-size:23px!important;line-height:1;display:block}
+.decktools .opt{font-size:0!important}
+.decktools .opt:disabled{opacity:.28;filter:saturate(.3);pointer-events:none}
+.opt.refugebtn{border-left-color:#56d6ff;color:#56d6ff}.opt.refugebtn:active{background:#56d6ff;color:#050708}
+.opt.regenbtn{border-left-color:#8fe388;color:#8fe388}.opt.regenbtn:active{background:#8fe388;color:#050708}
+.opt.undobtn{border-left-color:#ffb35c;color:#ffb35c}.opt.undobtn:active{background:#ffb35c;color:#050708}
+.opt.actionsbtn{border-left-color:#d88cff;color:#d88cff}.opt.actionsbtn:active{background:#d88cff;color:#050708}
+.opt.bdance{padding:12px 4px!important;text-transform:none!important;letter-spacing:0!important}
+.opt.bdance::before{display:none!important}
+
+.msg.actionmsg .b{background:linear-gradient(135deg,#191024,#0c1215);border:1px solid #6e3f86;border-left:3px solid #d88cff;color:#f2e7f7}
+.msg.v.actionmsg .b{background:linear-gradient(135deg,#241a08,#15100b);border-color:#8a641f;border-left:1px solid #8a641f;border-right:3px solid #ffc857}
+.actiontag{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:#d88cff;margin-bottom:4px}
+.msg.v.actionmsg .actiontag{color:#ffc857;text-align:right}
+.actiontext{white-space:pre-wrap}
+.actov,.refov{position:fixed;inset:0;z-index:9550;background:rgba(0,0,0,.88);backdrop-filter:blur(7px);display:flex;align-items:flex-end;justify-content:center;padding:8px}
+.actpanel,.refpanel{width:min(720px,100%);max-height:95vh;overflow:auto;background:#070b0e;border:1px solid #35223f;border-top:2px solid #d88cff;padding:12px}
+.refpanel{border-color:#173a46;border-top-color:#56d6ff}
+.actpickcat,.actcat{border:1px solid #202b30;background:#090e11;margin:7px 0;padding:4px 7px}
+.actpickcat summary,.actcat summary{cursor:pointer;color:#d88cff;font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:.08em;padding:7px 2px}
+.actcat summary{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.actpickgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:5px 0 7px}
+.actpick{border:1px solid #40304a;background:#100c15;color:#ebdcf2;padding:10px 8px;font:inherit;font-size:13px;text-align:left}
+.actpick:active{background:#d88cff;color:#050608}
+.actcfgrow{display:flex;align-items:stretch;gap:6px;border-top:1px solid #151f23;padding:5px 0}
+.actcfgmain{flex:1;border:0;background:transparent;color:inherit;text-align:left;display:flex;flex-direction:column;gap:2px;padding:5px}
+.actcfgmain b{font-size:14px}.actcfgmain i{font-style:normal;color:var(--dim);font-size:11px}
+
+.refugeline{margin:9px auto;max-width:92%;border:1px solid #173944;border-left:3px solid #56d6ff;background:#071116;padding:8px 10px}
+.refugeline .eh{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:#56d6ff;margin-bottom:4px}
+.refugeline .et{font-size:13px;color:#b8d9e2}
+.refgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.refrooms{display:flex;flex-direction:column;gap:8px}
+.refroom{border:1px solid #20333a;background:#081014;padding:9px}
+.refroom.current{border-left:3px solid #56d6ff}
+.refroomtop{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.refroomtop>div{display:flex;flex-direction:column;gap:2px}.refroomtop b{font-size:15px}.refroomtop i{font-style:normal;font-size:10px;color:#56d6ff}
+.refdesc{white-space:pre-wrap;color:#a9bdc3;font-size:12px;line-height:1.45;margin:7px 0}
+.refmedia{display:flex;flex-wrap:wrap;gap:6px;margin:7px 0}
+.refmedia img{width:72px;height:72px;object-fit:cover;border:1px solid #24434d;background:#030608}
+.refmusic,.refchip{border:1px solid #24434d;background:#091418;color:#9cdbe9;padding:6px 8px;font:inherit;font-size:11px}
+.refchips{display:flex;flex-wrap:wrap;gap:5px;margin:5px 0 8px}
+@media(max-width:420px){.actpickgrid,.refgrid{grid-template-columns:1fr}}
+
+
+/* Holophone 2.6.1 — co-construction du Refuge */
+.refugeline.proposal{border-left-color:#ffc857;background:#151106}
+.refugeline.proposal .eh{color:#ffc857}
+.refugeline.proposal.accepted{border-left-color:#79e38e;background:#08150d}
+.refugeline.proposal.accepted .eh{color:#79e38e}
+.refugeline.proposal.rejected{border-left-color:#ff6570;background:#17080b}
+.refugeline.proposal.rejected .eh{color:#ff6570}
+.refproposals{display:flex;flex-direction:column;gap:6px}
+.refproposal{border:1px solid #2a363a;background:#091014;padding:8px;display:flex;flex-direction:column;gap:5px}
+.refproposal b{font-size:11px;font-family:'Share Tech Mono',monospace;text-transform:uppercase;letter-spacing:.08em;color:#a9bbc0}
+.refproposal div{font-size:12px;color:#d3dde0}
+.refproposal.pending{border-left:3px solid #ffc857}.refproposal.pending b{color:#ffc857}
+.refproposal.accepted{border-left:3px solid #79e38e}.refproposal.accepted b{color:#79e38e}
+.refproposal.rejected{border-left:3px solid #ff6570}.refproposal.rejected b{color:#ff6570}
+
+
+/* Holophone 2.6.2 — interactions anti-miroir */
+.actpanel .rowb .mini:first-child{border-color:#8c6a2b;color:#ffc857}
+
+
+/* Holophone 2.6.3 — notifications fermables */
+.toast .x{
+ appearance:none;-webkit-appearance:none;border:0;background:transparent;
+ color:var(--dim);font-family:'Share Tech Mono';font-size:18px;
+ width:38px;height:38px;min-width:38px;display:flex;align-items:center;justify-content:center;
+ padding:0;margin:-3px -3px -3px 3px;cursor:pointer;touch-action:manipulation;
+}
+.toast .x:active{color:#050708;background:var(--magenta)}
+.happenedbtn{border-left-color:#ffc857!important;color:#ffc857!important;margin:8px 0 10px!important}
+.happenedbtn:active{background:#ffc857!important;color:#050708!important}
+
+
+/* Holophone 2.7 — salves de saisie */
+#sub b{transition:opacity .15s ease}
+
+
+/* Holophone 2.7.1 — propositions Refuge bidirectionnelles */
+.refproposal.pending .rowb{margin-top:4px}
+.refproposal.pending .rowb .mini{flex:1}
+
+
+/* Holophone 2.7.3 — Refuge / salves */
+.refhere{
+ margin:6px 0 4px;
+ font:11px 'Share Tech Mono',monospace;
+ letter-spacing:.08em;text-transform:uppercase;
+ color:var(--teal);
+}
+
+/* Holophone 2.8 — audio local des Replay Braindance */
+.bdaudiobar{display:grid;grid-template-columns:1fr auto auto;gap:6px;margin:8px 0 10px;padding:8px;border:1px solid #20353a;background:#070d10}
+.bdaudiobar .mini{min-height:34px}
+.bdaudiostate{grid-column:1/-1;font:11px 'Share Tech Mono',monospace;color:var(--dim);line-height:1.35;padding-top:2px}
+@media(max-width:420px){.bdaudiobar{grid-template-columns:1fr 1fr}.bdaudiobar .mini:first-child{grid-column:1/-1}}
+
+
+/* Holophone 2.8.1 — navigation audio par bloc */
+.bdaudiobar{grid-template-columns:1fr auto auto auto auto}
+.bdaudiopos{
+ grid-column:1/-1;text-align:center;font:12px 'Share Tech Mono',monospace;
+ color:var(--teal);letter-spacing:.08em;padding-top:2px;
+}
+.bdreplaysep.audioactive{
+ color:var(--teal);text-shadow:0 0 8px currentColor;
+ border-color:var(--teal);
+}
+@media(max-width:420px){
+ .bdaudiobar{grid-template-columns:1fr 1fr 1fr}
+ .bdaudiobar .mini:first-child{grid-column:1/-1}
+ .bdaudiobar .mini:nth-child(5){grid-column:2/4}
+}
+
+
+/* Holophone 2.8.2 — modales Refuge au premier plan + commandes audio flottantes */
+.sheet.refuge-front{
+ position:fixed;
+ z-index:9700;
+}
+.sheet.refuge-front .in{
+ max-height:min(88dvh,760px);
+ border-color:#24505d;
+ box-shadow:0 -10px 42px rgba(0,0,0,.72),0 0 22px rgba(46,230,200,.08);
+}
+#bdReplayOverlay .bdaudiobar{
+ position:sticky;
+ top:-1px;
+ z-index:12;
+ background:rgba(7,13,16,.98);
+ backdrop-filter:blur(8px);
+ -webkit-backdrop-filter:blur(8px);
+ box-shadow:0 10px 24px rgba(0,0,0,.55),0 0 0 1px rgba(46,230,200,.05);
+}
+#bdReplayOverlay .bdreplaysep{scroll-margin-top:150px}
+
+
+/* Holophone 2.8.4 — longueur Braindance directement dans le composeur */
+.bdquickcfg{display:flex;flex-direction:column;gap:9px;margin-top:10px;padding:10px 0;border-top:1px solid #1d272b;border-bottom:1px solid #1d272b}
+.bdquickages{margin-top:1px}.bdquickages input{min-height:40px}
+
+/* Holophone 2.9.0 — moteur de thèmes globaux */
+.appearancegrid{display:grid;grid-template-columns:1fr;gap:8px;margin:4px 0 6px}
+.appearancecard{width:100%;display:grid;grid-template-columns:64px 1fr 22px;align-items:center;gap:11px;
+ border:1px solid var(--line);border-left:3px solid transparent;background:#0b1114;color:var(--txt);
+ padding:11px 10px;text-align:left;font:inherit;cursor:pointer}
+.appearancecard:active{transform:translateY(1px)}
+.appearancecard.on{border-left-color:var(--teal);box-shadow:inset 0 0 18px rgba(46,230,200,.045)}
+.appearancepreview{height:42px;display:grid;grid-template-columns:repeat(4,1fr);overflow:hidden;border:1px solid #27343a;background:#050708}
+.appearancepreview i{display:block;min-width:0;box-shadow:inset 0 0 10px rgba(255,255,255,.10)}
+.appearancecopy{display:flex;flex-direction:column;gap:3px;min-width:0}
+.appearancecopy b{font-size:16px;color:#fff;letter-spacing:.035em;text-transform:uppercase}
+.appearancecopy i{font-style:normal;font-size:12px;line-height:1.28;color:var(--dim)}
+.appearancecheck{font:16px/1 'Share Tech Mono',monospace;color:transparent;text-align:center}
+.appearancecard.on .appearancecheck{color:var(--teal);text-shadow:0 0 8px currentColor}
+
+html[data-holo-theme="wallace"]{
+ --bg:#080604;--panel:#120d07;--line:#3b2c1b;--yellow:#ffd280;--teal:#ffd280;--magenta:#ffd280;--red:#ffd280;
+ --dim:#9f8767;--txt:#f5ead7;--u-accent:#ffd280;--u-secondary:#c78a3e;--u-fill:#191005;--u-soft:#2a1c0a;
+ --u-border:#7e5727;--u-glow:rgba(255,210,128,.42);--u-glow2:rgba(199,138,62,.24);--u-dark:#090603;--u-panel:#120d07;
+}
+html[data-holo-theme="redblue"]{
+ --bg:#04080e;--panel:#07111b;--line:#163652;--yellow:#49c8ff;--teal:#49c8ff;--magenta:#49c8ff;--red:#49c8ff;
+ --dim:#7194ad;--txt:#e6f4ff;--u-accent:#49c8ff;--u-secondary:#ff304a;--u-fill:#061827;--u-soft:#0b263a;
+ --u-border:#2875a0;--u-glow:rgba(73,200,255,.42);--u-glow2:rgba(255,48,74,.25);--u-dark:#02050a;--u-panel:#07111b;
+}
+html[data-holo-theme="bluegreen"]{
+ --bg:#030b0d;--panel:#071517;--line:#174044;--yellow:#38f1d0;--teal:#38f1d0;--magenta:#38f1d0;--red:#38f1d0;
+ --dim:#6d9e9a;--txt:#ddfff9;--u-accent:#38f1d0;--u-secondary:#39aaff;--u-fill:#061b1d;--u-soft:#0b3031;
+ --u-border:#25847b;--u-glow:rgba(56,241,208,.40);--u-glow2:rgba(57,170,255,.22);--u-dark:#020809;--u-panel:#071517;
+}
+html[data-holo-theme="red"]{
+ --bg:#0a0304;--panel:#150708;--line:#42151b;--yellow:#ff3948;--teal:#ff3948;--magenta:#ff3948;--red:#ff3948;
+ --dim:#a06c70;--txt:#ffe7e9;--u-accent:#ff3948;--u-secondary:#ff7580;--u-fill:#1c0709;--u-soft:#321015;
+ --u-border:#9e2630;--u-glow:rgba(255,57,72,.43);--u-glow2:rgba(255,117,128,.19);--u-dark:#080203;--u-panel:#150708;
+}
+
+/* Les thèmes modernes n'emploient plus de couleurs fonctionnelles différentes. */
+html[data-holo-theme]:not([data-holo-theme="original"]) body{background:#000;color:var(--txt)}
+html[data-holo-theme]:not([data-holo-theme="original"]) #app{
+ background:radial-gradient(120% 64% at 50% 0%,var(--u-soft) 0%,var(--bg) 68%);
+ box-shadow:0 0 18px var(--u-glow2),0 0 36px rgba(0,0,0,.45)
+}
+html[data-holo-theme]:not([data-holo-theme="original"]) #app::before{
+ border-color:var(--u-border);
+ box-shadow:0 0 5px var(--u-glow),0 0 15px var(--u-glow2),0 0 28px rgba(0,0,0,.10),inset 0 0 9px var(--u-glow2)
+}
+html[data-holo-theme]:not([data-holo-theme="original"]) .appver{
+ color:var(--u-accent);text-shadow:0 0 8px var(--u-glow)
+}
+html[data-holo-theme]:not([data-holo-theme="original"]) .perfgauge b,
+html[data-holo-theme]:not([data-holo-theme="original"]) .perfmetric.ram .perfgauge b,
+html[data-holo-theme]:not([data-holo-theme="original"]) .perfmetric.hot .perfgauge b{
+ background:var(--u-accent)!important;box-shadow:0 0 7px var(--u-glow)!important
+}
+html[data-holo-theme]:not([data-holo-theme="original"]) .perfmetric.hot .pval{color:var(--u-accent)!important}
+html[data-holo-theme]:not([data-holo-theme="original"]) .face,
+html[data-holo-theme]:not([data-holo-theme="original"]) .homeface{
+ box-shadow:0 0 0 1px var(--u-border),0 0 26px -6px var(--u-glow)!important
+}
+html[data-holo-theme]:not([data-holo-theme="original"]) .face .sweep{
+ background:linear-gradient(to bottom,transparent 0%,var(--u-glow2) 48%,transparent 52%)
+}
+
+html[data-holo-theme]:not([data-holo-theme="original"]) .homeact.call,
+html[data-holo-theme]:not([data-holo-theme="original"]) .homeact.message,
+html[data-holo-theme]:not([data-holo-theme="original"]) .homeact.set,
+html[data-holo-theme]:not([data-holo-theme="original"]) .homeactions.callmode #homeCall,
+html[data-holo-theme]:not([data-holo-theme="original"]) .homeact.mic{
+ color:var(--u-accent)!important;border-color:var(--u-border)!important;
+ text-shadow:0 0 8px var(--u-accent)!important;
+ box-shadow:inset 0 0 12px var(--u-glow2),0 0 10px var(--u-glow2)!important
+}
+html[data-holo-theme]:not([data-holo-theme="original"]) .homeact:active,
+html[data-holo-theme]:not([data-holo-theme="original"]) .homeact.mic:active,
+html[data-holo-theme]:not([data-holo-theme="original"]) .homeact.mic.listening{
+ background:var(--u-accent)!important;color:var(--u-dark)!important;border-color:var(--u-accent)!important;text-shadow:none!important
+}
+
+html[data-holo-theme]:not([data-holo-theme="original"]) .character .b,
+html[data-holo-theme]:not([data-holo-theme="original"]) .v .b,
+html[data-holo-theme]:not([data-holo-theme="original"]) .msg.actionmsg .b,
+html[data-holo-theme]:not([data-holo-theme="original"]) .msg.v.actionmsg .b{
+ background:var(--u-fill)!important;color:var(--txt)!important;border-color:var(--u-border)!important;
+ box-shadow:inset 0 0 14px var(--u-glow2)!important
+}
+html[data-holo-theme]:not([data-holo-theme="original"]) .character .b,
+html[data-holo-theme]:not([data-holo-theme="original"]) .msg.actionmsg .b{border-left:2px solid var(--u-accent)!important}
+html[data-holo-theme]:not([data-holo-theme="original"]) .v .b,
+html[data-holo-theme]:not([data-holo-theme="original"]) .msg.v.actionmsg .b{border-right:2px solid var(--u-accent)!important;border-left:0!important}
+html[data-holo-theme]:not([data-holo-theme="original"]) .actiontag,
+html[data-holo-theme]:not([data-holo-theme="original"]) .msg.v.actionmsg .actiontag{color:var(--u-accent)!important}
+html[data-holo-theme]:not([data-holo-theme="original"]) .replyref,
+html[data-holo-theme]:not([data-holo-theme="original"]) .msg.v .replyref{
+ border-color:var(--u-accent)!important;background:var(--u-fill)!important;color:var(--dim)!important
+}
+html[data-holo-theme]:not([data-holo-theme="original"]) .replyref b,
+html[data-holo-theme]:not([data-holo-theme="original"]) .msg.v .replyref b{color:var(--u-accent)!important}
+
+html[data-holo-theme]:not([data-holo-theme="original"]) .spc,
+html[data-holo-theme]:not([data-holo-theme="original"]) .spchosen,
+html[data-holo-theme]:not([data-holo-theme="original"]) .spcoop.on{
+ border-color:var(--u-border)!important;background:var(--u-fill)!important
+}
+html[data-holo-theme]:not([data-holo-theme="original"]) .spc .ic,
+html[data-holo-theme]:not([data-holo-theme="original"]) .spc .tx i{color:var(--u-accent)!important}
+html[data-holo-theme]:not([data-holo-theme="original"]) .spcoop.on{border-left-color:var(--u-accent)!important}
+
+html[data-holo-theme]:not([data-holo-theme="original"]) .jrn,
+html[data-holo-theme]:not([data-holo-theme="original"]) .jrn.socle,
+html[data-holo-theme]:not([data-holo-theme="original"]) .jrn.moi,
+html[data-holo-theme]:not([data-holo-theme="original"]) .jrn.elle,
+html[data-holo-theme]:not([data-holo-theme="original"]) .jrn.secousse,
+html[data-holo-theme]:not([data-holo-theme="original"]) .jrn.evt,
+html[data-holo-theme]:not([data-holo-theme="original"]) .jrn.grave,
+html[data-holo-theme]:not([data-holo-theme="original"]) .jrn.mus,
+html[data-holo-theme]:not([data-holo-theme="original"]) .jrn.img,
+html[data-holo-theme]:not([data-holo-theme="original"]) .jrn.souv,
+html[data-holo-theme]:not([data-holo-theme="original"]) .jrn.no{
+ border-color:var(--u-border)!important;border-left-color:var(--u-accent)!important;background:var(--u-fill)!important
+}
+html[data-holo-theme]:not([data-holo-theme="original"]) .jrn .ty,
+html[data-holo-theme]:not([data-holo-theme="original"]) .jrn.socle .ty,
+html[data-holo-theme]:not([data-holo-theme="original"]) .jrn.moi .ty,
+html[data-holo-theme]:not([data-holo-theme="original"]) .jrn.elle .ty,
+html[data-holo-theme]:not([data-holo-theme="original"]) .jrn.secousse .ty,
+html[data-holo-theme]:not([data-holo-theme="original"]) .jrn.evt .ty,
+html[data-holo-theme]:not([data-holo-theme="original"]) .jrn.grave .ty,
+html[data-holo-theme]:not([data-holo-theme="original"]) .jrn.mus .ty,
+html[data-holo-theme]:not([data-holo-theme="original"]) .jrn.img .ty,
+html[data-holo-theme]:not([data-holo-theme="original"]) .jrn.souv .ty,
+html[data-holo-theme]:not([data-holo-theme="original"]) .jrn.no .ty{color:var(--u-accent)!important}
+
+html[data-holo-theme]:not([data-holo-theme="original"]) .opt,
+html[data-holo-theme]:not([data-holo-theme="original"]) .opt.free,
+html[data-holo-theme]:not([data-holo-theme="original"]) .opt.evt,
+html[data-holo-theme]:not([data-holo-theme="original"]) .opt.att,
+html[data-holo-theme]:not([data-holo-theme="original"]) .opt.end,
+html[data-holo-theme]:not([data-holo-theme="original"]) .opt.refugebtn,
+html[data-holo-theme]:not([data-holo-theme="original"]) .opt.regenbtn,
+html[data-holo-theme]:not([data-holo-theme="original"]) .opt.undobtn,
+html[data-holo-theme]:not([data-holo-theme="original"]) .opt.actionsbtn,
+html[data-holo-theme]:not([data-holo-theme="original"]) .opt.bdance,
+html[data-holo-theme]:not([data-holo-theme="original"]) .happenedbtn{
+ border-left-color:var(--u-accent)!important;color:var(--u-accent)!important
+}
+html[data-holo-theme]:not([data-holo-theme="original"]) .opt::before,
+html[data-holo-theme]:not([data-holo-theme="original"]) .opt.free::before,
+html[data-holo-theme]:not([data-holo-theme="original"]) .opt.evt::before,
+html[data-holo-theme]:not([data-holo-theme="original"]) .opt.bdance::before{color:var(--u-accent)!important}
+html[data-holo-theme]:not([data-holo-theme="original"]) .opt:active,
+html[data-holo-theme]:not([data-holo-theme="original"]) .opt.free:active,
+html[data-holo-theme]:not([data-holo-theme="original"]) .opt.evt:active,
+html[data-holo-theme]:not([data-holo-theme="original"]) .opt.att:active,
+html[data-holo-theme]:not([data-holo-theme="original"]) .opt.refugebtn:active,
+html[data-holo-theme]:not([data-holo-theme="original"]) .opt.regenbtn:active,
+html[data-holo-theme]:not([data-holo-theme="original"]) .opt.undobtn:active,
+html[data-holo-theme]:not([data-holo-theme="original"]) .opt.actionsbtn:active,
+html[data-holo-theme]:not([data-holo-theme="original"]) .happenedbtn:active{
+ background:var(--u-accent)!important;color:var(--u-dark)!important
+}
+
+html[data-holo-theme]:not([data-holo-theme="original"]) .mini,
+html[data-holo-theme]:not([data-holo-theme="original"]) .mini.g,
+html[data-holo-theme]:not([data-holo-theme="original"]) .mini.att,
+html[data-holo-theme]:not([data-holo-theme="original"]) .mini.v2-danger,
+html[data-holo-theme]:not([data-holo-theme="original"]) .actpanel .rowb .mini:first-child{
+ border-color:var(--u-border)!important;color:var(--u-accent)!important;box-shadow:none!important
+}
+html[data-holo-theme]:not([data-holo-theme="original"]) .mini:active,
+html[data-holo-theme]:not([data-holo-theme="original"]) .mini.g:active,
+html[data-holo-theme]:not([data-holo-theme="original"]) .mini.att:active,
+html[data-holo-theme]:not([data-holo-theme="original"]) .mini.v2-danger:active{
+ background:var(--u-accent)!important;color:var(--u-dark)!important;border-color:var(--u-accent)!important
+}
+
+html[data-holo-theme]:not([data-holo-theme="original"]) .hkkey,
+html[data-holo-theme]:not([data-holo-theme="original"]) .hkkey.special,
+html[data-holo-theme]:not([data-holo-theme="original"]) .hkcat,
+html[data-holo-theme]:not([data-holo-theme="original"]) .hkemojiitem{
+ border-color:var(--u-border)!important;color:var(--u-accent)!important;box-shadow:inset 0 0 8px var(--u-glow2)!important
+}
+html[data-holo-theme]:not([data-holo-theme="original"]) .hkkey.press,
+html[data-holo-theme]:not([data-holo-theme="original"]) .hkkey.special.press,
+html[data-holo-theme]:not([data-holo-theme="original"]) .hkkey.special.on,
+html[data-holo-theme]:not([data-holo-theme="original"]) .hkcat.on,
+html[data-holo-theme]:not([data-holo-theme="original"]) .hkemojiitem.press{
+ background:var(--u-accent)!important;color:var(--u-dark)!important;border-color:var(--u-accent)!important;box-shadow:0 0 11px var(--u-glow)!important
+}
+html[data-holo-theme]:not([data-holo-theme="original"]) .hkfooter{color:var(--dim)!important}
+html[data-holo-theme]:not([data-holo-theme="original"]) .hkfooter::before,
+html[data-holo-theme]:not([data-holo-theme="original"]) .hkfooter::after{background:var(--u-border)!important}
+
+html[data-holo-theme]:not([data-holo-theme="original"]) .bdpanel,
+html[data-holo-theme]:not([data-holo-theme="original"]) .bdrpanel,
+html[data-holo-theme]:not([data-holo-theme="original"]) .actpanel,
+html[data-holo-theme]:not([data-holo-theme="original"]) .refpanel{
+ border-color:var(--u-border)!important;border-top-color:var(--u-accent)!important;background:var(--u-dark)!important
+}
+html[data-holo-theme]:not([data-holo-theme="original"]) .bdhead b,
+html[data-holo-theme]:not([data-holo-theme="original"]) .bdrange b,
+html[data-holo-theme]:not([data-holo-theme="original"]) .bdage,
+html[data-holo-theme]:not([data-holo-theme="original"]) .bdreplaysep,
+html[data-holo-theme]:not([data-holo-theme="original"]) .actpickcat summary,
+html[data-holo-theme]:not([data-holo-theme="original"]) .actcat summary,
+html[data-holo-theme]:not([data-holo-theme="original"]) .refugeline .eh,
+html[data-holo-theme]:not([data-holo-theme="original"]) .refroomtop i,
+html[data-holo-theme]:not([data-holo-theme="original"]) .refhere{color:var(--u-accent)!important}
+html[data-holo-theme]:not([data-holo-theme="original"]) .bdage,
+html[data-holo-theme]:not([data-holo-theme="original"]) .bdreplayctx,
+html[data-holo-theme]:not([data-holo-theme="original"]) .refugeline,
+html[data-holo-theme]:not([data-holo-theme="original"]) .refroom.current{border-color:var(--u-border)!important;border-left-color:var(--u-accent)!important}
+html[data-holo-theme]:not([data-holo-theme="original"]) .bdtoggle.on,
+html[data-holo-theme]:not([data-holo-theme="original"]) .actpick:active{
+ border-color:var(--u-accent)!important;color:var(--u-dark)!important;background:var(--u-accent)!important;box-shadow:0 0 12px var(--u-glow2)!important
+}
+html[data-holo-theme]:not([data-holo-theme="original"]) .bdtoggle.on{color:var(--txt)!important;background:var(--u-glow2)!important}
+html[data-holo-theme]:not([data-holo-theme="original"]) .actpick,
+html[data-holo-theme]:not([data-holo-theme="original"]) .refmusic,
+html[data-holo-theme]:not([data-holo-theme="original"]) .refchip,
+html[data-holo-theme]:not([data-holo-theme="original"]) .bdreplaymusic,
+html[data-holo-theme]:not([data-holo-theme="original"]) .bdreplaymedia span{
+ border-color:var(--u-border)!important;background:var(--u-fill)!important;color:var(--txt)!important
+}
+html[data-holo-theme]:not([data-holo-theme="original"]) .refugeline.proposal,
+html[data-holo-theme]:not([data-holo-theme="original"]) .refugeline.proposal.accepted,
+html[data-holo-theme]:not([data-holo-theme="original"]) .refugeline.proposal.rejected,
+html[data-holo-theme]:not([data-holo-theme="original"]) .refproposal.pending,
+html[data-holo-theme]:not([data-holo-theme="original"]) .refproposal.accepted,
+html[data-holo-theme]:not([data-holo-theme="original"]) .refproposal.rejected{
+ border-left-color:var(--u-accent)!important;background:var(--u-fill)!important
+}
+html[data-holo-theme]:not([data-holo-theme="original"]) .refugeline.proposal .eh,
+html[data-holo-theme]:not([data-holo-theme="original"]) .refugeline.proposal.accepted .eh,
+html[data-holo-theme]:not([data-holo-theme="original"]) .refugeline.proposal.rejected .eh,
+html[data-holo-theme]:not([data-holo-theme="original"]) .refproposal.pending b,
+html[data-holo-theme]:not([data-holo-theme="original"]) .refproposal.accepted b,
+html[data-holo-theme]:not([data-holo-theme="original"]) .refproposal.rejected b{color:var(--u-accent)!important}
+
+html[data-holo-theme]:not([data-holo-theme="original"]) .v2-badge.ok,
+html[data-holo-theme]:not([data-holo-theme="original"]) .v2-badge.warn,
+html[data-holo-theme]:not([data-holo-theme="original"]) .v2-badge.bad,
+html[data-holo-theme]:not([data-holo-theme="original"]) .v2-calltools button.on,
+html[data-holo-theme]:not([data-holo-theme="original"]) .v2-calltimer,
+html[data-holo-theme]:not([data-holo-theme="original"]) .bdaudiopos,
+html[data-holo-theme]:not([data-holo-theme="original"]) .bdreplaysep.audioactive{
+ color:var(--u-accent)!important;border-color:var(--u-border)!important;text-shadow:0 0 8px var(--u-glow)!important
+}
+html[data-holo-theme]:not([data-holo-theme="original"]) .v2-vu b{background:var(--u-accent)!important;box-shadow:0 0 6px var(--u-glow)!important}
+html[data-holo-theme]:not([data-holo-theme="original"]) .v2-sectionline{
+ background:linear-gradient(90deg,transparent,var(--u-glow),transparent)!important
+}
+
+html[data-holo-theme]:not([data-holo-theme="original"]) input[type=range]::-webkit-slider-thumb{background:var(--u-accent)!important}
+html[data-holo-theme]:not([data-holo-theme="original"]) input[type=range]::-moz-range-thumb{background:var(--u-accent)!important}
+html[data-holo-theme]:not([data-holo-theme="original"]) .txtin,
+html[data-holo-theme]:not([data-holo-theme="original"]) textarea,
+html[data-holo-theme]:not([data-holo-theme="original"]) select{
+ background:var(--u-panel)!important;border-color:var(--u-border)!important;border-left-color:var(--u-accent)!important;color:var(--txt)!important
+}
+html[data-holo-theme]:not([data-holo-theme="original"]) .chk.on .bx{background:var(--u-accent)!important;border-color:var(--u-accent)!important;color:var(--u-dark)!important}
+html[data-holo-theme]:not([data-holo-theme="original"]) .chk.on{border-left-color:var(--u-accent)!important}
+html[data-holo-theme]:not([data-holo-theme="original"]) .audiotrack .tag.on{color:var(--u-accent)!important;border-color:var(--u-accent)!important}
+html[data-holo-theme]:not([data-holo-theme="original"]) .title::after,
+html[data-holo-theme]:not([data-holo-theme="original"]) .hdr::after{background:linear-gradient(90deg,var(--u-accent),transparent 55%)!important}
+
+/* La variante Red & Blue conserve le rouge comme halo structurel, jamais comme code fonctionnel. */
+html[data-holo-theme="redblue"] #app::before{
+ border-color:rgba(73,200,255,.52);
+ box-shadow:0 0 5px rgba(73,200,255,.38),0 0 16px rgba(255,48,74,.23),0 0 30px rgba(255,48,74,.10),inset 0 0 9px rgba(73,200,255,.12)
+}
+html[data-holo-theme="redblue"] .homeact.call,
+html[data-holo-theme="redblue"] .homeact.message,
+html[data-holo-theme="redblue"] .homeact.set{
+ box-shadow:inset 0 0 12px rgba(73,200,255,.08),0 0 8px rgba(73,200,255,.16),0 0 18px rgba(255,48,74,.08)!important
+}
+
+@media(max-width:360px){.appearancecard{grid-template-columns:54px 1fr 18px}.appearancepreview{height:36px}}
+
+/* 2.9.0 — suppression des dernières couleurs fonctionnelles héritées */
+html[data-holo-theme]:not([data-holo-theme="original"]) #back,
+html[data-holo-theme]:not([data-holo-theme="original"]) .powerbtn{
+ color:var(--u-accent)!important;border-color:var(--u-border)!important;
+ text-shadow:0 0 10px var(--u-glow)!important;box-shadow:0 0 12px var(--u-glow2),inset 0 0 8px var(--u-glow2)!important
+}
+html[data-holo-theme]:not([data-holo-theme="original"]) #back:active,
+html[data-holo-theme]:not([data-holo-theme="original"]) .powerbtn:active{
+ background:var(--u-accent)!important;color:var(--u-dark)!important;border-color:var(--u-accent)!important
+}
+html[data-holo-theme]:not([data-holo-theme="original"]) .powerbtn svg{filter:drop-shadow(0 0 5px var(--u-accent))!important}
+html[data-holo-theme]:not([data-holo-theme="original"]) .homegrid,
+html[data-holo-theme]:not([data-holo-theme="original"]) .homeactions{background:var(--u-dark)!important}
+html[data-holo-theme]:not([data-holo-theme="original"]) .homeid{
+ border-bottom-color:var(--u-border)!important;background:linear-gradient(180deg,var(--u-fill) 0%,var(--bg) 100%)!important
+}
+html[data-holo-theme]:not([data-holo-theme="original"]) .homeavatar{
+ border-bottom-color:var(--u-border)!important;background:radial-gradient(circle at 50% 46%,var(--u-fill) 0%,var(--bg) 58%,#020304 100%)!important
+}
+html[data-holo-theme]:not([data-holo-theme="original"]) .homeface{border-color:var(--u-border)!important}
+html[data-holo-theme]:not([data-holo-theme="original"]) .homeface .grid{
+ background:repeating-linear-gradient(to bottom,rgba(0,0,0,.52) 0 1px,var(--u-glow2) 1px 2px,transparent 2px 4px)!important
+}
+html[data-holo-theme]:not([data-holo-theme="original"]) .homeface .sweep{
+ background:linear-gradient(to bottom,transparent 0%,var(--u-glow2) 48%,transparent 52%)!important
+}
+html[data-holo-theme]:not([data-holo-theme="original"]) .toyimg,
+html[data-holo-theme]:not([data-holo-theme="original"]) .toyempty{border-color:var(--u-border)!important}
+html[data-holo-theme]:not([data-holo-theme="original"]) .toyempty{color:var(--dim)!important}
+
+html[data-holo-theme]:not([data-holo-theme="original"]) .evtline,
+html[data-holo-theme]:not([data-holo-theme="original"]) .evline{
+ background:var(--u-fill)!important;border-color:var(--u-border)!important;border-left-color:var(--u-accent)!important;color:var(--txt)!important
+}
+html[data-holo-theme]:not([data-holo-theme="original"]) .evtline .eh,
+html[data-holo-theme]:not([data-holo-theme="original"]) .evline b{color:var(--u-accent)!important}
+html[data-holo-theme]:not([data-holo-theme="original"]) .evtline .et{color:var(--txt)!important}
+html[data-holo-theme]:not([data-holo-theme="original"]) .opt.ev,
+html[data-holo-theme]:not([data-holo-theme="original"]) .opt.talk,
+html[data-holo-theme]:not([data-holo-theme="original"]) .opt.mus,
+html[data-holo-theme]:not([data-holo-theme="original"]) .opt.sug,
+html[data-holo-theme]:not([data-holo-theme="original"]) .opt.sugtext,
+html[data-holo-theme]:not([data-holo-theme="original"]) .opt.retry{
+ border-left-color:var(--u-accent)!important;color:var(--u-accent)!important
+}
+html[data-holo-theme]:not([data-holo-theme="original"]) .opt.ev::before,
+html[data-holo-theme]:not([data-holo-theme="original"]) .opt.talk::before,
+html[data-holo-theme]:not([data-holo-theme="original"]) .opt.sug::before,
+html[data-holo-theme]:not([data-holo-theme="original"]) .opt.sugtext::before{color:var(--u-accent)!important}
+html[data-holo-theme]:not([data-holo-theme="original"]) .opt.ev:active,
+html[data-holo-theme]:not([data-holo-theme="original"]) .opt.talk:active,
+html[data-holo-theme]:not([data-holo-theme="original"]) .opt.sug:active,
+html[data-holo-theme]:not([data-holo-theme="original"]) .opt.retry:active{
+ background:var(--u-accent)!important;color:var(--u-dark)!important
+}
+html[data-holo-theme]:not([data-holo-theme="original"]) .mures{
+ border-color:var(--u-border)!important;border-left-color:var(--u-accent)!important;background:var(--u-fill)!important
+}
+html[data-holo-theme]:not([data-holo-theme="original"]) .mures:active{background:var(--u-soft)!important}
+html[data-holo-theme]:not([data-holo-theme="original"]) .swipe .trash,
+html[data-holo-theme]:not([data-holo-theme="original"]) .swipe .share{color:var(--u-accent)!important}
+
+html[data-holo-theme]:not([data-holo-theme="original"]) #warn{background:rgba(0,0,0,.97)!important}
+html[data-holo-theme]:not([data-holo-theme="original"]) .wbox{
+ background:var(--u-fill)!important;border-color:var(--u-accent)!important;border-left-color:var(--u-accent)!important;box-shadow:0 0 60px -12px var(--u-glow)!important
+}
+html[data-holo-theme]:not([data-holo-theme="original"]) .wbox .wsweep{
+ background:linear-gradient(to bottom,transparent 0%,var(--u-glow2) 47%,var(--u-glow2) 53%,transparent 56%)!important
+}
+html[data-holo-theme]:not([data-holo-theme="original"]) .wbox .wtri,
+html[data-holo-theme]:not([data-holo-theme="original"]) .wbox .wsub,
+html[data-holo-theme]:not([data-holo-theme="original"]) #warnGo{color:var(--u-accent)!important;border-left-color:var(--u-accent)!important}
+html[data-holo-theme]:not([data-holo-theme="original"]) .wbox .wrule{background:linear-gradient(90deg,var(--u-accent),transparent 70%)!important}
+html[data-holo-theme]:not([data-holo-theme="original"]) #warnGo::before{color:var(--u-accent)!important}
+html[data-holo-theme]:not([data-holo-theme="original"]) #warnGo:active{background:var(--u-accent)!important;color:var(--u-dark)!important}
+html[data-holo-theme]:not([data-holo-theme="original"]) #warnSkip{color:var(--dim)!important}
+html[data-holo-theme]:not([data-holo-theme="original"]) #warnSkip:active{color:var(--u-accent)!important}
+
+html[data-holo-theme]:not([data-holo-theme="original"]) #lock{background:var(--u-dark)!important}
+html[data-holo-theme]:not([data-holo-theme="original"]) #lock.err .dots i{border-color:var(--u-accent)!important}
+html[data-holo-theme]:not([data-holo-theme="original"]) .pad button{background:var(--u-panel)!important;border-color:var(--u-border)!important;color:var(--txt)!important}
+html[data-holo-theme]:not([data-holo-theme="original"]) .pad button:active{background:var(--u-accent)!important;color:var(--u-dark)!important}
+
+html[data-holo-theme]:not([data-holo-theme="original"]) .appearancecard{
+ background:var(--u-panel)!important;border-color:var(--u-border)!important;color:var(--txt)!important
+}
+html[data-holo-theme]:not([data-holo-theme="original"]) .appearancecard.on{border-left-color:var(--u-accent)!important;box-shadow:inset 0 0 18px var(--u-glow2)!important}
+html[data-holo-theme]:not([data-holo-theme="original"]) .appearancecard.on .appearancecheck{color:var(--u-accent)!important}

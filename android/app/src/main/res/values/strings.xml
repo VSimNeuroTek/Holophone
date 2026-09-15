@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Holophone</string>
+    <string name="title_activity_main">Holophone</string>
+    <string name="package_name">com.mudva.lumen</string>
+    <string name="custom_url_scheme">com.mudva.lumen</string>
+</resources>
