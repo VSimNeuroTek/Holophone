@@ -1,6 +1,6 @@
 {
   "name": "holophone",
-  "version": "3.2.2",
+  "version": "3.2.3",
   "private": true,
   "description": "Holophone - application Android Capacitor",
   "scripts": {

@@ -17,12 +17,10 @@
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;overflow:hidden}
 body{background:#000;color:var(--txt);font-family:'Rajdhani',system-ui,sans-serif;
- font-size:17px;line-height:1.35;display:flex;justify-content:center;
- padding:max(2px,env(safe-area-inset-top)) max(2px,env(safe-area-inset-right))
-         max(2px,env(safe-area-inset-bottom)) max(2px,env(safe-area-inset-left))}
+ font-size:17px;line-height:1.35;display:flex;justify-content:center;padding:0}
 #app{width:100%;max-width:520px;height:100%;position:relative;display:flex;flex-direction:column;
  background:radial-gradient(120% 60% at 50% 0%,#101a1f 0%,var(--bg) 70%);
- overflow:hidden;padding:27px 7px 7px;
+ overflow:hidden;padding:max(27px,calc(env(safe-area-inset-top) + 6px)) max(7px,env(safe-area-inset-right)) max(7px,env(safe-area-inset-bottom)) max(7px,env(safe-area-inset-left));
  border:2px solid #000;border-radius:min(5.5vw,34px);
  box-shadow:0 0 16px rgba(255,35,45,.10),0 0 30px rgba(255,35,45,.055)}
 #app::before{content:"";position:absolute;inset:4px;pointer-events:none;z-index:65;
@@ -146,8 +144,8 @@ body{background:#000;color:var(--txt);font-family:'Rajdhani',system-ui,sans-seri
 .msg .b{padding:9px 13px 10px;font-size:17px;font-weight:500;white-space:pre-wrap;
  clip-path:polygon(0 0,100% 0,100% 100%,10px 100%,0 calc(100% - 10px))}
 .msg .t{font-family:'Share Tech Mono',monospace;font-size:9.5px;letter-spacing:.12em;color:#3f5058;margin-top:4px}
-.judy{align-self:flex-start}
-.judy .b{background:#10221f;border-left:2px solid var(--teal);color:#e6fffa;cursor:pointer}
+.character{align-self:flex-start}
+.character .b{background:#10221f;border-left:2px solid var(--teal);color:#e6fffa;cursor:pointer}
 .v{align-self:flex-end;text-align:right}
 .v .b{background:#1e1c07;border-right:2px solid var(--yellow);color:#fff8c9;
  clip-path:polygon(0 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%)}
@@ -475,7 +473,7 @@ select{font-family:'Share Tech Mono';font-size:11px}
 .msg{position:relative}
 .msg .rc{position:absolute;bottom:14px;font-size:15px;background:#0d1418;border:1px solid #2a3a40;
  padding:1px 5px 2px;line-height:1.2;z-index:2}
-.judy .rc{right:-8px}
+.character .rc{right:-8px}
 .v .rc{left:-8px}
 .picker{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;padding:4px 0}
 .picker button{font-size:26px;background:#0d1418;border:1px solid #223035;padding:8px 10px;cursor:pointer;line-height:1}
@@ -834,7 +832,7 @@ select{font-family:'Share Tech Mono';font-size:11px}
 .startup[data-style="cyber"] .startupfoot{color:rgba(46,230,200,.48)}
 
 
-/* VSNT 3.1.2 — logo corporate définitif animé (géométrie Concept 03 v7) */
+/* VSNT 3.1.3 — logo corporate définitif animé (géométrie Concept 03 v7) */
 .startup{
  --vsnt-accent:#efae52;--vsnt-soft:#ffd89c;--vsnt-halo:#ffcb7a;--vsnt-core:#fff1d5;--vsnt-speed:1;
 }
@@ -876,7 +874,36 @@ select{font-family:'Share Tech Mono';font-size:11px}
 .startup[data-style="wallace"] .vsntlogo{filter:drop-shadow(0 0 10px rgba(255,223,169,.24))}
 .startup[data-style="cyber"] .vsntbrand .slogan{color:#2ee6c8}
 .startup[data-style="cyber"] .vsntlogo{filter:drop-shadow(0 0 10px rgba(255,48,61,.34))}
-.aboutvsntlogo{display:block;width:min(100%,420px);height:auto;margin:0 auto 12px;background:#000;object-fit:contain;border:1px solid rgba(255,75,31,.22);box-shadow:0 0 24px rgba(255,75,31,.08)}
+#screenAbout .title{min-height:112px;padding-right:158px}
+.aboutfloatinghead{position:relative;z-index:9;flex:0 0 auto;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:7px;padding:8px 64px 11px;background:linear-gradient(180deg,rgba(3,4,4,.985),rgba(3,4,4,.955));border-bottom:1px solid color-mix(in srgb,var(--theme-border,#324047) 78%,transparent);box-shadow:0 12px 24px rgba(0,0,0,.34)}
+.aboutfloatinghead .iconbtn{position:absolute;right:10px;top:10px}
+.aboutfloatlogo{display:block;width:114px;height:114px;object-fit:contain;background:transparent;border:0;outline:0;box-shadow:none;flex:0 0 auto}
+.aboutheadtitle{font:700 28px/1 'Rajdhani',system-ui,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--txt);text-align:center}
+.aboutlangs{display:flex;align-items:center;justify-content:center;gap:12px;min-height:38px}
+.aboutlang{width:48px;height:34px;padding:0;border:1px solid color-mix(in srgb,var(--theme-border,#324047) 72%,transparent);background:rgba(0,0,0,.76);font-size:24px;line-height:32px;cursor:pointer;opacity:.58;filter:saturate(.58);transition:opacity .15s ease,filter .15s ease,border-color .15s ease,transform .15s ease}
+.aboutlang:active{transform:scale(.95)}
+.aboutlang.on{opacity:1;filter:none;border-color:var(--theme-accent,var(--yellow));box-shadow:0 0 10px color-mix(in srgb,var(--theme-accent,var(--yellow)) 30%,transparent)}
+#screenAbout>.cfg{padding-top:12px}
+@media(max-width:390px){.aboutfloatinghead{padding-left:54px;padding-right:54px}.aboutfloatlogo{width:108px;height:108px}.aboutheadtitle{font-size:26px}.aboutlang{width:46px;height:33px;font-size:23px}}
+.abouttechhero{position:relative;overflow:hidden;padding:16px 15px 15px;border:1px solid var(--theme-border,#324047);background:linear-gradient(180deg,rgba(255,255,255,.022),rgba(255,255,255,.008));box-shadow:inset 0 0 28px rgba(0,0,0,.34)}
+.abouttechhero:before{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,transparent 0 49.7%,color-mix(in srgb,var(--theme-accent,var(--teal)) 9%,transparent) 50%,transparent 50.3%),linear-gradient(0deg,transparent 0 49.7%,color-mix(in srgb,var(--theme-accent,var(--teal)) 7%,transparent) 50%,transparent 50.3%);background-size:46px 46px;opacity:.28}
+.abouttechhero>*{position:relative}
+.abouttechkicker{margin:2px 0 7px;text-align:center;font:10px/1.2 'Share Tech Mono',monospace;letter-spacing:.18em;text-transform:uppercase;color:var(--theme-accent,var(--teal))}
+.abouttechtitle{text-align:center;font:700 19px/1.2 'Rajdhani',system-ui,sans-serif;letter-spacing:.05em;color:var(--txt);text-transform:uppercase}
+.abouttechlead{max-width:620px;margin:9px auto 0;text-align:center;font-size:14px;line-height:1.5;color:var(--dim)}
+.aboutbadges{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin:13px 0 2px}
+.aboutbadge{padding:5px 7px;border:1px solid color-mix(in srgb,var(--theme-accent,var(--teal)) 46%,#1b2529);background:color-mix(in srgb,var(--theme-accent,var(--teal)) 7%,#06090a);font:9px/1 'Share Tech Mono',monospace;letter-spacing:.09em;text-transform:uppercase;color:var(--theme-accent,var(--teal))}
+.aboutbuild{margin-top:12px;padding-top:10px;border-top:1px solid color-mix(in srgb,var(--theme-border,#324047) 72%,transparent);display:flex;flex-direction:column;align-items:center;gap:5px;text-align:center}
+.aboutbuild .tag{margin:0}
+.aboutbuild .meta{font:10px/1.25 'Share Tech Mono',monospace;letter-spacing:.07em;color:var(--dim)}
+.aboutgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:8px 0 3px}
+.aboutmodule{min-height:112px;padding:11px 12px;border:1px solid color-mix(in srgb,var(--theme-border,#324047) 88%,transparent);background:rgba(255,255,255,.014)}
+.aboutmodule b{display:block;margin-bottom:5px;font:700 11px/1.2 'Share Tech Mono',monospace;letter-spacing:.09em;text-transform:uppercase;color:var(--theme-accent,var(--teal))}
+.aboutmodule span{display:block;font-size:12.5px;line-height:1.42;color:var(--dim)}
+.aboutprotocol{padding:12px 13px;border-left:2px solid var(--theme-accent,var(--teal));background:color-mix(in srgb,var(--theme-accent,var(--teal)) 5%,#050708);font-size:12.5px;line-height:1.5;color:var(--dim)}
+.aboutprotocol strong{color:var(--txt)}
+.aboutlegal{margin:14px 0 4px;text-align:center;font:9.5px/1.5 'Share Tech Mono',monospace;letter-spacing:.06em;color:var(--dim);opacity:.78}
+@media(max-width:430px){.aboutgrid{grid-template-columns:1fr}.aboutmodule{min-height:0}.abouttechlead{font-size:13px}.abouttechtitle{font-size:17px}}
 @media(max-width:420px){.startupcore{gap:7px;padding:15px 12px 12px}.vsntvisual{height:226px}.vsntlogo{width:min(78vw,274px);min-width:0}.vsntbrand .slogan{font-size:10px;letter-spacing:.14em}.vsntstatus{margin-top:8px}}
 
 .startstylegrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
@@ -913,7 +940,7 @@ select{font-family:'Share Tech Mono';font-size:11px}
 }
 
 
-/* ===================== LOT 2 · PRÉSENCE JUDY ===================== */
+/* ===================== LOT 2 · PRÉSENCE PERSONA ===================== */
 .presencehero{position:relative;overflow:hidden;border:1px solid var(--u-border);padding:17px 16px 15px;
  background:linear-gradient(145deg,var(--u-fill),rgba(0,0,0,.18));box-shadow:inset 0 0 18px rgba(255,255,255,.018)}
 .presencehero::after{content:"";position:absolute;inset:auto -25% -65% 20%;height:140px;border-radius:50%;
@@ -938,7 +965,7 @@ select{font-family:'Share Tech Mono';font-size:11px}
 <body>
 <div id="app" class="preboot">
  <div id="perfbar" class="perfbar" aria-label="Consommation de Holophone">
-  <span class="appver" id="appVersionBadge">Holophone v3.1.2</span>
+  <span class="appver" id="appVersionBadge">Holophone v3.1.4</span>
   <div class="perfmetrics">
    <div class="perfmetric cpu" id="perfCpu">
     <span class="plabel">CPU</span><span class="perfgauge"><b id="perfCpuBar"></b></span><em class="pval" id="perfCpuVal">--%</em>
@@ -1086,7 +1113,7 @@ select{font-family:'Share Tech Mono';font-size:11px}
    </div>
 
    <section class="setgroup" data-setgroup="character">
-    <button class="setgrouphead" type="button"><span class="setgroupicon">◇</span><span><b>Personnage</b><i>identité, mémoire, apparence et initiative</i></span><span class="setgroupchev">⌄</span></button>
+    <button class="setgrouphead" type="button"><span class="setgroupicon">◇</span><span><b>Persona</b><i>identité, mémoire, apparence et initiative</i></span><span class="setgroupchev">⌄</span></button>
     <div class="setgroupbody">
      <button class="hubrow" id="goIdent"><span class="ic">▦</span><span class="tt"><b>Identité</b><i id="idState">nom, surnom, relation, emploi du temps</i></span><span class="chev">▸</span></button>
      <button class="hubrow" id="goPersona"><span class="ic">🧠</span><span class="tt"><b>Personnalité</b><i>qui elle est, comment elle écrit</i></span><span class="chev">▸</span></button>
@@ -1234,7 +1261,7 @@ select{font-family:'Share Tech Mono';font-size:11px}
  <div id="screenBDReplay" class="hide" style="flex:1;display:flex;flex-direction:column;min-height:0">
   <div class="title">Replay Braindance<small id="bdReplaySub">—</small><button class="iconbtn" id="bdReplayBack">✕</button></div>
   <div class="cfg">
-   <div class="note">Les Braindances terminées sont archivées automatiquement. Le tri place d'abord les mieux notées, puis les plus récentes. Une note de 4 ou 5 étoiles ajoute aussi cette Braindance aux goûts de Judy.</div>
+   <div class="note">Les Braindances terminées sont archivées automatiquement. Le tri place d'abord les mieux notées, puis les plus récentes. Une note de 4 ou 5 étoiles ajoute aussi cette Braindance aux goûts de la persona.</div>
    <div id="bdReplayList" style="display:flex;flex-direction:column;gap:9px"></div>
    <div class="ok" id="bdReplayMsg"></div>
   </div>
@@ -1279,7 +1306,7 @@ select{font-family:'Share Tech Mono';font-size:11px}
     <label>Toi<input class="txtin" id="bdUserAge" type="number" min="18" max="99"></label>
     <label>Autre protagoniste sans âge<input class="txtin" id="bdOtherAge" type="number" min="18" max="99"></label>
    </div>
-   <div class="note" style="font-size:12.5px">L'âge de Judy vient toujours de sa fiche Identité. Tout protagoniste ajouté sans âge explicite reçoit l'âge adulte par défaut ci-dessus.</div>
+   <div class="note" style="font-size:12.5px">L'âge de la persona vient toujours de sa fiche Identité. Tout protagoniste ajouté sans âge explicite reçoit l'âge adulte par défaut ci-dessus.</div>
 
    <div class="note" style="font-size:12.5px">Le nombre de blocs se choisit directement au lancement de chaque Braindance dans la conversation.</div>
 
@@ -1416,22 +1443,45 @@ select{font-family:'Share Tech Mono';font-size:11px}
 
  <!-- À PROPOS -->
  <div id="screenAbout" class="hide" style="flex:1;display:flex;flex-direction:column;min-height:0">
-  <div class="title">À propos<small>Holophone</small><button class="iconbtn" id="abBack">✕</button></div>
-  <div class="cfg">
-   <div class="card">
-    <img class="aboutvsntlogo" src="media/vsnt-logo-full.png" alt="VSim NeuroTek — Connecting Minds &amp; Bytes">
-    <span class="tag" id="abV">Version</span>
-<div class="note" style="font-size:16px;color:var(--txt)">Un téléphone de fiction. Tu y discutes avec des personnages qui ont une mémoire, une humeur et une vie propre — ils t'écrivent d'eux-mêmes, t'envoient des images, et n'attendent pas toujours que tu commences.</div>
-    <div class="note" id="abStat" style="font-size:13.5px"></div>
+  <div class="aboutfloatinghead" aria-label="VSim NeuroTek">
+   <button class="iconbtn" id="abBack" aria-label="Fermer">✕</button>
+   <img class="aboutfloatlogo" src="media/vsnt-logo-full.png" alt="VSim NeuroTek — Connecting Minds &amp; Bytes">
+   <div class="aboutheadtitle" id="abTitle">À propos</div>
+   <div class="aboutlangs" role="group" aria-label="Language">
+    <button class="aboutlang" id="abLangFr" type="button" data-about-lang="fr" aria-label="Français" title="Français">🇫🇷</button>
+    <button class="aboutlang" id="abLangEn" type="button" data-about-lang="en" aria-label="English" title="English">🇬🇧</button>
    </div>
-   <div class="sect">Comment ça marche</div>
-   <div class="note">Chaque contact possède une fiche de personnalité découpée en blocs, envoyée au modèle de langage à chaque message, avec sa mémoire et ses souvenirs gravés. Rien n'est écrit d'avance : les réponses sont improvisées à chaque fois, en tenant compte de l'heure qu'il est et du temps écoulé depuis ton dernier message.</div>
-   <div class="sect">Ce qui reste sur ton téléphone</div>
-   <div class="note">Contacts, conversations, images et clés API ne quittent jamais l'appareil, sauf le texte des messages envoyé au fournisseur d'IA que tu as choisi pour obtenir les réponses.</div>
-   <div class="sect">Fiches partagées</div>
-   <div class="note">Une fiche de personnage importée contient des consignes envoyées au modèle. Elles sont affichées avant que tu acceptes : lis-les si le fichier vient de quelqu'un que tu ne connais pas.</div>
-   <div class="sect">Crédits</div>
-   <div class="note"><b>Holophone™ est conçu par VSim NeuroTek (VSNT)</b> — <i>Connecting Minds &amp; Bytes</i><br><br>Application libre et gratuite, sans publicité, sans compte et sans collecte. Les personnages, images et textes que tu ajoutes t'appartiennent et restent sur ton appareil.</div>
+  </div>
+  <div class="cfg">
+   <div class="abouttechhero">
+    <div class="abouttechkicker" id="abKicker">VSNT // Synthetic Presence Systems</div>
+    <div class="abouttechtitle" id="abProduct">Holophone™ · Adaptive Persona Interface</div>
+    <div class="abouttechlead" id="abLead">Une architecture de présence synthétique conçue pour maintenir une persona persistante, contextuelle et multimodale — avec identité, mémoire, continuité temporelle, états internes, initiatives, voix, médias et environnement partagé.</div>
+    <div class="aboutbadges">
+     <span class="aboutbadge" id="abBadgePersona">Persistent Persona</span><span class="aboutbadge" id="abBadgeTemporal">Temporal Continuity</span><span class="aboutbadge" id="abBadgeLocal">Local-First</span><span class="aboutbadge" id="abBadgeMulti">Multimodal Runtime</span>
+    </div>
+    <div class="aboutbuild"><span class="tag" id="abV">Version</span><div class="meta" id="abStat">Initialisation du runtime…</div></div>
+   </div>
+
+   <div class="sect" id="abCoreTitle">Core systems</div>
+   <div class="aboutgrid">
+    <div class="aboutmodule"><b>Persona Runtime</b><span id="abPersonaDesc">Identité, personnalité, comportement, humeur et présence sont maintenus comme un état cohérent plutôt que reconstruits à chaque message.</span></div>
+    <div class="aboutmodule"><b>Memory Fabric</b><span id="abMemoryDesc">Souvenirs persistants, contexte conversationnel, goûts, événements et protections anti-répétition assurent une continuité au-delà d'une seule session.</span></div>
+    <div class="aboutmodule"><b>Temporal Engine</b><span id="abTemporalDesc">Holophone suit le temps écoulé, les rythmes de vie, les activités et les changements d'état afin que plusieurs heures ou plusieurs jours aient un sens.</span></div>
+    <div class="aboutmodule"><b>Interaction Layer</b><span id="abInteractionDesc">Texte, voix, images, musique, Braindance, Refuge et interactions structurées sont coordonnés autour de la même persona.</span></div>
+    <div class="aboutmodule"><b>Initiative Core</b><span id="abInitiativeDesc">La persona peut prendre l'initiative selon son contexte, son activité et ses états internes — ou décider qu'elle n'a aucune raison pertinente d'intervenir.</span></div>
+    <div class="aboutmodule"><b>Privacy Architecture</b><span id="abPrivacyDesc">Stockage local, verrouillage, protection de l'aperçu Android, sauvegardes contrôlées et secrets configurés localement par l'utilisateur.</span></div>
+   </div>
+
+   <div class="sect" id="abDataTitle">Architecture des données</div>
+   <div class="aboutprotocol" id="abDataText"><strong>Local-first.</strong> Les données persistantes de Holophone résident sur l'appareil. Lorsqu'une fonction fait appel à un service externe, seules les informations nécessaires à cette fonction sont transmises au fournisseur concerné. Les clés de service ne sont pas intégrées à l'application distribuée : elles sont ajoutées et conservées localement par l'utilisateur.</div>
+
+   <div class="sect" id="abPackageTitle">Persona packages</div>
+   <div class="aboutprotocol" id="abPackageText">Une persona importée peut contenir des consignes de comportement destinées au moteur d'IA. Holophone présente ces informations avant validation afin que l'utilisateur conserve le contrôle sur ce qu'il installe.</div>
+
+   <div class="sect" id="abCompanyTitle">VSim NeuroTek</div>
+   <div class="aboutprotocol" id="abCompanyText"><strong>Holophone™</strong> est présenté comme une technologie de VSim NeuroTek (VSNT), division Synthetic Presence Systems. <i>Connecting Minds &amp; Bytes.</i></div>
+   <div class="aboutlegal" id="abLegal">PERSONAL RUNTIME · NO EMBEDDED SERVICE KEYS · USER-CONTROLLED DATA<br>HOLOPHONE™ / VSIM NEUROTEK (VSNT)</div>
   </div>
  </div>
 
@@ -1599,14 +1649,14 @@ select{font-family:'Share Tech Mono';font-size:11px}
    <div class="note" style="font-size:13.5px">Ouvre Spotify et lance n'importe quoi une fois pour que le téléphone apparaisse ici.</div>
    <select id="spDev"></select>
    <button class="mini g" id="spDevRefresh">Rafraîchir la liste</button>
-   <div class="sect">Playlist V × Judy</div>
-   <div class="note" style="font-size:13.5px">Holophone peut créer une playlist Spotify privée et collaborative. Tu peux y ajouter des morceaux depuis les cartes de recherche, et Judy peut décider d'y conserver certains de ses propres choix musicaux.</div>
+   <div class="sect" id="spCoopTitle">Playlist collaborative</div>
+   <div class="note" style="font-size:13.5px">Holophone peut créer une playlist Spotify privée et collaborative. Tu peux y ajouter des morceaux depuis les cartes de recherche, et la persona peut décider d'y conserver certains de ses propres choix musicaux.</div>
    <div class="note" id="spScopeNote" style="font-size:12.5px"></div>
-   <input class="txtin" id="spCoopName" placeholder="V × Judy — Holophone">
+   <input class="txtin" id="spCoopName" placeholder="Playlist collaborative Holophone">
    <div class="spcoop" id="spCoopCard"></div>
    <div class="rowb">
     <button class="mini g" id="spCoopCreate">Créer la playlist</button>
-    <button class="mini" id="spCoopShare">Partager à Judy</button>
+    <button class="mini" id="spCoopShare">Partager dans la conversation</button>
     <button class="mini" id="spCoopOpen">Ouvrir</button>
    </div>
    <div class="sect">Recevoir un partage</div>
@@ -1615,9 +1665,9 @@ select{font-family:'Share Tech Mono';font-size:11px}
   </div>
  </div>
 
- <!-- VIE / PRESENCE JUDY -->
+ <!-- VIE / PRESENCE PERSONA -->
  <div id="screenPresence" class="hide" style="flex:1;display:flex;flex-direction:column;min-height:0">
-  <div class="title"><span id="presenceTitle">Vie de Judy</span><small id="presenceSub">présence intérieure</small><button class="iconbtn" id="presenceBack">✕</button></div>
+  <div class="title"><span id="presenceTitle">Vie de la persona</span><small id="presenceSub">présence intérieure</small><button class="iconbtn" id="presenceBack">✕</button></div>
   <div class="cfg" id="presenceBody"></div>
  </div>
 
@@ -1664,7 +1714,11 @@ select{font-family:'Share Tech Mono';font-size:11px}
 const mem={};
 /* Holophone 2.0 : les secrets passent par Android Keystore quand le plugin
    natif est disponible. Le fallback web reste présent pour le développement. */
-const SECURE_KEYS=new Set(['judy.keys','judy.voice','v7.search','v7.spot','v7.pin']);
+const LEGACY_PERSONA_PREFIX=String.fromCharCode(106,117,100,121); // ancien préfixe de stockage, compatibilité uniquement
+const legacyStoreKey=suffix=>LEGACY_PERSONA_PREFIX+'.'+suffix;
+const LEGACY_FULL_APP=LEGACY_PERSONA_PREFIX+'-phone';
+const LEGACY_CONTACT_APP=LEGACY_PERSONA_PREFIX+'-contact';
+const SECURE_KEYS=new Set(['v7.api.keys','v7.voice','v7.search','v7.spot','v7.pin',legacyStoreKey('keys'),legacyStoreKey('voice')]);
 let _securePlugin=null;
 function secureNative(){
  if(_securePlugin)return _securePlugin;
@@ -1720,11 +1774,16 @@ const Store={
   return true;
  }
 };
-function idb(){return new Promise((res,rej)=>{try{
- const r=indexedDB.open('judyphone',1);
- r.onupgradeneeded=()=>r.result.createObjectStore('files');
+const MEDIA_DB_NAME='holophone-media';
+const LEGACY_MEDIA_DB_NAME=String.fromCharCode(106,117,100,121)+'phone';
+function idbOpen(name){return new Promise((res,rej)=>{try{
+ const r=indexedDB.open(name,1);
+ r.onupgradeneeded=()=>{if(!r.result.objectStoreNames.contains('files'))r.result.createObjectStore('files')};
  r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error);
 }catch(e){rej(e)}})}
+function idb(){return idbOpen(MEDIA_DB_NAME)}
+async function idbLegacyGet(k){try{const db=await idbOpen(LEGACY_MEDIA_DB_NAME);return await new Promise((res,rej)=>{const t=db.transaction('files','readonly'),q=t.objectStore('files').get(k);q.onsuccess=()=>res(idbUnpack(q.result));q.onerror=()=>rej(q.error)})}catch(e){return undefined}}
+async function idbLegacyDel(k){try{const db=await idbOpen(LEGACY_MEDIA_DB_NAME);return await new Promise(res=>{const t=db.transaction('files','readwrite');t.objectStore('files').delete(k);t.oncomplete=()=>res(true);t.onerror=()=>res(false)})}catch(e){return false}}
 /* IMPORTANT : un objet File pointe encore vers le fichier d'origine.
    On en fait une copie binaire autonome avant de la ranger. */
 async function storeBlob(file){
@@ -1762,15 +1821,34 @@ async function idbPut(k,b){
   t.oncomplete=()=>res(true);t.onerror=()=>rej(t.error);
  });
 }
-async function idbGet(k){const db=await idb();return new Promise((res,rej)=>{
+async function idbGet(k){const db=await idb();const current=await new Promise((res,rej)=>{
  const t=db.transaction('files','readonly'),q=t.objectStore('files').get(k);
- q.onsuccess=()=>res(idbUnpack(q.result));q.onerror=()=>rej(q.error)})}
-async function idbDel(k){const db=await idb();return new Promise(res=>{
- const t=db.transaction('files','readwrite');t.objectStore('files').delete(k);t.oncomplete=()=>res(true)})}
+ q.onsuccess=()=>res(idbUnpack(q.result));q.onerror=()=>rej(q.error)});
+ if(current!==undefined)return current;
+ const legacy=await idbLegacyGet(k);
+ if(legacy!==undefined){try{await idbPut(k,legacy)}catch(e){}return legacy}
+ return undefined;
+}
+async function idbDel(k){const db=await idb();await new Promise(res=>{
+ const t=db.transaction('files','readwrite');t.objectStore('files').delete(k);t.oncomplete=()=>res(true);t.onerror=()=>res(false)});
+ await idbLegacyDel(k);return true}
+async function migrateLegacyStoreKeys(){
+ const pairs=[[legacyStoreKey('keys'),'v7.api.keys'],[legacyStoreKey('model'),'v7.api.model'],[legacyStoreKey('prov'),'v7.api.provider'],[legacyStoreKey('voice'),'v7.voice']];
+ for(const [oldKey,newKey] of pairs){try{const cur=await Store.get(newKey);if(cur!==null&&cur!=='')continue;const prev=await Store.get(oldKey);if(prev!==null&&prev!==''){await Store.set(newKey,prev);await Store.remove(oldKey)}}catch(e){}}
+}
+function normalizeRoleValue(value){const w=String(value||'');return ['v','sys','evt','refuge','character'].includes(w)?w:'character'}
+function normalizeConversationRoles(v){if(!v||typeof v!=='object')return false;let changed=false;
+ if(Array.isArray(v.msgs))v.msgs.forEach(m=>{if(!m||typeof m!=='object')return;const nw=normalizeRoleValue(m.w);if(m.w!==nw){m.w=nw;changed=true}if(m.reply&&typeof m.reply==='object'&&m.reply.w){const rw=m.reply.w==='v'?'v':'character';if(m.reply.w!==rw){m.reply.w=rw;changed=true}}});
+ return changed;
+}
+function normalizePersonaData(c){if(!c||typeof c!=='object')return false;let changed=false;
+ const r=c.refuge;if(r&&Array.isArray(r.proposals))r.proposals.forEach(p=>{if(!p||typeof p!=='object')return;const by=p.by==='v'?'v':'character';if(p.by!==by){p.by=by;changed=true}});
+ if(Array.isArray(c.jrn))c.jrn.forEach(e=>{if(!e||typeof e!=='object')return;if(e.owner&&!['user','character','shared','pinned','foundation','relationship'].includes(e.owner)){e.owner='character';changed=true}});
+ return changed;
+}
 
-const K={ct:'v7.contacts',cv:'v7.convs',key:'judy.keys',model:'judy.model',prov:'judy.prov',
- voice:'judy.voice',se:'v7.search'};
-const OLD={av:'judy.avatars',sc:'judy.scripts',cv:'judy.convs',per:'judy.persona2',bd:'judy.bd',gal:'judy.gallery'};
+const K={ct:'v7.contacts',cv:'v7.convs',key:'v7.api.keys',model:'v7.api.model',prov:'v7.api.provider',
+ voice:'v7.voice',se:'v7.search'};
 
 /* ===================== DONNÉES ===================== */
 const DEFAULTS = [];
@@ -1804,7 +1882,7 @@ const TTS={
 let audioEl=null;
 let AUTO={on:true};
 const saveAuto=()=>Store.set('v7.auto',JSON.stringify(AUTO));
-const APPV='3.1.2';
+const APPV='3.2.3';
 /* --- FAMILLES : clé, nom, couleur, valence, énergie --- */
 const FAM=[
  ['calme','Calme','#8aa0a8', 0.20,-0.60],
@@ -2018,7 +2096,7 @@ Privilégie ce qui est visible et sensible : espace, lumière, expressions, rega
 Développe chaque bloc largement. Évite les ellipses paresseuses, les répétitions et les conclusions prématurées.
 Fais évoluer naturellement la scène : changements de rythme, d’initiative, de proximité, de position ou de dynamique lorsque les choix rapides le demandent.
 Utilise les éléments cochés par l’utilisateur comme contraintes de mise en scène sans les réciter comme une liste.
-Reste cohérente avec la personnalité de Judy, les protagonistes, le contexte et les blocs précédents.
+Reste cohérente avec la personnalité de la persona configurée dans Holophone, les protagonistes, le contexte et les blocs précédents.
 Le mode Braindance est un récit continu : pas de petites bulles, pas de résumé, pas de métacommentaire.
 N’achève pas toute la séquence avant le dernier bloc.`;
 
@@ -2095,7 +2173,9 @@ function actionByKey(k){
   ||allActions().find(a=>a.phrase.toLowerCase()===q)||null;
 }
 const actionActorName=c=>String(ACTCFG.userActorName||uName(c)||'Vincent').trim()||'Vincent';
-const actionCharacterName=c=>String(c&&c.first||'Personnage').trim()||'Personnage';
+const characterName=c=>String(c&&c.first||'Persona').trim()||'Persona';
+const characterFullName=c=>{const f=characterName(c),l=String(c&&c.last||'').trim();return l?f+' '+l:f};
+const actionCharacterName=c=>characterName(c);
 function actionUsableBy(a,who){
  const mode=String(a&&a.actors||'both');
  return mode==='both'||mode===who;
@@ -2153,12 +2233,12 @@ function actionAllowedAsReply(k,g,c){
  return allowed.some(x=>x.id===a.id)?a:null;
 }
 
-function judyActionCadence(conv,replyingToUserAction){
+function characterActionCadence(conv,replyingToUserAction){
  if(!conv)return{ok:false,reason:'no-conversation'};
  const msgs=conv.msgs||[];
  let idx=-1,last=null;
  for(let i=msgs.length-1;i>=0;i--){
-  if(msgs[i]&&msgs[i].w==='judy'&&msgs[i].act){idx=i;last=msgs[i];break}
+  if(msgs[i]&&msgs[i].w==='character'&&msgs[i].act){idx=i;last=msgs[i];break}
  }
  if(!last)return{ok:true,reason:'first'};
  const age=nowTs()-(Number(last.ts)||0);
@@ -2190,7 +2270,7 @@ function ensureRefuge(c){
  r.autoEvents=!!r.autoEvents;
  r.lastEventTs=Number(r.lastEventTs)||0;
  r.events=Array.isArray(r.events)?r.events.slice(-30):[];
- r.lastJudyProposalTs=Number(r.lastJudyProposalTs)||0;
+ r.lastCharacterProposalTs=Number(r.lastCharacterProposalTs)||0;
  r.ideaDue=!!r.ideaDue;
  r.proposals=Array.isArray(r.proposals)?r.proposals.slice(-60):[];
  r.proposals=r.proposals.map((p,i)=>{
@@ -2198,7 +2278,7 @@ function ensureRefuge(c){
   q.id=String(q.id||('refp_'+i+'_'+uid())).slice(0,70);
   q.ts=Number(q.ts)||0;
   q.decidedTs=Number(q.decidedTs)||0;
-  q.by=q.by==='judy'?'judy':'v';
+  q.by=q.by==='character'?'character':'v';
   q.conversationId=String(q.conversationId||'').slice(0,80);
   q.kind=['meta','room-create','room-update','room-delete'].includes(q.kind)?q.kind:'meta';
   q.status=['pending','accepted','rejected'].includes(q.status)?q.status:'pending';
@@ -2226,7 +2306,7 @@ function refugePrompt(c){
  const r=ensureRefuge(c);if(!r)return'';
  const cr=refugeCurrentRoom(c);
  let s='\n\nNOTRE REFUGE NUMÉRIQUE\n'+
-  'Vous avez construit ensemble un lieu fictif persistant appelé « '+r.name+' ». Judy y vit virtuellement et '+actionActorName(c)+' peut l’y rejoindre. '+
+  'Vous avez construit ensemble un lieu fictif persistant appelé « '+r.name+' ». '+characterName(c)+' y vit virtuellement et '+actionActorName(c)+' peut l’y rejoindre. '+
   'Ce lieu fait partie de votre continuité imaginaire, pas du monde réel. Tu peux y faire référence naturellement quand cela a du sens, sans le forcer dans chaque réponse.';
  if(r.location)s+='\nLocalisation : '+r.location;
  if(r.climate)s+='\nClimat : '+r.climate;
@@ -2236,12 +2316,12 @@ function refugePrompt(c){
  if(r.rooms.length)s+='\nPièces connues : '+r.rooms.slice(0,12).map(x=>x.name+(x.desc?' ('+x.desc.slice(0,120)+')':'')).join(' ; ');
  const pending=r.proposals.filter(p=>p.status==='pending').slice(-8);
  if(pending.length)s+='\nPROPOSITIONS EN ATTENTE — elles ne font PAS encore partie du Refuge :\n'+
-  pending.map(p=>'· '+p.id+' — '+(p.by==='judy'?'proposée par toi, en attente de Vincent':'proposée par Vincent, en attente de toi')+' — '+p.summary).join('\n');
- const pendingJudy=pending.some(p=>p.by==='judy');
- if(r.ideaDue&&!pendingJudy){
+  pending.map(p=>'· '+p.id+' — '+(p.by==='character'?'proposée par toi, en attente de Vincent':'proposée par Vincent, en attente de toi')+' — '+p.summary).join('\n');
+ const pendingCharacter=pending.some(p=>p.by==='character');
+ if(r.ideaDue&&!pendingCharacter){
   s+='\nPROPOSITION ATTENDUE DE TOI\nLe Refuge a besoin de ton initiative. Dans CE tour, propose une nouvelle pièce concrète que TU aimerais vraiment y avoir. '+
     'Renseigne refugeProposalName et refugeProposalDescription. Cette proposition restera en attente de Vincent : elle ne sera pas construite automatiquement.';
- }else if(!pendingJudy&&r.rooms.length<20&&(nowTs()-r.lastJudyProposalTs)>6*3600000){
+ }else if(!pendingCharacter&&r.rooms.length<20&&(nowTs()-r.lastCharacterProposalTs)>6*3600000){
   s+='\nINITIATIVE REFUGE FACULTATIVE\nDe temps à autre, si une idée de pièce te vient vraiment et si elle colle à ton humeur, tu peux la proposer avec refugeProposalName et refugeProposalDescription. '+
     'Laisse ces deux champs vides la plupart du temps : une maison commune ne doit pas devenir une suite de propositions automatiques.';
  }
@@ -2497,6 +2577,55 @@ const saveContacts=()=>Store.set(K.ct,JSON.stringify(CONTACTS.map(c=>({...c,
   url:a.url||'',kind:a.kind||'',jid:a.jid||'',st:a.st||'ok',
   ts:a.ts||0,used:a.used||0,last:a.last||0,strength:a.strength||3,confidence:a.confidence||0,
   source:a.source||'',firstSeen:a.firstSeen||0,lastConfirmed:a.lastConfirmed||0,why:a.why||a.w||''}))}))));
+/* 3.1.3 : le catalogue Vidéos & musique possède aussi une copie durable dédiée
+   dans IndexedDB. L'ancienne version ne validait que saveContacts() : l'UI pouvait
+   donc afficher un ajout présent en RAM alors que l'écriture persistante avait échoué. */
+const MEDIA_CATALOG_IDB_KEY='meta_media_catalog_v1';
+function mediaCatalogCleanVideo(list){
+ return(Array.isArray(list)?list:[]).map(b=>({label:String(b&&b.label||'').slice(0,120),id:ytId(b&&b.id||'')}))
+  .filter(b=>b.label&&b.id).slice(0,120);
+}
+function mediaCatalogCleanMusic(list){
+ return(Array.isArray(list)?list:[]).map(m=>{const sp=spLink(m&&m.url||'');return{
+  label:String(m&&m.label||'').slice(0,120),url:sp?sp.url:String(m&&m.url||'').slice(0,500),
+  kind:sp?sp.kind:String(m&&m.kind||'track').slice(0,30)}})
+  .filter(m=>m.label&&m.url).slice(0,120);
+}
+async function mediaCatalogRead(){
+ try{const o=await idbGet(MEDIA_CATALOG_IDB_KEY);return o&&typeof o==='object'&&!Array.isArray(o)?o:{}}catch(e){return{}}
+}
+async function mediaCatalogWriteFor(c){
+ if(!c||!c.id)throw new Error('contact absent');
+ const all=await mediaCatalogRead();
+ const record={bd:mediaCatalogCleanVideo(c.bd),mus:mediaCatalogCleanMusic(c.mus),updatedAt:Date.now()};
+ all[String(c.id)]=record;
+ await idbPut(MEDIA_CATALOG_IDB_KEY,all);
+ const check=await mediaCatalogRead(),got=check[String(c.id)];
+ if(!got||!Array.isArray(got.bd)||!Array.isArray(got.mus)||got.bd.length!==record.bd.length||got.mus.length!==record.mus.length)
+  throw new Error('vérification du catalogue impossible');
+ return true;
+}
+async function persistMediaCatalog(c){
+ const contactOk=await saveContacts();
+ await mediaCatalogWriteFor(c);
+ return contactOk!==false;
+}
+async function mediaCatalogHydrate(){
+ const all=await mediaCatalogRead();let touched=false;
+ for(const c of CONTACTS){
+  if(!c||!c.id)continue;
+  c.bd=Array.isArray(c.bd)?c.bd:[];c.mus=Array.isArray(c.mus)?c.mus:[];
+  const rec=all[String(c.id)];
+  if(rec&&typeof rec==='object'&&Array.isArray(rec.bd)&&Array.isArray(rec.mus)){
+   c.bd=mediaCatalogCleanVideo(rec.bd);c.mus=mediaCatalogCleanMusic(rec.mus);
+  }else{
+   all[String(c.id)]={bd:mediaCatalogCleanVideo(c.bd),mus:mediaCatalogCleanMusic(c.mus),updatedAt:Date.now()};touched=true;
+  }
+ }
+ if(touched)await idbPut(MEDIA_CATALOG_IDB_KEY,all);
+ return true;
+}
+async function mediaCatalogSyncAll(){for(const c of CONTACTS)await mediaCatalogWriteFor(c);return true}
 /* les images des conversations vivent dans IndexedDB ; le texte ne garde qu'une référence.
    Sans ça, quelques photos suffisent à saturer le stockage et à faire perdre des fins de fils. */
 const BLOBS={};
@@ -2718,12 +2847,12 @@ function spNeedPlaylistAuth(){
 }
 async function spCreateCoop(name){
  spNeedPlaylistAuth();
- const n=String(name||'V × Judy — Holophone').trim().slice(0,100)||'V × Judy — Holophone';
+ const n=String(name||(uName(C())+' × '+characterName(C())+' — Holophone')).trim().slice(0,100)||(uName(C())+' × '+characterName(C())+' — Holophone');
  const p=await spApi('/me/playlists',{
   method:'POST',
   body:JSON.stringify({
    name:n,public:false,collaborative:true,
-   description:'Playlist partagée V × Judy depuis Holophone'
+   description:'Playlist partagée '+uName(C())+' × '+characterName(C())+' depuis Holophone'
   })
  });
  const x=spPlaylistObj(p);
@@ -2734,7 +2863,7 @@ async function spCreateCoop(name){
 }
 async function spCoopAdd(uriOrQuery){
  spNeedPlaylistAuth();
- if(!SPOT.coop||!SPOT.coop.id)throw new Error('Crée d’abord la playlist V × Judy dans Réglages → Spotify.');
+ if(!SPOT.coop||!SPOT.coop.id)throw new Error('Crée d’abord la playlist '+uName(C())+' × '+characterName(C())+' dans Réglages → Spotify.');
  const uri=await spResolveUri(uriOrQuery);
  if(!/^spotify:track:/.test(uri||''))throw new Error('Seuls les morceaux peuvent être ajoutés à la playlist commune.');
  await spApi('/playlists/'+encodeURIComponent(SPOT.coop.id)+'/items',{
@@ -2742,10 +2871,10 @@ async function spCoopAdd(uriOrQuery){
  });
  return uri;
 }
-async function spShareCoopToJudy(){
+async function spShareCoopToCharacter(){
  if(!SPOT.coop||!SPOT.coop.id)throw new Error('Aucune playlist commune configurée.');
  await dropShared({
-  label:SPOT.coop.name||'V × Judy — Holophone',
+  label:SPOT.coop.name||(uName(C())+' × '+characterName(C())+' — Holophone'),
   url:SPOT.coop.url||('https://open.spotify.com/playlist/'+SPOT.coop.id),
   kind:'playlist',own:true
  });
@@ -2781,7 +2910,7 @@ function musResolve(c,q){
  return{label:q.slice(0,60),url:spSearch(q),kind:'track',query:q,own:false};
 }
 
-/* Anti-répétition musique : Judy ne retransmet pas le même morceau avant 12 h.
+/* Anti-répétition musique : La persona ne retransmet pas le même morceau avant 12 h.
    Le contrôle se base sur les cartes réellement présentes dans toutes ses
    conversations, donc il survit aux redémarrages sans journal parallèle. */
 const MUSIC_COOLDOWN=12*60*60*1000;
@@ -2801,11 +2930,11 @@ function sameMusic(a,b){
  const A=musicKeys(a),B=new Set(musicKeys(b));
  return A.some(k=>B.has(k));
 }
-function recentJudyMusic(c,within,at){
+function recentCharacterMusic(c,within,at){
  const now=at||nowTs(),lim=within===undefined?MUSIC_COOLDOWN:within;
  const out=[];
  CONVS.filter(v=>v.cid===c.id&&!v.mindArchived).forEach(v=>(v.msgs||[]).forEach(m=>{
-  if(m.w!=='judy'||!m.mus||!m.ts)return;
+  if(m.w!=='character'||!m.mus||!m.ts)return;
   const age=now-m.ts;
   if(age>=0&&age<lim)out.push({mus:m.mus,ts:m.ts,conv:v.id,age});
  }));
@@ -2816,12 +2945,12 @@ function recentJudyMusic(c,within,at){
 }
 function musicGuard(c,mu,at){
  const now=at||nowTs();
- const hit=recentJudyMusic(c,MUSIC_COOLDOWN,now).find(x=>sameMusic(x.mus,mu));
+ const hit=recentCharacterMusic(c,MUSIC_COOLDOWN,now).find(x=>sameMusic(x.mus,mu));
  if(!hit)return{ok:true,last:0,remain:0};
  return{ok:false,last:hit.ts,remain:Math.max(0,MUSIC_COOLDOWN-(now-hit.ts)),hit};
 }
 function musicGuardPrompt(c){
- const r=recentJudyMusic(c,MUSIC_COOLDOWN,nowTs());
+ const r=recentCharacterMusic(c,MUSIC_COOLDOWN,nowTs());
  if(!r.length)return'';
  return '\n\nANTI-RÉPÉTITION MUSIQUE — tu as déjà envoyé ces morceaux dans les 12 dernières heures :\n'+
   r.map(x=>'· '+String(x.mus.label||'morceau').slice(0,80)+' — '+'il y a '+durLabel(Math.max(0,nowTs()-x.ts))).join('\n')+
@@ -2895,7 +3024,7 @@ function musCard(mu){
  sc.innerHTML='<div class="ic">♪</div><div class="tx"><b></b><i></i></div>';
  const t=sc.querySelector('b'),st=sc.querySelector('i');
  t.textContent=(mu.label||'un morceau').slice(0,60);
- const idle=()=>{st.textContent=mu.coop?'dans V × Judy · toucher pour écouter':(spOn()?'toucher pour écouter':(mu.own?'ouvrir dans Spotify':'chercher dans Spotify'))};
+ const idle=()=>{st.textContent=mu.coop?('dans '+uName(C())+' × '+characterName(C())+' · toucher pour écouter'):(spOn()?'toucher pour écouter':(mu.own?'ouvrir dans Spotify':'chercher dans Spotify'))};
  idle();
  sc.onclick=async()=>{
   if(!spOn()){try{window.open(mu.url,'_blank')}catch(e){location.href=mu.url}return}
@@ -2938,6 +3067,14 @@ function saveRow(labelEl){
  rb.append(b);
  const w=document.createElement('div');w.append(rb,m);
  return w;
+}
+function mediaCatalogSaveRow(c){
+ const rb=document.createElement('div');rb.className='rowb';rb.style.marginTop='10px';
+ const b=document.createElement('button');b.className='mini g';b.textContent='✓ Enregistrer le catalogue';
+ const m=document.createElement('div');m.className='ok';
+ b.onclick=async()=>{try{await persistMediaCatalog(c);flash(m,'Catalogue vidéo / musique enregistré et relu.','var(--teal)',9000)}
+  catch(e){flash(m,'Échec — '+(e.message||e),'var(--magenta)',18000)}};
+ rb.append(b);const w=document.createElement('div');w.append(rb,m);return w;
 }
 
 /* ===================== VISAGES ===================== */
@@ -3042,7 +3179,7 @@ function availabilityNow(c){
 /* APPEL VOCAL — mécanique demi-duplex / push-to-talk.
    Le micro Android ne sert qu'à transformer la voix utilisateur en texte.
    Le moteur IA choisi génère la réponse ; la voix configurée la lit ensuite.
-   Le micro est volontairement coupé pendant la voix de Judy pour éviter
+   Le micro est volontairement coupé pendant la voix de la persona pour éviter
    qu'ElevenLabs soit ré-entendu et retranscrit par le téléphone. */
 const CALL={
  on:false,busy:false,listening:false,session:0,conv:null,ct:null,
@@ -3092,7 +3229,7 @@ function callRenderHome(){
  mic.classList.toggle('hide',!CALL.on);
  mic.classList.toggle('listening',CALL.listening);
  mic.classList.toggle('busy',CALL.busy);
- $('#homeMicLabel').textContent=CALL.listening?'Parle…':CALL.busy?(CALL.status||'Judy répond…'):'Maintenir pour parler';
+ $('#homeMicLabel').textContent=CALL.listening?'Parle…':CALL.busy?(CALL.status||(characterName(C())+' répond…')):'Maintenir pour parler';
  const t=CALL.listening?(CALL.last||'écoute…'):(CALL.status&&CALL.busy?CALL.status:(CALL.last||'Maintiens le micro, relâche pour envoyer'));
  $('#homeMicText').textContent=t;
 }
@@ -3117,7 +3254,7 @@ async function callSpeak(lines,session){
 async function callAi(promptText,opening){
  if(!CALL.on||CALL.busy||!CALL.conv||!CALL.ct)return;
  const session=CALL.session,conv=CALL.conv,c=CALL.ct;
- CALL.busy=true;CALL.listening=false;CALL.status=opening?'Judy décroche…':'Judy réfléchit…';callRenderHome();
+ CALL.busy=true;CALL.listening=false;CALL.status=opening?(characterName(C())+' décroche…'):(characterName(C())+' réfléchit…');callRenderHome();
  const P=voiceCapturePlugin();if(P&&P.cancel){try{await P.cancel()}catch(e){}}
  try{
   if(!opening){
@@ -3148,9 +3285,9 @@ async function callAi(promptText,opening){
    if(r)saveContacts();
   }
   const base=nowTs();
-  o.m.slice(0,2).forEach((line,i)=>conv.msgs.push({w:'judy',t:line,ts:base+i*900}));
+  o.m.slice(0,2).forEach((line,i)=>conv.msgs.push({w:'character',t:line,ts:base+i*900}));
   conv.failed=false;await saveConvs();
-  CALL.status='Judy parle…';CALL.last=o.m[0]||'';callRenderHome();
+  CALL.status=characterName(C())+' parle…';CALL.last=o.m[0]||'';callRenderHome();
   await callSpeak(o.m.slice(0,2),session);
   if(!CALL.on||CALL.session!==session)return;
   CALL.busy=false;CALL.status='';CALL.last='';callRenderHome();
@@ -3450,10 +3587,10 @@ async function sendUserAction(a,catName){
   'Si tu utilises act, choisis uniquement parmi ces alternatives compatibles : '+altText+'.]'});
  clearWait(c,cur);await saveConvs();queueTurn();
 }
-async function sendJudyAction(k){
+async function sendCharacterAction(k){
  const c=C(),a=actionByKey(k);if(!c||!a||!cur||!actionUsableBy(a,'character'))return false;
  const text=(actionCharacterName(c)+' '+a.phrase).replace(/\s+/g,' ').trim();
- push({w:'judy',t:text,act:{id:a.id,label:a.label,cat:a.catName||'',mood:a.mood,lvl:a.lvl},ts:nowTs()});
+ push({w:'character',t:text,act:{id:a.id,label:a.label,cat:a.catName||'',mood:a.mood,lvl:a.lvl},ts:nowTs()});
  actionMood(c,a);await saveConvs();return true;
 }
 function actionComposer(){
@@ -3561,22 +3698,22 @@ function refugePendingForConv(c,conv,owner){
  return r.proposals.filter(p=>p.status==='pending'&&p.conversationId===conv.id&&(!owner||p.by===owner))
   .sort((a,b)=>b.ts-a.ts)[0]||null;
 }
-function refugeJudyProposalAllowed(c){
+function refugeCharacterProposalAllowed(c){
  const r=ensureRefuge(c);
- if(r.proposals.some(p=>p.status==='pending'&&p.by==='judy'))return false;
- if(!r.ideaDue&&r.lastJudyProposalTs&&nowTs()-r.lastJudyProposalTs<6*3600000)return false;
+ if(r.proposals.some(p=>p.status==='pending'&&p.by==='character'))return false;
+ if(!r.ideaDue&&r.lastCharacterProposalTs&&nowTs()-r.lastCharacterProposalTs<6*3600000)return false;
  return r.rooms.length<20;
 }
-async function refugeCreateJudyProposal(c,conv,name,desc){
+async function refugeCreateCharacterProposal(c,conv,name,desc){
  const r=ensureRefuge(c);
  name=String(name||'').trim().slice(0,70);desc=String(desc||'').trim().slice(0,2500);
- if(!name||!desc||!refugeJudyProposalAllowed(c))return null;
+ if(!name||!desc||!refugeCharacterProposalAllowed(c))return null;
  const id='refp_'+uid(),payload={id:'room_'+uid(),name,desc,images:[],music:[]};
- const p={id,ts:nowTs(),decidedTs:0,by:'judy',conversationId:conv.id,kind:'room-create',status:'pending',
+ const p={id,ts:nowTs(),decidedTs:0,by:'character',conversationId:conv.id,kind:'room-create',status:'pending',
   summary:'Créer la pièce « '+name+' » — '+desc.slice(0,260),payload};
  r.proposals.push(p);r.proposals=r.proposals.slice(-60);
- r.lastJudyProposalTs=nowTs();r.ideaDue=false;
- const msg={w:'refuge',t:'Judy propose : '+p.summary,proposalId:id,proposalStatus:'pending',proposalBy:'judy',ts:nowTs()};
+ r.lastCharacterProposalTs=nowTs();r.ideaDue=false;
+ const msg={w:'refuge',t:characterName(c)+' propose : '+p.summary,proposalId:id,proposalStatus:'pending',proposalBy:'character',ts:nowTs()};
  if(cur&&cur.id===conv.id)push(msg);else conv.msgs.push(msg);
  await saveContacts();await saveConvs();return p;
 }
@@ -3591,7 +3728,7 @@ async function refugeUserDecideProposal(c,p,decision){
  const pid=String(p&&p.id||'');
  const r=ensureRefuge(c);
  p=r.proposals.find(x=>x.id===pid)||null;
- if(!p||p.status!=='pending'||p.by!=='judy')return false;
+ if(!p||p.status!=='pending'||p.by!=='character')return false;
  const accept=decision==='accept';
  p.status=accept?'accepted':'rejected';p.decidedTs=nowTs();
  let applied=false;if(accept)applied=refugeApplyProposal(c,p);
@@ -3607,9 +3744,9 @@ async function refugeUserDecideProposal(c,p,decision){
  await saveContacts();await saveConvs();if(conv&&cur&&conv.id===cur.id)queueTurn();return true;
 }
 
-function refugeReconcileJudyDecisionState(c){
+function refugeReconcileCharacterDecisionState(c){
  const r=ensureRefuge(c);let fixed=0;
- for(const p of r.proposals.filter(x=>x.status==='pending'&&x.by==='judy')){
+ for(const p of r.proposals.filter(x=>x.status==='pending'&&x.by==='character')){
   const conv=CONVS.find(v=>v.id===p.conversationId);if(!conv)continue;
   const decision=[...(conv.msgs||[])].reverse().find(m=>
    m&&m.proposalId===p.id&&(
@@ -3625,7 +3762,7 @@ function refugeReconcileJudyDecisionState(c){
   }
   /* Le bug 2.7.1 pouvait déjà matérialiser la pièce tout en laissant
      la proposition pending. La présence de cette pièce est donc aussi une
-     preuve sûre d'acceptation pour une proposition room-create de Judy. */
+     preuve sûre d'acceptation pour une proposition room-create de la persona. */
   if(!status&&p.kind==='room-create'){
    const d=p.payload||{};
    const exists=r.rooms.some(x=>x.id===String(d.id||''))||
@@ -3643,7 +3780,7 @@ function refugeReconcileJudyDecisionState(c){
 
 function refugeReconcileLegacyPending(c){
  const r=ensureRefuge(c);let fixed=0;
- for(const p of r.proposals.filter(x=>x.status==='pending'&&x.by!=='judy')){
+ for(const p of r.proposals.filter(x=>x.status==='pending'&&x.by!=='character')){
   const conv=CONVS.find(v=>v.id===p.conversationId);if(!conv)continue;
   const ai=conv.ai||[];
   const q=ai.findIndex(x=>x&&x.role==='user'&&String(x.content||'').includes(p.id));
@@ -3661,7 +3798,7 @@ function refugeReconcileLegacyPending(c){
    if(accept&&!applied){p.status='rejected';p.summary+=' [application impossible]'}
    refugeProposalMsgStatus(conv,p.id,p.status);
    if(!conv.msgs.some(m=>m&&m.proposalDecision&&m.proposalId===p.id))
-    refugeDecisionMsg(conv,p,'Judy',p.status);
+    refugeDecisionMsg(conv,p,characterName(c),p.status);
    if(p.status==='accepted'&&p.kind==='meta'&&!r.rooms.length)r.ideaDue=true;
    fixed++;break;
   }
@@ -3676,7 +3813,7 @@ async function refugePropose(c,conv,kind,payload,summary){
   payload:payload||{}};
  r.proposals.push(p);r.proposals=r.proposals.slice(-60);
  conv.refugeDecisionGuard={id,ts:nowTs()};
- push({w:'refuge',t:'Proposition à Judy : '+p.summary,proposalId:id,proposalStatus:'pending',proposalBy:'v',ts:nowTs()});
+ push({w:'refuge',t:'Proposition à '+characterName(c)+' : '+p.summary,proposalId:id,proposalStatus:'pending',proposalBy:'v',ts:nowTs()});
  conv.ai.push({ts:nowTs(),role:'user',content:
   '[PROPOSITION POUR NOTRE REFUGE — ID '+id+']\n'+
   p.summary+
@@ -3724,7 +3861,7 @@ function refugeApplyProposal(c,p){
  return false;
 }
 async function refugeDecideProposal(c,id,decision){
- const p=refugeProposalById(c,id);if(!p||p.status!=='pending'||p.by==='judy')return false;
+ const p=refugeProposalById(c,id);if(!p||p.status!=='pending'||p.by==='character')return false;
  const d=String(decision||'').trim().toLowerCase();
  const accept=/^(accept|accepted|accepte|oui|yes)$/.test(d);
  const reject=/^(refuse|refused|rejette|reject|non|no)$/.test(d);
@@ -3734,7 +3871,7 @@ async function refugeDecideProposal(c,id,decision){
  if(accept&&!applied){p.status='rejected';p.summary+=' [application impossible]'}
  const conv=CONVS.find(x=>x.id===p.conversationId)||cur;
  refugeProposalMsgStatus(conv,p.id,p.status);
- refugeDecisionMsg(conv,p,'Judy',p.status);
+ refugeDecisionMsg(conv,p,characterName(c),p.status);
  if(conv)conv.refugeDecisionGuard=null;
  const r=ensureRefuge(c);
  if(p.status==='accepted'&&p.kind==='meta'&&!r.rooms.length)r.ideaDue=true;
@@ -3785,7 +3922,7 @@ function refugeRoomEditor(room){
  refugeMusicLabels(c).forEach(v=>{const o=document.createElement('option');o.value=v;o.textContent=v;musSel.appendChild(o)});
  musSel.onchange=()=>{if(musSel.value&&!music.includes(musSel.value))music.push(musSel.value);musSel.value='';renderChips()};
  const save=document.createElement('button');save.className='opt att';
- save.textContent=editing?'Proposer ces modifications à Judy':'Proposer cette pièce à Judy';
+ save.textContent=editing?'Proposer ces modifications à '+characterName(c):'Proposer cette pièce à '+characterName(c);
  save.onclick=async()=>{
   const n=name.value.trim();if(!n)return;
   const payload={id:editing?room.id:'room_'+uid(),name:n.slice(0,70),desc:desc.value.trim().slice(0,2500),images:images.slice(0,12),music:music.slice(0,12)};
@@ -3795,7 +3932,7 @@ function refugeRoomEditor(room){
  box.append(h,name,desc,chips,imgSel,musSel,save);
  if(editing){
   const del=document.createElement('button');del.className='opt end';del.textContent='Proposer de supprimer cette pièce';
-  del.onclick=()=>askConfirm('Proposer la suppression de « '+room.name+' » ?','La pièce ne sera supprimée que si Judy accepte.','Proposer',async()=>{
+  del.onclick=()=>askConfirm('Proposer la suppression de « '+room.name+' » ?','La pièce ne sera supprimée que si '+characterName(c)+' accepte.','Proposer',async()=>{
    sh.classList.remove('on','refuge-front');$('#refugeOverlay')?.remove();
    await refugePropose(c,cur,'room-delete',{id:room.id,name:room.name},'Supprimer la pièce « '+room.name+' »');
   });box.appendChild(del);
@@ -3836,19 +3973,19 @@ async function refugeEnterRoom(room){
  const already=r.currentRoomId===room.id;
  r.currentRoomId=room.id;await saveContacts();
  const txt=already
-  ?actionActorName(c)+' retrouve '+(c.first||'Judy')+' dans « '+room.name+' ».'
-  :actionActorName(c)+' rejoint '+(c.first||'Judy')+' dans « '+room.name+' ».';
+  ?actionActorName(c)+' retrouve '+characterName(c)+' dans « '+room.name+' ».'
+  :actionActorName(c)+' rejoint '+characterName(c)+' dans « '+room.name+' ».';
  push({w:'refuge',t:txt,ts:nowTs()});
  cur.ai.push({ts:nowTs(),role:'user',content:
   '[NOTRE REFUGE — '+txt+' Vous êtes ensemble dans cette pièce. '+
   (room.desc?'Description : '+room.desc.slice(0,900):'')+']'});
  await saveConvs();queueTurn();
 }
-async function refugeJudyMove(c,name){
+async function refugeCharacterMove(c,name){
  const room=refugeRoomByName(c,name);if(!room||!cur)return false;
  const r=ensureRefuge(c);if(r.currentRoomId===room.id)return true;
  r.currentRoomId=room.id;await saveContacts();
- push({w:'refuge',t:(c.first||'Judy')+' se déplace vers « '+room.name+' ».',ts:nowTs()});return true;
+ push({w:'refuge',t:characterName(c)+' se déplace vers « '+room.name+' ».',ts:nowTs()});return true;
 }
 function refugeRoomCard(c,room,r){
  const card=document.createElement('div');card.className='refroom'+(r.currentRoomId===room.id?' current':'');
@@ -3864,7 +4001,7 @@ function refugeRoomCard(c,room,r){
   const here=document.createElement('div');here.className='refhere';here.textContent='● Vous êtes ici';card.appendChild(here);
  }
  const enter=document.createElement('button');enter.className='mini g';
- enter.textContent=r.currentRoomId===room.id?'Retrouver Judy ici':'Rejoindre Judy ici';
+ enter.textContent=r.currentRoomId===room.id?'Retrouver '+characterName(c)+' ici':'Rejoindre '+characterName(c)+' ici';
  enter.onclick=()=>{$('#refugeOverlay')?.remove();refugeEnterRoom(room)};
  card.appendChild(enter);return card;
 }
@@ -3877,7 +4014,7 @@ function refugeOverlay(){
  const x=document.createElement('button');x.className='iconbtn';x.textContent='✕';x.onclick=()=>root.remove();hd.append(t,x);panel.appendChild(hd);
 
  const note=document.createElement('div');note.className='note';
- note.textContent='Tout changement de la maison que tu proposes reste en attente jusqu’à ce que Judy donne son accord. Rien n’est construit unilatéralement.';
+ note.textContent='Tout changement de la maison que tu proposes reste en attente jusqu’à ce que '+characterName(c)+' donne son accord. Rien n’est construit unilatéralement.';
  panel.appendChild(note);
 
  const name=document.createElement('input');name.className='txtin';name.placeholder='Nom du refuge';name.value=r.name;
@@ -3888,7 +4025,7 @@ function refugeOverlay(){
  const desc=document.createElement('textarea');desc.rows=3;desc.placeholder='Atmosphère générale, environnement, vue…';desc.value=r.description;
  panel.append(name,loc,grid,desc);
 
- const proposeGeneral=document.createElement('button');proposeGeneral.className='mini g';proposeGeneral.textContent='Proposer ces changements à Judy';
+ const proposeGeneral=document.createElement('button');proposeGeneral.className='mini g';proposeGeneral.textContent='Proposer ces changements à '+characterName(c);
  proposeGeneral.onclick=async()=>{
   const payload={
    name:name.value.trim().slice(0,80)||'Notre Refuge',
@@ -3908,13 +4045,13 @@ function refugeOverlay(){
 
  const sec=document.createElement('div');sec.className='sect';sec.textContent='Pièces acceptées';panel.appendChild(sec);
  const rooms=document.createElement('div');rooms.className='refrooms';r.rooms.forEach(room=>rooms.appendChild(refugeRoomCard(c,room,r)));
- if(!r.rooms.length){const e=document.createElement('div');e.className='empty';e.textContent='Le refuge est encore vide. Proposez votre première pièce à Judy.';rooms.appendChild(e)}
+ if(!r.rooms.length){const e=document.createElement('div');e.className='empty';e.textContent='Le refuge est encore vide. Proposez votre première pièce à '+characterName(c)+'.';rooms.appendChild(e)}
  panel.appendChild(rooms);
 
  const rb=document.createElement('div');rb.className='rowb';
  const add=document.createElement('button');add.className='mini g';add.textContent='＋ Proposer une pièce';add.onclick=()=>refugeRoomEditor(null);
- const idea=document.createElement('button');idea.className='mini';idea.textContent='✦ Proposition de Judy';idea.onclick=async()=>{
-  if(r.proposals.some(p=>p.status==='pending'&&p.by==='judy')){toastInfo('Notre Refuge','Une proposition de Judy attend déjà ta décision.');return}
+ const idea=document.createElement('button');idea.className='mini';idea.textContent='✦ Proposition de '+characterName(c);idea.onclick=async()=>{
+  if(r.proposals.some(p=>p.status==='pending'&&p.by==='character')){toastInfo('Notre Refuge','Une proposition de '+characterName(c)+' attend déjà ta décision.');return}
   r.ideaDue=true;await saveContacts();root.remove();
   cur.ai.push({ts:nowTs(),role:'user',content:
    '[NOTRE REFUGE — JE VEUX TON AVIS ET TON INITIATIVE. Propose maintenant UNE nouvelle pièce concrète que TU voudrais vraiment dans notre maison. '+
@@ -3934,12 +4071,12 @@ function refugeOverlay(){
  [...pending,...recent].forEach(p=>{
   const card=document.createElement('div');card.className='refproposal '+p.status;
   const b=document.createElement('b');
-  if(p.status==='pending')b.textContent=p.by==='judy'?'Proposition de Judy · ta décision':'Ta proposition · décision de Judy';
-  else if(p.by==='judy')b.textContent=p.status==='accepted'?'Proposition de Judy · acceptée par toi':'Proposition de Judy · refusée par toi';
-  else b.textContent=p.status==='accepted'?'Ta proposition · acceptée par Judy':'Ta proposition · refusée par Judy';
+  if(p.status==='pending')b.textContent=p.by==='character'?'Proposition de '+characterName(c)+' · ta décision':'Ta proposition · décision de '+characterName(c);
+  else if(p.by==='character')b.textContent=p.status==='accepted'?'Proposition de '+characterName(c)+' · acceptée par toi':'Proposition de '+characterName(c)+' · refusée par toi';
+  else b.textContent=p.status==='accepted'?'Ta proposition · acceptée par '+characterName(c):'Ta proposition · refusée par '+characterName(c);
   const tx=document.createElement('div');tx.textContent=p.summary;
   card.append(b,tx);
-  if(p.status==='pending'&&p.by==='judy'){
+  if(p.status==='pending'&&p.by==='character'){
    const row=document.createElement('div');row.className='rowb';
    const yes=document.createElement('button');yes.className='mini g';yes.textContent='✓ Accepter';
    yes.onclick=()=>{root.remove();refugeUserDecideProposal(c,p,'accept')};
@@ -3947,7 +4084,7 @@ function refugeOverlay(){
    no.onclick=()=>{root.remove();refugeUserDecideProposal(c,p,'refuse')};
    row.append(yes,no);card.appendChild(row);
   }else if(p.status==='pending'){
-   const retry=document.createElement('button');retry.className='mini';retry.textContent='Redemander à Judy';
+   const retry=document.createElement('button');retry.className='mini';retry.textContent='Redemander à '+characterName(c);
    retry.onclick=()=>{root.remove();refugeRetryProposal(p)};card.appendChild(retry);
   }
   plist.appendChild(card);
@@ -4242,7 +4379,7 @@ function convTitle(c){
  return 'Conversation du '+d.toLocaleDateString('fr-FR',{day:'numeric',month:'long'});
 }
 function convPreview(c){
- const last=[...c.msgs].reverse().find(m=>m.w==='judy'||m.w==='v');
+ const last=[...c.msgs].reverse().find(m=>m.w==='character'||m.w==='v');
  if(!last)return 'Nouvelle conversation';
  return (last.w==='v'?'Toi : ':'')+(last.t||((last.img||last.imgId)?'▨ image':'▶ vidéo'));
 }
@@ -4327,7 +4464,7 @@ function openConv(id,fresh){
    g.textContent='▷ '+String(ct.greeting).slice(0,90)+'…';
    g.onclick=()=>{
     String(ct.greeting).split(/\n{2,}/).slice(0,3).forEach(l=>{
-     const t=l.trim();if(t)push({w:'judy',t,ts:nowTs()})});
+     const t=l.trim();if(t)push({w:'character',t,ts:nowTs()})});
     cur.ai.push({ts:nowTs(),role:'assistant',content:JSON.stringify({m:[String(ct.greeting).slice(0,400)]})});
     saveConvs();deckBar();
    };
@@ -4379,7 +4516,7 @@ function drawMsg(m,instant){
   const st=m.proposalStatus||'';
   const d=document.createElement('div');d.className='refugeline'+(m.proposalId?' proposal '+st:'');
   const h=document.createElement('div');h.className='eh';
-  h.textContent=m.proposalId?(st==='accepted'?'⌂ proposition acceptée':st==='rejected'?'⌂ proposition refusée':'⌂ proposition à Judy'):'⌂ notre refuge';
+  h.textContent=m.proposalId?(st==='accepted'?'⌂ proposition acceptée':st==='rejected'?'⌂ proposition refusée':'⌂ proposition à '+characterName(c)):'⌂ notre refuge';
   const t=document.createElement('div');t.className='et';t.textContent=m.t;
   d.append(h,t);threadEl.appendChild(d);down();return;
  }
@@ -4422,11 +4559,11 @@ function drawMsg(m,instant){
  } else {
   if(m.act){const tx=document.createElement('div');tx.className='actiontext';tx.textContent=m.t;b.appendChild(tx)}
   else b.textContent=m.t;
-  if(m.w==='judy')b.onclick=()=>speak(m.t,true)
+  if(m.w==='character')b.onclick=()=>speak(m.t,true)
  }
  if(m.reply){
   const r=document.createElement('div');r.className='replyref';
-  const rb=document.createElement('b');rb.textContent=m.reply.w==='judy'?'Judy':'Toi';
+  const rb=document.createElement('b');rb.textContent=m.reply.w==='character'?characterName(c):'Toi';
   const rs=document.createElement('span');rs.textContent=m.reply.text||'message';
   r.append(rb,rs);w.appendChild(r);
  }
@@ -4459,7 +4596,7 @@ function reactPicker(m){
    await saveConvs();
    sh.classList.remove('on');
    openConv(cur.id);
-   if(next&&m.w==='judy'&&next!==prev)await judyRepliesToReaction(m,next);
+   if(next&&m.w==='character'&&next!==prev)await characterRepliesToReaction(m,next);
   };
   p.appendChild(b)});
  i.appendChild(p);
@@ -4471,7 +4608,7 @@ function reactPicker(m){
  pin.textContent=m.pin?'🧠 Retirer de la mémoire gravée':'🧠 Graver ce souvenir dans sa mémoire';
  pin.onclick=async()=>{
   const txt=(m.t||m.cap||'une image').slice(0,300);
-  const who=(m.w==='v'?uName(c):(c.first||'Judy'))+' : « '+txt+' »';
+  const who=(m.w==='v'?uName(c):characterName(c))+' : « '+txt+' »';
   if(m.pin){m.pin=false;c.jrn=jrn(c).filter(y=>!(y.ty==='grave'&&y.t===who))}
   else{m.pin=true;jrnAdd(c,'grave',who,{ts:m.ts||nowTs()})}
   await saveContacts();await saveConvs();sh.classList.remove('on');openConv(cur.id);
@@ -4492,13 +4629,13 @@ function replyComposer(m){
  composer(async txt=>{
   cur.sug='';
   vSays(txt,ref);
-  const cible=m.w==='judy'?'ton message':'son message précédent';
+  const cible=m.w==='character'?'ton message':'son message précédent';
   cur.ai.push({ts:nowTs(),role:'user',content:
    '[RÉPONSE CIBLÉE — '+uName(c)+' répond expressément à '+cible+' : « '+ref.text+' ».]\n'+txt});
   clearWait(c,cur);await saveConvs();queueTurn();
  },false,ref);
 }
-async function judyRepliesToReaction(m,emoji){
+async function characterRepliesToReaction(m,emoji){
  if(!cur)return;
  const c=CONTACTS.find(x=>x.id===cur.cid);
  if(!c||!API.key)return;
@@ -4527,14 +4664,14 @@ function push(m){
  }
  cur.msgs.push(m);saveConvs();drawMsg(m);
 }
-function typing(){const w=document.createElement('div');w.className='msg judy typing';
+function typing(){const w=document.createElement('div');w.className='msg character typing';
  w.innerHTML='<div class="b"><i></i><i></i><i></i></div>';threadEl.appendChild(w);down();return w}
-async function judySays(line){
+async function characterSays(line){
  const dots=typing();
  await wait(400+Math.min(line.length*20,2200));
  dots.remove();tickClock();
  if(cur)cur.failed=false;
- push({w:'judy',t:line,ts:nowTs()});
+ push({w:'character',t:line,ts:nowTs()});
  if(VOICE.on)speak(line);
  await wait(220);
 }
@@ -4845,7 +4982,7 @@ function composer(onSend,ferme,reply){
 }
 /* Une salve de messages/actions/médias ne donne qu'un seul tour de parole.
    Chaque nouvelle intervention de V repousse l'échéance de 3 secondes.
-   Pendant ce délai Holophone reste interactif : Judy ne commence à répondre
+   Pendant ce délai Holophone reste interactif : la persona ne commence à répondre
    qu'après 3 secondes complètes sans nouvelle intervention. */
 const TURN_DEBOUNCE_MS=3000;
 let turnTimer=null,turnTick=null,turnDeadline=0;
@@ -4872,7 +5009,7 @@ function queueTurn(){
 }
 /* Une frappe n'ajoute rien à la salve tant que le texte n'est pas envoyé,
    mais elle signifie clairement que V n'a pas fini de parler. On repousse donc
-   le tour de Judy sans créer un nouvel appel s'il n'y en avait pas déjà un. */
+   le tour de la persona sans créer un nouvel appel s'il n'y en avait pas déjà un. */
 function bumpTurnWhileTyping(){
  if(!turnTimer||busy)return;
  queueTurn();
@@ -4956,13 +5093,13 @@ function musComposer(){
   mt.placeholder=t.kind==='playlist'?'Un mot avec cette playlist… (facultatif)':'Un message avec ce morceau… (facultatif)';
   const rb=document.createElement('div');rb.className='rowb';
   const send=document.createElement('button');send.className='mini g';
-  send.textContent=t.kind==='playlist'?'Partager à Judy':'Envoyer à Judy';
+  send.textContent=t.kind==='playlist'?'Partager à '+characterName(c):'Envoyer à '+characterName(c);
   send.onclick=()=>envoyer(t,mt.value.trim());
   rb.append(send);
 
   if(t.kind==='track'&&SPOT.coop&&SPOT.coop.id){
    const add=document.createElement('button');add.className='mini';
-   add.textContent='+ V × Judy';
+   add.textContent='+ '+uName(c)+' × '+characterName(c);
    add.onclick=async()=>{
     add.disabled=true;add.textContent='Ajout…';
     try{await spCoopAdd(t.uri||t.url);add.textContent='✓ Ajouté';}
@@ -5140,7 +5277,7 @@ const BD_MODELS=['gemini-3.1-pro-preview','gemini-3.8-flash','gemini-3.5-flash']
 function bdBaseContext(c,conv){
  const U=uName(c),lastU=[...(conv.msgs||[])].reverse().find(m=>m.w==='v'&&m.t);
  let s='IDENTITÉ\n';
- s+='Tu es '+(c.first||'Judy')+(c.last?' '+c.last:'')+', '+(c.age||'?')+' ans. ';
+ s+='Tu es '+characterName(c)+(c.last?' '+c.last:'')+', '+(c.age||'?')+' ans. ';
  s+='Tu t’adresses à '+U+'.\n';
  if((c.look||'').trim())s+='\nAPPARENCE\n'+c.look.trim().slice(0,7000)+'\n';
  if((c.facts||'').trim())s+='\nFAITS ÉTABLIS\n'+c.facts.trim().slice(0,5000)+'\n';
@@ -5232,16 +5369,16 @@ async function bdRequestBest(sys,input,opt,preferred){
  throw last||new Error('aucun modèle Braindance disponible');
 }
 function bdAdultFrame(c,participants){
- const rawJudyAge=Number(c.age)||0;if(rawJudyAge<18)return null;
- const judyAge=Math.min(99,rawJudyAge);
+ const rawCharacterAge=Number(c.age)||0;if(rawCharacterAge<18)return null;
+ const characterAge=Math.min(99,rawCharacterAge);
  const U=uName(c),ua=Math.max(18,Number(BDCFG.userAge)||30),oa=Math.max(18,Number(BDCFG.otherAdultAge)||30);
- const p=String(participants||'').trim()||((c.first||'Judy')+' ('+judyAge+' ans), '+U+' ('+ua+' ans)');
+ const p=String(participants||'').trim()||(characterName(c)+' ('+characterAge+' ans), '+U+' ('+ua+' ans)');
  return{
-  text:'ÂGES EXPLICITES : '+(c.first||'Judy')+' a '+judyAge+' ans ; '+U+' a '+ua+
+  text:'ÂGES EXPLICITES : '+characterName(c)+' a '+characterAge+' ans ; '+U+' a '+ua+
    ' ans. Participants déclarés : '+p+
    '. Tout autre protagoniste mentionné sans âge chiffré est automatiquement cadré à '+oa+
    ' ans. Aucun personnage mineur ou d’âge ambigu n’est admis.',
-  participants:p,judyAge,userAge:ua,otherAge:oa
+  participants:p,characterAge,userAge:ua,otherAge:oa
  };
 }
 function bdToggleGroup(title,list,selected){
@@ -5274,7 +5411,7 @@ function braindanceComposer(){
  const c=C();bdNormalizeCfg();
  const frame=bdAdultFrame(c,'');
  if(!frame){
-  toastInfo('Braindance','Renseigne un âge adulte explicite pour Judy dans Identité.');
+  toastInfo('Braindance','Renseigne un âge adulte explicite pour '+characterName(c)+' dans Identité.');
   return;
  }
  bdCloseOverlay();
@@ -5323,7 +5460,7 @@ function braindanceComposer(){
  const age=document.createElement('div');age.className='bdage';
  const savedFrame=bdAdultFrame(c,'');
  if(savedFrame){
-  age.textContent='Adultes : '+(c.first||'Judy')+' '+savedFrame.judyAge+' ans · '+uName(c)+' '+savedFrame.userAge+' ans · autre : '+savedFrame.otherAge+' ans';
+  age.textContent='Adultes : '+characterName(c)+' '+savedFrame.characterAge+' ans · '+uName(c)+' '+savedFrame.userAge+' ans · autre : '+savedFrame.otherAge+' ans';
   if(ppl.dataset.auto==='1')ppl.value=savedFrame.participants;
  }
  panel.appendChild(age);
@@ -5459,19 +5596,19 @@ async function bdInsertBeatMedia(c,beat){
  if(beat.image){
   const g=(c.gal||[]).find(x=>x&&x.label===beat.image);
   if(g&&imageGuard(c,{fid:g.fid||'',src:g.src,label:g.label},nowTs()).ok){
-   push(g.fid?{w:'judy',imgId:g.fid,cap:g.label,ts:nowTs()}
-             :{w:'judy',img:g.src,cap:g.label,ts:nowTs()});
+   push(g.fid?{w:'character',imgId:g.fid,cap:g.label,ts:nowTs()}
+             :{w:'character',img:g.src,cap:g.label,ts:nowTs()});
    g.used=(g.used||0)+1;g.last=nowTs();used.image=g.label;await saveContacts();
   }
  }
  if(beat.video){
   const v=(c.bd||[]).find(x=>x&&x.label===beat.video);
-  if(v){push({w:'judy',yt:{id:v.id,label:v.label},ts:nowTs()});used.video=v.label}
+  if(v){push({w:'character',yt:{id:v.id,label:v.label},ts:nowTs()});used.video=v.label}
  }
  if(beat.music){
   const mu=musResolve(c,beat.music);
   if(mu&&musicGuard(c,mu,nowTs()).ok){
-   push({w:'judy',mus:mu,ts:nowTs()});used.music=mu.label;
+   push({w:'character',mus:mu,ts:nowTs()});used.music=mu.label;
    affTouch(c,'mus',mu.label,cur&&cur.mood||fondOf(c).fam,{url:mu.url||'',kind:mu.kind||'track',st:'ok'});
    await saveContacts();
    if(spOn()&&SPOT.auto){try{await spPlay(mu.query||mu.url)}catch(e){}}
@@ -5507,7 +5644,7 @@ function bdQueueChatBridge(conv,c,traceBd){
  const state=traceBd.ok?'vient de se terminer':'a été interrompue après '+traceBd.generated+' bloc(s)';
  conv.ai.push({ts:nowTs(),role:'user',bdBridge:true,content:
   '[CONTINUITÉ APRÈS BRAINDANCE — Une Braindance privée entre adultes consentants '+state+'. '+
-  (c.first||'Judy')+' vient de partager cette expérience avec '+uName(c)+'. '+
+  characterName(c)+' vient de partager cette expérience avec '+uName(c)+'. '+
   'Tiens compte simplement de ce vécu dans la suite de la conversation, sans demander le texte complet et sans le rejouer spontanément.]'});
 }
 async function runBraindance(opt){
@@ -5538,7 +5675,7 @@ async function runBraindance(opt){
    /* garde une marge généreuse tout en évitant un message HTML démesuré */
    if(txt.length>50000)txt=txt.slice(0,50000);
    parts.push(txt);
-   push({w:'judy',t:txt,ts:nowTs(),bd:true});
+   push({w:'character',t:txt,ts:nowTs(),bd:true});
    mediaBlocks.push(await bdInsertBeatMedia(c,plan.beats[i]));
    traceBd.generated=i+1;
    await saveConvs();
@@ -5585,13 +5722,13 @@ function deckBar(){
  const row2=document.createElement('div');row2.className='optrow decktools';
  const bd=document.createElement('button');bd.className='opt bdance';bd.innerHTML=deckIcon('◉');bd.setAttribute('aria-label','Braindance');bd.onclick=()=>braindanceComposer();
  const rg=document.createElement('button');rg.className='opt regenbtn';rg.innerHTML=deckIcon('↻');rg.setAttribute('aria-label','Régénérer la dernière réponse');
- const hasJudy=[...cur.msgs].reverse().some(m=>m.w==='judy'&&m.t);
- rg.disabled=!hasJudy||busy;
- rg.onclick=()=>askConfirm('Régénérer la dernière réponse ?','La dernière réponse de Judy sera supprimée puis une nouvelle réponse sera demandée au moteur IA.','Régénérer',()=>regenerate());
+ const hasCharacter=[...cur.msgs].reverse().some(m=>m.w==='character'&&m.t);
+ rg.disabled=!hasCharacter||busy;
+ rg.onclick=()=>askConfirm('Régénérer la dernière réponse ?','La dernière réponse de '+characterName(C())+' sera supprimée puis une nouvelle réponse sera demandée au moteur IA.','Régénérer',()=>regenerate());
  const un=document.createElement('button');un.className='opt undobtn';un.innerHTML=deckIcon('⟲');un.setAttribute('aria-label','Annuler le dernier échange');
  const hasUser=[...cur.msgs].reverse().some(m=>m.w==='v');
  un.disabled=!hasUser||busy;
- un.onclick=()=>askConfirm('Annuler le dernier échange ?','Le dernier message utilisateur et la réponse de Judy associée seront retirés de cette conversation.','Annuler l’échange',()=>undoExchange());
+ un.onclick=()=>askConfirm('Annuler le dernier échange ?','Le dernier message utilisateur et la réponse de '+characterName(C())+' associée seront retirés de cette conversation.','Annuler l’échange',()=>undoExchange());
  const ac=document.createElement('button');ac.className='opt actionsbtn';ac.innerHTML=deckIcon('✦');ac.setAttribute('aria-label','Interactions');ac.onclick=()=>actionComposer();
  row2.append(bd,rg,un,ac);deckEl.appendChild(row2);
 
@@ -5619,7 +5756,7 @@ async function openingLine(){
  const c=CONTACTS.find(x=>x.id===cur.cid);
  if(c&&c.greeting){
   for(const line of String(c.greeting).split(/\n{2,}/).slice(0,3)){
-   const t=line.trim();if(t)push({w:'judy',t,ts:nowTs()});
+   const t=line.trim();if(t)push({w:'character',t,ts:nowTs()});
   }
   cur.ai.push({ts:nowTs(),role:'assistant',content:JSON.stringify({m:[String(c.greeting).slice(0,400)]})});
   saveConvs();return;
@@ -5663,8 +5800,8 @@ function mayInit(c){
  if(r.mode==='num'&&counter(c,k)>=(r.max||0))return false;
  return true;
 }
-function schedState(c){
- const h=new Date().getHours();
+function schedState(c,ts){
+ const h=new Date(ts===undefined?Date.now():ts).getHours();
  if(inRange(h,c.sleep))return 'sleep';
  if(inRange(h,c.work))return 'work';
  return '';
@@ -5699,10 +5836,10 @@ function sameImage(a,b){
  const A=imageKeys(a),B=new Set(imageKeys(b));
  return A.some(k=>B.has(k));
 }
-function recentJudyImages(c,within,at){
+function recentCharacterImages(c,within,at){
  const now=at||nowTs(),lim=within===undefined?IMAGE_COOLDOWN:within,out=[];
  CONVS.filter(v=>v.cid===c.id&&!v.mindArchived).forEach(v=>(v.msgs||[]).forEach(m=>{
-  if(m.w!=='judy'||(!m.imgId&&!m.img)||!m.ts)return;
+  if(m.w!=='character'||(!m.imgId&&!m.img)||!m.ts)return;
   const age=now-m.ts;if(age<0||age>=lim)return;
   out.push({imgId:m.imgId||'',img:m.img||'',cap:m.cap||'image',ts:m.ts,age});
  }));
@@ -5710,11 +5847,11 @@ function recentJudyImages(c,within,at){
 }
 function imageGuard(c,pic,at){
  const now=at||nowTs();
- const hit=recentJudyImages(c,IMAGE_COOLDOWN,now).find(x=>sameImage(x,pic));
+ const hit=recentCharacterImages(c,IMAGE_COOLDOWN,now).find(x=>sameImage(x,pic));
  return hit?{ok:false,hit,remain:Math.max(0,IMAGE_COOLDOWN-(now-hit.ts))}:{ok:true,remain:0};
 }
 function imageGuardPrompt(c){
- const r=recentJudyImages(c,IMAGE_COOLDOWN,nowTs());
+ const r=recentCharacterImages(c,IMAGE_COOLDOWN,nowTs());
  if(!r.length)return'';
  return '\\nANTI-RÉPÉTITION IMAGE — ces images ont déjà été envoyées dans les 12 dernières heures et sont BLOQUÉES :\\n'+
   r.map(x=>'· '+String(x.cap||'image').slice(0,80)+' — '+'il y a '+durLabel(Math.max(0,nowTs()-x.ts))).join('\\n')+
@@ -5911,7 +6048,7 @@ async function imgSearch(q,prov,key,cx,bias){
  }catch(e){return null}
 }
 async function aiTurn(){
- if(cur&&cur.mindArchived){toastInfo('Archive','Cette conversation appartient à une ancienne mémoire de Judy. Elle reste consultable mais Judy n’y a plus accès.');return}
+ if(cur&&cur.mindArchived){toastInfo('Archive','Cette conversation appartient à une ancienne mémoire de '+characterName(C())+'. Elle reste consultable mais '+characterName(C())+' n’y a plus accès.');return}
  if(!API.key){push({w:'sys',t:'Aucune clé API — ⚙ → Moteur IA.'});restoreDeck();return}
  const conv=cur;                                   /* on fige la conversation visée */
  const c=CONTACTS.find(x=>x.id===conv.cid);
@@ -5942,7 +6079,7 @@ async function aiTurn(){
    else o.act='';
   }
   if(o.act){
-   const cadence=judyActionCadence(conv,!!actionGuard);
+   const cadence=characterActionCadence(conv,!!actionGuard);
    if(!cadence.ok)o.act='';
   }
   const mediaGuard=mediaReplyGuardActive(conv);
@@ -5990,7 +6127,7 @@ async function aiTurn(){
    const tgt=[...cur.msgs].reverse().find(x=>x.w==='v');
    if(tgt&&!tgt.react){tgt.react=o.react;saveConvs();openConv(cur.id)}
   }
-  for(const line of o.m)await judySays(line);
+  for(const line of o.m)await characterSays(line);
 
   /* Décision Refuge : le schéma 2.7.1 impose désormais les deux champs,
      mais on garde une réparation conservatrice pour les réponses historiques
@@ -6003,10 +6140,10 @@ async function aiTurn(){
   if(decisionId&&decision)await refugeDecideProposal(c,decisionId,decision);
 
   if(o.refugeProposalName&&o.refugeProposalDescription)
-   await refugeCreateJudyProposal(c,conv,o.refugeProposalName,o.refugeProposalDescription);
+   await refugeCreateCharacterProposal(c,conv,o.refugeProposalName,o.refugeProposalDescription);
 
-  if(o.act)await sendJudyAction(o.act);
-  if(o.room)await refugeJudyMove(c,o.room);
+  if(o.act)await sendCharacterAction(o.act);
+  if(o.room)await refugeCharacterMove(c,o.room);
   if(o.taste){
    const lastUser=[...cur.msgs].reverse().find(x=>x.w==='v');
    if(lastUser&&lastUser.mus){
@@ -6043,8 +6180,8 @@ async function aiTurn(){
    if(pic){
     const ig=imageGuard(c,pic,nowTs());
     if(ig.ok){
-     push(pic.fid?{w:'judy',imgId:pic.fid,cap:pic.label,ts:nowTs()}
-                 :{w:'judy',img:pic.src,cap:pic.label,ts:nowTs()});
+     push(pic.fid?{w:'character',imgId:pic.fid,cap:pic.label,ts:nowTs()}
+                 :{w:'character',img:pic.src,cap:pic.label,ts:nowTs()});
      if(pic.gal){
       pic.gal.used=(pic.gal.used||0)+1;pic.gal.last=nowTs();
       affTouch(c,'img',pic.gal.label,cur.mood||fondOf(c).fam);saveContacts();
@@ -6061,7 +6198,7 @@ async function aiTurn(){
    if(mu){
     const mg=musicGuard(c,mu,nowTs());
     if(mg.ok){
-     push({w:'judy',mus:mu,ts:nowTs()});
+     push({w:'character',mus:mu,ts:nowTs()});
      affTouch(c,'mus',mu.label,cur.mood||fondOf(c).fam,{url:mu.url||'',kind:mu.kind||'track',st:'ok'});
      saveContacts();
      if(o.coop&&mu.kind==='track'&&SPOT.coop&&SPOT.coop.id){
@@ -6083,13 +6220,13 @@ async function aiTurn(){
     if(pl){
      const mg=musicGuard(c,pl,nowTs());
      if(mg.ok){
-      push({w:'judy',mus:{label:pl.label,url:pl.url,kind:'playlist',query:pl.uri||pl.url,own:true},ts:nowTs()});
+      push({w:'character',mus:{label:pl.label,url:pl.url,kind:'playlist',query:pl.uri||pl.url,own:true},ts:nowTs()});
       affTouch(c,'mus',pl.label,cur.mood||fondOf(c).fam,{url:pl.url||'',kind:'playlist',st:'ok'});
       saveContacts();
      }
     }else{
      const q=String(o.pl).trim();
-     if(q)push({w:'judy',mus:{label:q.slice(0,60),url:'https://open.spotify.com/search/'+encodeURIComponent(q),kind:'playlist',query:q,own:false},ts:nowTs()});
+     if(q)push({w:'character',mus:{label:q.slice(0,60),url:'https://open.spotify.com/search/'+encodeURIComponent(q),kind:'playlist',query:q,own:false},ts:nowTs()});
     }
    }catch(e){if(typeof trace==='function')trace('spotify.playlist.error',{error:String(e.message||e),query:String(o.pl).slice(0,100)})}
   }
@@ -6097,7 +6234,7 @@ async function aiTurn(){
    const hit=c.bd.find(b=>b.label.toLowerCase()===String(o.yt).toLowerCase())
           ||c.bd.find(b=>String(o.yt).toLowerCase().includes(b.label.toLowerCase()))
           ||(ytId(o.yt)?{label:'vidéo',id:ytId(o.yt)}:null);
-   if(hit){push({w:'judy',yt:{id:hit.id,label:hit.label},ts:nowTs()})}
+   if(hit){push({w:'character',yt:{id:hit.id,label:hit.label},ts:nowTs()})}
   }
   cur.reactionReplyGuard=null;
   cur.actionReplyGuard=null;
@@ -6296,11 +6433,11 @@ async function maybeMemory(c,conv){return harvest(c,conv,false)}
    C'est ce qui supprime la dérive : rien ne peut être perdu à la réécriture. */
 async function harvest(c,conv,force){
  if(!c||!conv||conv.mindArchived)return{ok:true,added:0};
- const nb=conv.msgs.filter(m=>m.w==='v'||m.w==='judy').length;
+ const nb=conv.msgs.filter(m=>m.w==='v'||m.w==='character').length;
  if(!force&&nb-(conv.memAt||0)<HARVEST*2)return{ok:true,added:0};
  conv.memAt=nb;saveConvs();
 
- const U=uName(c),J=c.first||'Judy';
+ const U=uName(c),J=characterName(c);
  const recentMsgs=conv.msgs.filter(m=>m.w!=='sys'&&(m.t||m.mus||m.img||m.imgId||m.yt)).slice(-24);
  const recent=recentMsgs.map(m=>{
   const who=(m.w==='v'?U:(m.w==='evt'?'[VÉCU COMMUN]':J));
@@ -6322,18 +6459,18 @@ async function harvest(c,conv,force){
  const sys='Tu extrais la mémoire de '+J+' à partir de ses échanges avec '+U+'.\n'+
   'OBJECTIF : conserver peu de choses, mais les attribuer au BON propriétaire.\n'+
   'Réponds UNIQUEMENT avec ce JSON :\n'+
-  '{"userFacts":[],"judyFacts":[],"events":[],"tastes":[]}\n\n'+
+  '{"userFacts":[],"characterFacts":[],"events":[],"tastes":[]}\n\n'+
   'userFacts : faits DURABLES sur '+U+' seulement. Chaque élément : {"fact":"'+U+' ..."}.\n'+
-  'judyFacts : faits DURABLES explicitement affirmés par '+J+' sur elle-même. Chaque élément : {"fact":"'+J+' ..."}.\n'+
+  'characterFacts : faits DURABLES explicitement affirmés par '+J+' sur elle-même. Chaque élément : {"fact":"'+J+' ..."}.\n'+
   'events : faits PONCTUELS ou datés qui ne doivent surtout pas devenir des vérités permanentes. '+
-  'Chaque élément : {"owner":"user|judy|shared","fact":"phrase avec le nom explicite","ttlHours":24}.\n'+
+  'Chaque élément : {"owner":"user|character|shared","fact":"phrase avec le nom explicite","ttlHours":24}.\n'+
   'tastes : goûts de '+J+' uniquement : {"k":"mus|img|souv","p":1,"t":"titre exact","w":"raison courte","h":"humeur"}.\n\n'+
   'RÈGLES DE PROPRIÉTÉ ABSOLUES :\n'+
   '1. N’utilise JAMAIS "tu", "il", "elle" seuls dans un nouveau souvenir. Écris explicitement "'+U+'" ou "'+J+'".\n'+
   '2. Une information dite par '+U+' sur sa propre journée appartient à '+U+', même si '+J+' la répète ensuite.\n'+
   '3. Ne transforme JAMAIS un détail de '+U+' en vécu de '+J+'. Exemple : si '+U+' dit qu’il déjeune à une boulangerie '+
   'avant des réunions, cela reste un événement de '+U+' et ne devient jamais le déjeuner ou les réunions de '+J+'.\n'+
-  '4. userFacts/judyFacts = seulement ce qui restera probablement vrai plusieurs semaines ou mois : métier, proche, habitude, '+
+  '4. userFacts/characterFacts = seulement ce qui restera probablement vrai plusieurs semaines ou mois : métier, proche, habitude, '+
   'préférence stable, relation, conviction explicite. Pas de trajet actuel, rendez-vous du jour, repas, réunion, fatigue, lieu momentané.\n'+
   '5. Tout ce qui est "aujourd’hui", "ce midi", "cet après-midi", "ce soir", "demain", un trajet, un repas, un rendez-vous ou '+
   'une activité ponctuelle va dans events, avec ttlHours entre 6 et 48.\n'+
@@ -6352,7 +6489,7 @@ async function harvest(c,conv,force){
   return t;
  }
  function overlapWithSpeaker(owner,fact){
-  const wanted=owner==='user'?'judy':'v';
+  const wanted=owner==='user'?'character':'v';
   const pool=recentMsgs.filter(m=>m.w===wanted&&m.t).slice(-16);
   return pool.some(m=>{
    const a=new Set(jnorm(fact).split(' ').filter(x=>x.length>4&&!STOPW.has(x)));
@@ -6377,10 +6514,10 @@ async function harvest(c,conv,force){
    if(fact&&jrnAdd(c,'moi',fact,{owner:'user',kind:'durable',source:'harvest',confidence:.9,importance:3}))n++;
   });
 
-  const jf=Array.isArray(o.judyFacts)?o.judyFacts:[];
+  const jf=Array.isArray(o.characterFacts)?o.characterFacts:[];
   jf.slice(0,4).forEach(x=>{
    const fact=namedFact('character',typeof x==='string'?x:x&&x.fact);
-   /* Si le "fait sur Judy" ressemble fortement à ce que V vient de dire sur lui,
+   /* Si le "fait sur la persona" ressemble fortement à ce que V vient de dire sur lui,
       on le refuse : c'est exactement le garde-fou contre l'appropriation. */
    if(fact&&!overlapWithSpeaker('character',fact)&&
       jrnAdd(c,'elle',fact,{owner:'character',kind:'durable',source:'harvest-self',confidence:.72,importance:2}))n++;
@@ -6389,7 +6526,7 @@ async function harvest(c,conv,force){
   const ev=Array.isArray(o.events)?o.events:[];
   ev.slice(0,4).forEach(x=>{
    if(!x)return;
-   const owner=x.owner==='judy'?'character':x.owner==='shared'?'shared':'user';
+   const owner=x.owner==='character'?'character':x.owner==='shared'?'shared':'user';
    const fact=namedFact(owner==='character'?'character':'user',x.fact);
    if(!fact)return;
    if(owner==='character'&&overlapWithSpeaker('character',fact))return;
@@ -7041,7 +7178,7 @@ async function bdOpenReplay(meta){
  panel.appendChild(bdStars(meta));
 
  const abar=document.createElement('div');abar.className='bdaudiobar';
- const play=document.createElement('button');play.className='mini g';play.textContent='🔊 Lire avec Judy';
+ const play=document.createElement('button');play.className='mini g';play.textContent='🔊 Lire avec '+characterName(c);
  const prev=document.createElement('button');prev.className='mini';prev.textContent='◀ Bloc';prev.title='Bloc précédent';
  const next=document.createElement('button');next.className='mini';next.textContent='Bloc ▶';next.title='Bloc suivant';
  const stop=document.createElement('button');stop.className='mini';stop.textContent='■ Arrêter';stop.disabled=true;
@@ -7062,7 +7199,7 @@ async function bdOpenReplay(meta){
   ast.textContent=st.all?'Audio local ✓ · '+st.ready+'/'+st.blocks+' bloc(s) · '+bdAudioFmtBytes(st.bytes)
    :(st.cachedSegments?'Cache partiel · '+st.cachedSegments+'/'+st.segments+' partie(s) · '+bdAudioFmtBytes(st.bytes)
     :(st.stale?'Cache d’une autre voix · sera régénéré':'Pas encore d’audio local'));
-  clear.disabled=!st.cachedSegments&&!st.stale;play.textContent=st.all?'▶ Lire audio local':'🔊 Lire avec Judy';
+  clear.disabled=!st.cachedSegments&&!st.stale;play.textContent=st.all?'▶ Lire audio local':'🔊 Lire avec '+characterName(c);
  };
  const runFrom=async(bi,scroll=true)=>{
   const total=(rec.blocks||[]).length;if(!total)return;
@@ -7394,7 +7531,7 @@ function buildBD(){
   const t=document.createElement('span');t.className='tag';t.textContent=b.label;
   const x=document.createElement('button');x.className='mini';x.textContent='Retirer';x.style.alignSelf='flex-start';
   x.onclick=()=>askConfirm('Retirer « '+(b.label||'cette vidéo')+' » ?','','Retirer',
-   async()=>{c.bd.splice(i,1);await saveContacts();buildBD()});
+   async()=>{c.bd.splice(i,1);await persistMediaCatalog(c);buildBD()});
   card.append(t,x);L.appendChild(card);
  });
  if(!c.bd.length){const e=document.createElement('div');e.className='empty';
@@ -7412,16 +7549,17 @@ function buildMus(){
   sc.querySelector('i').textContent=SPKIND[m.kind]||'lien';
   sc.onclick=()=>{try{window.open(m.url,'_blank')}catch(e){}};
   const t=document.createElement('input');t.className='txtin';t.value=m.label;t.placeholder='étiquette';
-  t.oninput=()=>{m.label=t.value;saveContacts()};
+  t.oninput=()=>{m.label=t.value};
+  t.onchange=async()=>{try{await persistMediaCatalog(c);flash($('#musMsg'),'Étiquette enregistrée.','var(--teal)',5000)}catch(e){flash($('#musMsg'),'Échec d’enregistrement — '+(e.message||e),'var(--magenta)',15000)}};
   const x=document.createElement('button');x.className='mini';x.textContent='Retirer';x.style.alignSelf='flex-start';
   x.onclick=()=>askConfirm('Retirer « '+(m.label||'ce morceau')+' » ?','','Retirer',
-   async()=>{c.mus.splice(i,1);await saveContacts();buildMus()});
+   async()=>{c.mus.splice(i,1);await persistMediaCatalog(c);buildMus()});
   card.append(sc,t,x);L.appendChild(card);
  });
  if(!c.mus.length){const e=document.createElement('div');e.className='empty';
   e.textContent='Catalogue vide — elle peut quand même proposer n\'importe quel titre, en recherche.';
   L.appendChild(e)}
- L.appendChild(saveRow());
+ L.appendChild(mediaCatalogSaveRow(c));
 }
 $('#musAdd').onclick=async()=>{
  const c=C(),u=$('#musUrl').value.trim(),l=$('#musLabel').value.trim();
@@ -7430,14 +7568,17 @@ $('#musAdd').onclick=async()=>{
  c.mus=c.mus||[];
  c.mus.push({label:l||(SPKIND[sp.kind]||'morceau')+' Spotify',url:sp.url,kind:sp.kind});
  $('#musUrl').value='';$('#musLabel').value='';
- await saveContacts();buildMus();
- flash($('#musMsg'),'Ajouté.','var(--teal)',8000);
+ try{await persistMediaCatalog(c);buildMus();
+  flash($('#musMsg'),'Ajouté et vérifié dans le stockage local.','var(--teal)',9000);
+ }catch(e){c.mus.pop();buildMus();flash($('#musMsg'),'Ajout annulé — stockage impossible : '+(e.message||e),'var(--magenta)',20000)}
 };
 $('#bdAdd').onclick=async()=>{
  const c=C(),l=$('#bdLabel').value.trim(),u=$('#bdUrl').value.trim(),id=ytId(u);
  if(!l||!id){flash($('#bdMsg'),'Étiquette + lien YouTube valide.','var(--magenta)',15000);return}
- c.bd.push({label:l,id});await saveContacts();$('#bdLabel').value='';$('#bdUrl').value='';buildBD();
- flash($('#bdMsg'),'Ajouté.');
+ c.bd.push({label:l,id});$('#bdLabel').value='';$('#bdUrl').value='';
+ try{await persistMediaCatalog(c);buildBD();
+  flash($('#bdMsg'),'Ajouté et vérifié dans le stockage local.','var(--teal)',9000);
+ }catch(e){c.bd.pop();buildBD();flash($('#bdMsg'),'Ajout annulé — stockage impossible : '+(e.message||e),'var(--magenta)',20000)}
 };
 
 /* ===================== PONTS NATIFS ===================== */
@@ -7540,7 +7681,7 @@ async function planPushes(){
   try{
    const mine=CONVS.filter(v=>v.cid===ct.id&&!v.mindArchived).sort((a,b)=>lastTs(b)-lastTs(a));
    const recent=mine[0];
-   const relance=recent&&lastFrom(recent)==='judy'&&(recent.bumps||0)<3;
+   const relance=recent&&lastFrom(recent)==='character'&&(recent.bumps||0)<3;
    const conv=relance?recent:null;
    const presenceHint=(window.holoPresenceInitiative?window.holoPresenceInitiative(ct,conv):'');
    const consigne=(relance
@@ -7581,7 +7722,7 @@ async function collectPushes(){
    CONVS.unshift(conv);
   }
   conv.failed=false;
-  p.m.forEach((line,i)=>conv.msgs.push({w:'judy',t:line,ts:p.at+i*1200}));
+  p.m.forEach((line,i)=>conv.msgs.push({w:'character',t:line,ts:p.at+i*1200}));
   conv.pending=(p.c||[]).slice(0,2).map(t=>({t}));
   conv.ai.push({ts:nowTs(),role:'assistant',content:JSON.stringify({m:p.m,c:p.c})});
   conv.unread=true;conv.bumps=(conv.bumps||0)+1;
@@ -7935,7 +8076,7 @@ const DIAG_KEYS=[
  K.ct,K.cv,K.voice,K.se,'v7.auto','v7.user','v7.gen','v7.spot','v7.pin','v7.theme','v7.startup','v7.audioLibrary',
  'v7.rev','v7.seen','v7.warn','v7.partage-en-attente','v2.config','v2.backupLast',
  'v3.schemaVersion','v3.migrationLog','v3.lastHealth','v3.lastRecipe',
- 'judy.keys','judy.model','judy.prov','v7.emojiRecent'
+ 'character.keys','character.model','character.prov','v7.emojiRecent'
 ];
 const bytesFmt=n=>{
  n=Number(n)||0;
@@ -7969,6 +8110,7 @@ function referencedMediaIds(){
  CONVS.forEach(v=>(v.msgs||[]).forEach(m=>{if(m.imgId)ids.add(m.imgId)}));
  (BDCFG.replays||[]).forEach(r=>{if(r&&r.key)ids.add(r.key)});
  try{(AUDIOCFG&&Array.isArray(AUDIOCFG.tracks)?AUDIOCFG.tracks:[]).forEach(t=>{if(t&&t.id)ids.add(AUDIO_BLOB_PREFIX+t.id)})}catch(e){}
+ try{ids.add(MEDIA_CATALOG_IDB_KEY)}catch(e){}
  return ids;
 }
 function diagContact(c){
@@ -7978,7 +8120,7 @@ function diagContact(c){
    look:c.look,facts:c.facts},
   persona:c.per||{},mood:{fond:c.fond,temp:c.temp,fv:c.fv},
   counts:{avatars:(c.av||[]).length,gallery:(c.gal||[]).length,toys:(c.toys||[]).length,
-   musicCatalog:(c.mus||[]).length,memory:jrn(c).length,affinities:aff(c).length},
+   videoCatalog:(c.bd||[]).length,musicCatalog:(c.mus||[]).length,memory:jrn(c).length,affinities:aff(c).length},
   avatars:(c.av||[]).map(a=>({name:a.name||'',fid:a.fid||'',kind:a.kind||'',mood:a.mood||'',
    nuance:a.nu||'',levels:[a.lmin||1,a.lmax||5],pos:a.pos||'50% 50%',zoom:a.zoom||1})),
   gallery:(c.gal||[]).map(g=>({label:g.label,fid:g.fid||'',keys:g.keys||[],mood:g.mood||'',
@@ -8042,21 +8184,21 @@ async function makeDiagnostic(){
   conversations:CONVS.map(diagConversation),
   musicGuard:{
    cooldownHours:12,
-   recent:recentJudyMusic(c,MUSIC_COOLDOWN,nowTs()).map(x=>({
+   recent:recentCharacterMusic(c,MUSIC_COOLDOWN,nowTs()).map(x=>({
     label:x.mus.label||'',ts:x.ts,ageMs:x.age,remainingMs:Math.max(0,MUSIC_COOLDOWN-x.age),
     keys:musicKeys(x.mus)
    }))
   },
   imageGuard:{
    cooldownHours:12,
-   recent:recentJudyImages(c,IMAGE_COOLDOWN,nowTs()).map(x=>({
+   recent:recentCharacterImages(c,IMAGE_COOLDOWN,nowTs()).map(x=>({
     label:x.cap||'image',ts:x.ts,ageMs:x.age,remainingMs:Math.max(0,IMAGE_COOLDOWN-x.age),
     keys:imageKeys(x)
    }))
   },
   storage:{
    localKeys:local,
-   indexedDB:{database:'judyphone',store:'files',count:inv.length,
+   indexedDB:{database:MEDIA_DB_NAME,store:'files',count:inv.length,
     bytes:inv.reduce((a,x)=>a+x.size,0),items:inv,
     referenced:[...refs],orphans:inv.filter(x=>!refs.has(x.key))}
   }
@@ -8098,7 +8240,7 @@ async function buildHood(){
 
   R.append(
    hoodDetails('Moteur & réglages (secrets masqués)',d.engine),
-   hoodDetails('Personnage & mémoire',d.contacts),
+   hoodDetails('Persona & mémoire',d.contacts),
    hoodDetails('Conversations & historique IA',d.conversations),
    hoodDetails('Anti-répétition musique',d.musicGuard),
    hoodDetails('Stockage local',d.storage.localKeys),
@@ -8137,11 +8279,68 @@ $('#hoodOrphans').onclick=async()=>{
 };
 
 /* ===================== À PROPOS ===================== */
-$('#goAbout').onclick=()=>{show($('#screenAbout'));
- $('#abV').textContent='Version '+APPV+(isNative()?' · application Android':' · navigateur');
- const nb=CONTACTS.length,cv=CONVS.length,ms=CONVS.reduce((a,v)=>a+v.msgs.length,0);
- $('#abStat').textContent=nb+' contact'+(nb>1?'s':'')+' · '+cv+' conversation'+(cv>1?'s':'')+' · '+ms+' messages échangés';
+const ABOUT_LANG_KEY='v7.aboutLang';
+const ABOUT_I18N={
+ fr:{
+  title:'À propos',subtitle:'VSim NeuroTek · Synthetic Presence Systems',kicker:'VSNT // Synthetic Presence Systems',
+  product:'Holophone™ · Adaptive Persona Interface',
+  lead:'Une architecture de présence synthétique conçue pour maintenir une persona persistante, contextuelle et multimodale — avec identité, mémoire, continuité temporelle, états internes, initiatives, voix, médias et environnement partagé.',
+  badges:['Persistent Persona','Temporal Continuity','Local-First','Multimodal Runtime'],core:'Core systems',
+  persona:'Identité, personnalité, comportement, humeur et présence sont maintenus comme un état cohérent plutôt que reconstruits à chaque message.',
+  memory:"Souvenirs persistants, contexte conversationnel, goûts, événements et protections anti-répétition assurent une continuité au-delà d'une seule session.",
+  temporal:"Holophone suit le temps écoulé, les rythmes de vie, les activités et les changements d'état afin que plusieurs heures ou plusieurs jours aient un sens.",
+  interaction:'Texte, voix, images, musique, Braindance, Refuge et interactions structurées sont coordonnés autour de la même persona.',
+  initiative:"La persona peut prendre l'initiative selon son contexte, son activité et ses états internes — ou décider qu'elle n'a aucune raison pertinente d'intervenir.",
+  privacy:"Stockage local, verrouillage, protection de l'aperçu Android, sauvegardes contrôlées et secrets configurés localement par l'utilisateur.",
+  dataTitle:'Architecture des données',
+  data:'<strong>Local-first.</strong> Les données persistantes de Holophone résident sur l’appareil. Lorsqu’une fonction fait appel à un service externe, seules les informations nécessaires à cette fonction sont transmises au fournisseur concerné. Les clés de service ne sont pas intégrées à l’application distribuée : elles sont ajoutées et conservées localement par l’utilisateur.',
+  packageTitle:'Persona packages',package:'Une persona importée peut contenir des consignes de comportement destinées au moteur d’IA. Holophone présente ces informations avant validation afin que l’utilisateur conserve le contrôle sur ce qu’il installe.',
+  companyTitle:'VSim NeuroTek',company:'<strong>Holophone™</strong> est présenté comme une technologie de VSim NeuroTek (VSNT), division Synthetic Presence Systems. <i>Connecting Minds &amp; Bytes.</i>',
+  legal:'PERSONAL RUNTIME · NO EMBEDDED SERVICE KEYS · USER-CONTROLLED DATA<br>HOLOPHONE™ / VSIM NEUROTEK (VSNT)',init:'Initialisation du runtime…'
+ },
+ en:{
+  title:'About',subtitle:'VSim NeuroTek · Synthetic Presence Systems',kicker:'VSNT // Synthetic Presence Systems',
+  product:'Holophone™ · Adaptive Persona Interface',
+  lead:'A synthetic-presence architecture designed to maintain a persistent, contextual and multimodal persona — combining identity, memory, temporal continuity, internal state, initiative, voice, media and a shared environment.',
+  badges:['Persistent Persona','Temporal Continuity','Local-First','Multimodal Runtime'],core:'Core systems',
+  persona:'Identity, personality, behaviour, mood and presence are maintained as a coherent state instead of being reconstructed for every message.',
+  memory:'Persistent memories, conversational context, tastes, events and anti-repetition safeguards provide continuity beyond a single session.',
+  temporal:'Holophone tracks elapsed time, life rhythms, activities and state changes so that hours — or days — of absence retain meaning.',
+  interaction:'Text, voice, images, music, Braindance, Refuge and structured interactions are coordinated around the same persona.',
+  initiative:'The persona can take initiative according to context, activity and internal state — or decide there is no relevant reason to intervene.',
+  privacy:'Local storage, application locking, Android preview protection, controlled backups and service secrets configured locally by the user.',
+  dataTitle:'Data architecture',
+  data:'<strong>Local-first.</strong> Holophone persistent data resides on the device. When a feature uses an external service, only the information required for that feature is transmitted to the relevant provider. Service keys are not embedded in the distributed application: they are supplied and stored locally by the user.',
+  packageTitle:'Persona packages',package:'An imported persona may contain behavioural instructions intended for the AI runtime. Holophone presents this information before validation so the user remains in control of what is installed.',
+  companyTitle:'VSim NeuroTek',company:'<strong>Holophone™</strong> is presented as a VSim NeuroTek (VSNT) technology from the Synthetic Presence Systems division. <i>Connecting Minds &amp; Bytes.</i>',
+  legal:'PERSONAL RUNTIME · NO EMBEDDED SERVICE KEYS · USER-CONTROLLED DATA<br>HOLOPHONE™ / VSIM NEUROTEK (VSNT)',init:'Runtime initialization…'
+ }
 };
+function aboutLang(){
+ try{const v=localStorage.getItem(ABOUT_LANG_KEY);if(v==='fr'||v==='en')return v}catch(e){}
+ return String((navigator.languages&&navigator.languages[0])||navigator.language||'fr').toLowerCase().startsWith('fr')?'fr':'en';
+}
+function renderAboutMeta(lang){
+ const fr=lang==='fr',nb=CONTACTS.length,cv=CONVS.length,ms=CONVS.reduce((a,v)=>a+v.msgs.length,0);
+ $('#abV').textContent='HOLOPHONE '+APPV+(isNative()?' · ANDROID RUNTIME':' · WEB RUNTIME');
+ $('#abStat').textContent=(fr?'ÉTAT LOCAL':'LOCAL STATE')+' · '+nb+' '+(fr?'persona':'persona')+(nb>1?'s':'')+' · '+cv+' '+(fr?'conversation':'conversation')+(cv>1?'s':'')+' · '+ms+' '+(fr?'message':'message')+(ms>1?'s':'');
+}
+function setAboutLang(lang,persist=true){
+ lang=lang==='en'?'en':'fr';const t=ABOUT_I18N[lang];
+ const text=(id,v)=>{const e=$(id);if(e)e.textContent=v};
+ text('#abTitle',t.title);text('#abKicker',t.kicker);text('#abProduct',t.product);text('#abLead',t.lead);
+ text('#abBadgePersona',t.badges[0]);text('#abBadgeTemporal',t.badges[1]);text('#abBadgeLocal',t.badges[2]);text('#abBadgeMulti',t.badges[3]);text('#abCoreTitle',t.core);
+ text('#abPersonaDesc',t.persona);text('#abMemoryDesc',t.memory);text('#abTemporalDesc',t.temporal);text('#abInteractionDesc',t.interaction);text('#abInitiativeDesc',t.initiative);text('#abPrivacyDesc',t.privacy);
+ text('#abDataTitle',t.dataTitle);text('#abPackageTitle',t.packageTitle);text('#abCompanyTitle',t.companyTitle);
+ if($('#abDataText'))$('#abDataText').innerHTML=t.data;if($('#abPackageText'))$('#abPackageText').textContent=t.package;if($('#abCompanyText'))$('#abCompanyText').innerHTML=t.company;if($('#abLegal'))$('#abLegal').innerHTML=t.legal;
+ if(persist)try{localStorage.setItem(ABOUT_LANG_KEY,lang)}catch(e){}
+ document.documentElement.setAttribute('data-about-lang',lang);
+ if($('#abLangFr'))$('#abLangFr').classList.toggle('on',lang==='fr');if($('#abLangEn'))$('#abLangEn').classList.toggle('on',lang==='en');
+ renderAboutMeta(lang);
+}
+$('#goAbout').onclick=()=>{show($('#screenAbout'));setAboutLang(aboutLang(),false)};
+$('#abLangFr').onclick=()=>setAboutLang('fr');
+$('#abLangEn').onclick=()=>setAboutLang('en');
 $('#abBack').onclick=()=>{show($('#screenSys'));refreshSys()};
 
 /* ===================== APPARENCE GLOBALE ===================== */
@@ -8253,7 +8452,7 @@ function buildMem(){
  const c=C(),B=$('#memBody');B.innerHTML='';
  $('#memSub').textContent=jrn(c).length+' entrées';
  const n=document.createElement('div');n.className='note';
- n.textContent='Chaque souvenir possède maintenant un propriétaire explicite : V, Judy ou le vécu commun. '+
+ n.textContent='Chaque souvenir possède maintenant un propriétaire explicite : '+uName(c)+', '+characterName(c)+' ou le vécu commun. '+
   'Les événements temporaires expirent du contexte au lieu de devenir des vérités permanentes. Tu peux corriger ou supprimer n\'importe quelle ligne.';
  B.appendChild(n);
  if(c.memMsg){const em=document.createElement('div');em.className='note';em.style.color='var(--magenta)';
@@ -8274,7 +8473,7 @@ function buildMem(){
  JT.forEach(([k,lb,h])=>{const o=document.createElement('option');o.value=k;o.textContent=lb+' — '+h;
   if(k===(memFilt||'socle'))o.selected=true;sel.appendChild(o)});
  const ta=document.createElement('textarea');ta.style.minHeight='60px';
- ta.placeholder='Une phrase factuelle. Ex : « V déteste être appelé avant 10 h. » ou « Judy adore marcher pieds nus. »';
+ ta.placeholder='Une phrase factuelle. Ex : « '+uName(c)+' déteste être appelé avant 10 h. » ou « '+characterName(c)+' adore marcher pieds nus. »';
  const go=document.createElement('button');go.className='mini g';go.textContent='Ajouter';
  const msg=document.createElement('div');msg.className='ok';
  go.onclick=async()=>{
@@ -8731,17 +8930,18 @@ async function dropShared(mus,texte){
 $('#goSpot').onclick=()=>{show($('#screenSpot'));buildSpot()};
 $('#spBack').onclick=()=>{show($('#screenSys'));refreshSys()};
 function buildSpot(){
+ const c=C();if($('#spCoopTitle'))$('#spCoopTitle').textContent='Playlist '+uName(c)+' × '+characterName(c);if($('#spCoopShare'))$('#spCoopShare').textContent='Partager à '+characterName(c);
  $('#spId').value=SPOT.id||'';
  $('#spAuto').classList.toggle('on',!!SPOT.auto);
  $('#spSub').textContent=spOn()?'compte relié':'non relié';
- $('#spCoopName').value=(SPOT.coop&&SPOT.coop.name)||'V × Judy — Holophone';
+ $('#spCoopName').value=(SPOT.coop&&SPOT.coop.name)||(uName(C())+' × '+characterName(C())+' — Holophone');
  $('#spScopeNote').textContent=Number(SPOT.authRev)>=2
   ?'Autorisations playlists actives.'
   :'Après cette mise à jour, relie Spotify une nouvelle fois pour autoriser la création/modification de playlists.';
  $('#spScopeNote').style.color=Number(SPOT.authRev)>=2?'var(--teal)':'var(--magenta)';
  const cc=$('#spCoopCard');cc.innerHTML='';
  if(SPOT.coop&&SPOT.coop.id){
-  const b=document.createElement('b');b.textContent=SPOT.coop.name||'V × Judy — Holophone';
+  const b=document.createElement('b');b.textContent=SPOT.coop.name||(uName(C())+' × '+characterName(C())+' — Holophone');
   const i=document.createElement('i');i.textContent='playlist collaborative · '+SPOT.coop.id.slice(0,10)+'…';
   cc.append(b,i);cc.classList.add('on');
  }else{
@@ -8767,7 +8967,7 @@ $('#spCoopCreate').onclick=async()=>{
  }catch(e){flash($('#spMsg'),'Impossible — '+e.message,'var(--magenta)',50000)}
 };
 $('#spCoopShare').onclick=async()=>{
- try{await spShareCoopToJudy();flash($('#spMsg'),'Playlist envoyée dans la conversation.','var(--teal)',20000)}
+ try{await spShareCoopToCharacter();flash($('#spMsg'),'Playlist envoyée dans la conversation.','var(--teal)',20000)}
  catch(e){flash($('#spMsg'),'Impossible — '+e.message,'var(--magenta)',40000)}
 };
 $('#spCoopOpen').onclick=()=>{
@@ -8946,11 +9146,11 @@ function sanitizeConv(o,cid){
  const src=o&&o.conv?o.conv:o;
  if(!src||!Array.isArray(src.msgs))throw new Error('ce fichier ne contient pas de conversation');
  const msgs=src.msgs.slice(0,800).map(m=>{
-  const r={w:['v','judy','sys','evt','refuge'].includes(m.w)?m.w:'judy',t:s(m.t,4000),ts:Number(m.ts)||0};
+  const r={w:['v','character','sys','evt','refuge'].includes(m.w)?m.w:'character',t:s(m.t,4000),ts:Number(m.ts)||0};
   if(m.cap)r.cap=s(m.cap,120);
   if(typeof m.react==='string'&&m.react.length<=6)r.react=m.react;
   if(m.reply&&typeof m.reply==='object')r.reply={
-   w:['v','judy'].includes(m.reply.w)?m.reply.w:'',
+   w:['v','character'].includes(m.reply.w)?m.reply.w:'',
    text:s(m.reply.text,180),ts:Number(m.reply.ts)||0
   };
   if(m.pin)r.pin=true;
@@ -8980,8 +9180,8 @@ $('#convFile').onchange=async e=>{
  const c=C();if(!c)return;
  try{
   const o=JSON.parse(await f.text());
-  if(o&&o.app==='judy-contact')throw new Error('ceci est une fiche de contact — utilise Importer une fiche sur l\'écran Contacts');
-  if(o&&(o.app==='holophone-backup'||o.app==='judy-phone'))throw new Error('ceci est une sauvegarde complète — utilise Réglages → Sauvegarde');
+  if(o&&o.app===LEGACY_CONTACT_APP)throw new Error('ceci est une fiche de contact — utilise Importer une fiche sur l\'écran Contacts');
+  if(o&&(o.app==='holophone-backup'||o.app===LEGACY_FULL_APP))throw new Error('ceci est une sauvegarde complète — utilise Réglages → Sauvegarde');
   const v=sanitizeConv(o,c.id);
   /* les images repassent dans le stockage binaire */
   for(const m of v.msgs){if(m.img){try{m.imgId=await keepImage(m.img);delete m.img}catch(err){}}}
@@ -9152,7 +9352,7 @@ function sanitizeContact(o){
  /* champs de l'ancien format, convertis à l'adoption */
  c.mem=s(o.mem,4000);c.userfile=s(o.userfile,4000);c.drift=s(o.drift,2000);
  c.pins=(Array.isArray(o.pins)?o.pins:[]).slice(0,60).filter(p=>p&&typeof p.t==='string')
-  .map(p=>({t:p.t.slice(0,300),ts:+p.ts||Date.now(),who:p.who==='v'?'v':'judy'}));
+  .map(p=>({t:p.t.slice(0,300),ts:+p.ts||Date.now(),who:p.who==='v'?'v':'character'}));
  (Array.isArray(o.av)?o.av:[]).slice(0,12).forEach(a=>{const u=img(a&&a.src);
   if(u)c.av.push({src:u,kind:a.kind==='video'?'video':'image',pos:s(a.pos,20)||'50% 32%',zoom:Math.max(1,Math.min(2.4,Number(a.zoom)||1)),tick:s(a.tick,6),
    mood:FAM.some(f=>f[0]===a.mood)?a.mood:'',nu:NU[a.nu]?a.nu:'',
@@ -9283,7 +9483,7 @@ $('#ctFile').onchange=async e=>{
     importSheet(sanitizeContact(built));fiche=true;continue;
    }
    const o=JSON.parse(await f.text());
-   if(o&&(o.app==='holophone-backup'||o.app==='judy-phone'))
+   if(o&&(o.app==='holophone-backup'||o.app===LEGACY_FULL_APP))
     throw new Error('sauvegarde complète, pas une fiche — Réglages → Sauvegarde → Importer');
    /* tranche d'images */
    if(o&&(o.app==='holophone-images'||o.app==='lumen-images')&&Array.isArray(o.items)){
@@ -9298,7 +9498,7 @@ $('#ctFile').onchange=async e=>{
    }
    /* anciens formats */
    let raw=null;
-   if(o&&o.app==='judy-contact')raw=o.contact;
+   if(o&&o.app===LEGACY_CONTACT_APP)raw=o.contact;
    else if(o&&o.per)raw=o;
    else if(o&&(o.name||o.char_name||(o.data&&o.data.name)))raw=cardToContact(o,'');
    if(!raw)throw new Error('format non reconnu');
@@ -9507,14 +9707,14 @@ $('#svCopy').onclick=async()=>{
  catch(e){flash($('#svMsg'),'Copie refusée — '+e.message,'var(--magenta)',20000)}
 };
 async function applyBackup(o){
- if(o&&(o.app==='judy-contact'||o.per||o.name||o.char_name))throw new Error(
+ if(o&&(o.app===LEGACY_CONTACT_APP||o.per||o.name||o.char_name))throw new Error(
   'ceci est une FICHE DE CONTACT, pas une sauvegarde. Pour l\'ajouter : écran Contacts → Importer');
- if(!o||!['holophone-backup','judy-phone'].includes(o.app)||!Array.isArray(o.contacts))throw new Error('ce n\'est pas une sauvegarde de Holophone');
+ if(!o||!(o.app==='holophone-backup'||o.app===LEGACY_FULL_APP)||!Array.isArray(o.contacts))throw new Error('ce n\'est pas une sauvegarde de Holophone');
  if(window.HolophoneStability&&window.HolophoneStability.prepareIncomingBackup)o=await window.HolophoneStability.prepareIncomingBackup(o);
  CONTACTS=o.contacts;
  for(const c of CONTACTS){
-  c.av=c.av||[];c.gal=c.gal||[];c.toys=c.toys||[];c.per=c.per||{};c.bd=c.bd||[];ensureRefuge(c);delete c.scripts;
-  if(typeof c.spont!=='number')c.spont=c.id==='judy'?20:0;
+  c.av=c.av||[];c.gal=c.gal||[];c.toys=c.toys||[];c.per=c.per||{};c.bd=c.bd||[];c.mus=c.mus||[];ensureRefuge(c);delete c.scripts;
+  if(typeof c.spont!=='number')c.spont=60;
   /* on tente de replacer les images dans le stockage local */
   for(const a of c.av)if(/^data:/.test(a.src||'')){
    try{const b=await(await fetch(a.src)).blob();const fid='f_'+uid();await idbPut(fid,b);
@@ -9555,7 +9755,7 @@ async function applyBackup(o){
  if(o.api){if(o.api.prov&&PROVIDERS[o.api.prov])API.prov=o.api.prov;
   if(o.api.model)API.model=o.api.model;
   if(o.api.keys&&Object.keys(o.api.keys).length)API.keys=o.api.keys}
- await saveContacts();await saveConvs();await saveAuto();await saveVoice();await saveSearch();await saveUser();await saveGen();await saveBDCfg();
+ await saveContacts();await mediaCatalogSyncAll();await saveConvs();await saveAuto();await saveVoice();await saveSearch();await saveUser();await saveGen();await saveBDCfg();
  await Store.set(K.key,JSON.stringify(API.keys));await Store.set(K.model,API.model);await Store.set(K.prov,API.prov);
  curCt=CONTACTS[0].id;
  return CONTACTS.length;
@@ -9584,20 +9784,20 @@ $('#svPasteGo').onclick=async()=>{
 
 /* ===================== ACTIVITÉ SPONTANÉE ===================== */
 function lastTs(v){const m=[...v.msgs].reverse().find(x=>x.ts);return m?m.ts:(v.created||0)}
-function lastFrom(v){const m=[...v.msgs].reverse().find(x=>x.w==='judy'||x.w==='v');return m?m.w:null}
+function lastFrom(v){const m=[...v.msgs].reverse().find(x=>x.w==='character'||x.w==='v');return m?m.w:null}
 
 /* ajoute des messages dans une conversation, ouverte ou non */
 function deliver(conv,o,ct){
  const base=nowTs();
  conv.failed=false;
- o.m.forEach((line,i)=>conv.msgs.push({w:'judy',t:line,ts:base+i*1200}));
+ o.m.forEach((line,i)=>conv.msgs.push({w:'character',t:line,ts:base+i*1200}));
  if(o.img&&ct){
   const q=String(o.img).toLowerCase();
   const g=ct.gal.find(x=>x.label.toLowerCase()===q);
   const its=base+o.m.length*1200;
   if(g&&imageGuard(ct,{fid:g.fid||'',src:g.src,label:g.label},its).ok){
-   conv.msgs.push(g.fid?{w:'judy',imgId:g.fid,cap:g.label,ts:its}
-                       :{w:'judy',img:g.src,cap:g.label,ts:its});
+   conv.msgs.push(g.fid?{w:'character',imgId:g.fid,cap:g.label,ts:its}
+                       :{w:'character',img:g.src,cap:g.label,ts:its});
    g.used=(g.used||0)+1;g.last=its;affTouch(ct,'img',g.label,conv.mood||fondOf(ct).fam);
    saveContacts();
   }
@@ -9609,7 +9809,7 @@ function deliver(conv,o,ct){
  if(o.mus&&ct){const mu=musResolve(ct,o.mus);
   const mts=base+o.m.length*1200+600;
   if(mu&&musicGuard(ct,mu,mts).ok){
-   conv.msgs.push({w:'judy',mus:mu,ts:mts});
+   conv.msgs.push({w:'character',mus:mu,ts:mts});
    affTouch(ct,'mus',mu.label,conv.mood||fondOf(ct).fam,{url:mu.url||'',kind:mu.kind||'track',st:'ok'});
    saveContacts();
   }}
@@ -9648,8 +9848,9 @@ async function spontaneous(ct){
   CONVS.unshift(conv);
  }
  const vie=opt(ct,'life')
-  ?" Avant d'écrire, décide en silence ce qui vient de t'arriver depuis votre dernier contact — un incident, une rencontre, une contrariété, une bonne nouvelle — et pars de là plutôt que d'une formule vide."
+  ?" Avant d'écrire, pars si possible d'un détail ordinaire déjà présent dans ta continuité de vie plutôt que d'inventer artificiellement un événement spectaculaire."
   :"";
+ const presenceHint=(window.holoPresenceInitiative?window.holoPresenceInitiative(ct,conv):'');
  const rang=relance?((conv.wait&&conv.wait.n)||0):0;
  const attente=relance?durLabel(nowTs()-(conv.wait.since||nowTs())):'';
  const consigne=relance
@@ -9663,7 +9864,8 @@ async function spontaneous(ct){
      "Ajoute \"fin\": true si dans ce message tu renonces à insister — parce que tu lui trouves "+
      "une excuse qui te convient, parce que tu comprends qu'il est occupé, ou parce que tu décides "+
      "de le laisser tranquille. Dans ce cas tu ne relanceras plus, même s'il reste muet.")
-  : ("Tu prends l'initiative d'écrire à "+uName(ct)+", sans qu'on t'ait rien demandé. Une raison concrète : un truc qui vient de t'arriver, une question, une envie, une inquiétude. Commence directement, sans formule d'introduction.")+vie;
+  : ("Tu prends l'initiative d'écrire à "+uName(ct)+", sans qu'on t'ait rien demandé. Commence directement, sans formule d'introduction.")+
+    (presenceHint?' '+presenceHint:'')+vie;
  const o=parseAI(await callModel(sysPrompt(ct,conv)+'\n\nSITUATION\n'+consigne,
   conv.ai.slice(-20).concat([{role:'user',content:'[écris maintenant, de ta propre initiative]'}])));
  conv.ai.pop();
@@ -9752,6 +9954,7 @@ $('#auMaster').onclick=async()=>{
 
 /* ===================== DÉMARRAGE + MIGRATION ===================== */
 async function boot(){
+ await migrateLegacyStoreKeys();
  /* Si on est la fenêtre ouverte par un partage, on dépose et on s'arrête là :
     pas d'interface métier, pas d'appel au modèle dans une fenêtre qui va se
     refermer d'elle-même. */
@@ -9793,7 +9996,11 @@ async function boot(){
     if(a.nu&&!NU[a.nu])a.nu='';a.lmin=a.lmin||1;a.lmax=a.lmax||5});
   }
  }
+ /* 3.1.3 : le catalogue vidéo/musique dédié est restauré avant tout écran. */
+ try{await mediaCatalogHydrate()}catch(e){console.warn('Media catalog hydrate',e)}
  if(!CONVS.length){try{const v=await Store.get(K.cv);if(v){const l=JSON.parse(v);if(Array.isArray(l))CONVS=l}}catch(e){}}
+ let personaNormalized=false;CONTACTS.forEach(c=>{personaNormalized=normalizePersonaData(c)||personaNormalized});CONVS.forEach(v=>{personaNormalized=normalizeConversationRoles(v)||personaNormalized});
+ if(personaNormalized){try{await saveContacts();await saveConvs()}catch(e){}}
  try{const k=await Store.get(K.key);if(k)API.keys=k.startsWith('{')?JSON.parse(k):{anthropic:k}}catch(e){}
  API.prov=(await Store.get(K.prov))||'google';
  if(!PROVIDERS[API.prov])API.prov='google';
@@ -9827,7 +10034,7 @@ async function boot(){
  let refugeRepares=0;
  CONTACTS.forEach(c=>{
   refugeRepares+=refugeReconcileLegacyPending(c);
-  refugeRepares+=refugeReconcileJudyDecisionState(c);
+  refugeRepares+=refugeReconcileCharacterDecisionState(c);
  });
  if(repares||refugeRepares)await saveConvs();
  CONVS.forEach(v=>{const c=CONTACTS[0];

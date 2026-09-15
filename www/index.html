@@ -875,13 +875,16 @@ select{font-family:'Share Tech Mono';font-size:11px}
 .startup[data-style="cyber"] .vsntbrand .slogan{color:#2ee6c8}
 .startup[data-style="cyber"] .vsntlogo{filter:drop-shadow(0 0 10px rgba(255,48,61,.34))}
 #screenAbout .title{min-height:112px;padding-right:158px}
-.aboutfloatdock{position:absolute;right:64px;top:7px;width:76px;z-index:8;display:flex;flex-direction:column;align-items:center;gap:3px;pointer-events:auto}
-.aboutfloatlogo{display:block;width:76px;height:76px;object-fit:contain;background:#000;border:0;outline:0;box-shadow:none}
-.aboutlangs{display:flex;align-items:center;justify-content:center;gap:4px;height:23px}
-.aboutlang{width:32px;height:21px;padding:0;border:1px solid color-mix(in srgb,var(--theme-border,#324047) 72%,transparent);background:rgba(0,0,0,.76);font-size:15px;line-height:19px;cursor:pointer;opacity:.55;filter:saturate(.55);transition:opacity .15s ease,filter .15s ease,border-color .15s ease,transform .15s ease}
+.aboutfloatinghead{position:relative;z-index:9;flex:0 0 auto;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:7px;padding:8px 64px 11px;background:linear-gradient(180deg,rgba(3,4,4,.985),rgba(3,4,4,.955));border-bottom:1px solid color-mix(in srgb,var(--theme-border,#324047) 78%,transparent);box-shadow:0 12px 24px rgba(0,0,0,.34)}
+.aboutfloatinghead .iconbtn{position:absolute;right:10px;top:10px}
+.aboutfloatlogo{display:block;width:114px;height:114px;object-fit:contain;background:transparent;border:0;outline:0;box-shadow:none;flex:0 0 auto}
+.aboutheadtitle{font:700 28px/1 'Rajdhani',system-ui,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--txt);text-align:center}
+.aboutlangs{display:flex;align-items:center;justify-content:center;gap:12px;min-height:38px}
+.aboutlang{width:48px;height:34px;padding:0;border:1px solid color-mix(in srgb,var(--theme-border,#324047) 72%,transparent);background:rgba(0,0,0,.76);font-size:24px;line-height:32px;cursor:pointer;opacity:.58;filter:saturate(.58);transition:opacity .15s ease,filter .15s ease,border-color .15s ease,transform .15s ease}
 .aboutlang:active{transform:scale(.95)}
-.aboutlang.on{opacity:1;filter:none;border-color:var(--theme-accent,var(--yellow));box-shadow:0 0 9px color-mix(in srgb,var(--theme-accent,var(--yellow)) 28%,transparent)}
-@media(max-width:390px){#screenAbout .title{min-height:104px;padding-right:143px}.aboutfloatdock{right:58px;top:8px;width:68px}.aboutfloatlogo{width:68px;height:68px}.aboutlang{width:29px}}
+.aboutlang.on{opacity:1;filter:none;border-color:var(--theme-accent,var(--yellow));box-shadow:0 0 10px color-mix(in srgb,var(--theme-accent,var(--yellow)) 30%,transparent)}
+#screenAbout>.cfg{padding-top:12px}
+@media(max-width:390px){.aboutfloatinghead{padding-left:54px;padding-right:54px}.aboutfloatlogo{width:108px;height:108px}.aboutheadtitle{font-size:26px}.aboutlang{width:46px;height:33px;font-size:23px}}
 .abouttechhero{position:relative;overflow:hidden;padding:16px 15px 15px;border:1px solid var(--theme-border,#324047);background:linear-gradient(180deg,rgba(255,255,255,.022),rgba(255,255,255,.008));box-shadow:inset 0 0 28px rgba(0,0,0,.34)}
 .abouttechhero:before{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,transparent 0 49.7%,color-mix(in srgb,var(--theme-accent,var(--teal)) 9%,transparent) 50%,transparent 50.3%),linear-gradient(0deg,transparent 0 49.7%,color-mix(in srgb,var(--theme-accent,var(--teal)) 7%,transparent) 50%,transparent 50.3%);background-size:46px 46px;opacity:.28}
 .abouttechhero>*{position:relative}
@@ -1440,15 +1443,14 @@ select{font-family:'Share Tech Mono';font-size:11px}
 
  <!-- À PROPOS -->
  <div id="screenAbout" class="hide" style="flex:1;display:flex;flex-direction:column;min-height:0">
-  <div class="title"><span id="abTitle">À propos</span><small id="abSubtitle">VSim NeuroTek · Synthetic Presence Systems</small>
-   <div class="aboutfloatdock" aria-label="VSim NeuroTek">
-    <img class="aboutfloatlogo" src="media/vsnt-logo-full.png" alt="VSim NeuroTek — Connecting Minds &amp; Bytes">
-    <div class="aboutlangs" role="group" aria-label="Language">
-     <button class="aboutlang" id="abLangFr" type="button" data-about-lang="fr" aria-label="Français" title="Français">🇫🇷</button>
-     <button class="aboutlang" id="abLangEn" type="button" data-about-lang="en" aria-label="English" title="English">🇬🇧</button>
-    </div>
+  <div class="aboutfloatinghead" aria-label="VSim NeuroTek">
+   <button class="iconbtn" id="abBack" aria-label="Fermer">✕</button>
+   <img class="aboutfloatlogo" src="media/vsnt-logo-full.png" alt="VSim NeuroTek — Connecting Minds &amp; Bytes">
+   <div class="aboutheadtitle" id="abTitle">À propos</div>
+   <div class="aboutlangs" role="group" aria-label="Language">
+    <button class="aboutlang" id="abLangFr" type="button" data-about-lang="fr" aria-label="Français" title="Français">🇫🇷</button>
+    <button class="aboutlang" id="abLangEn" type="button" data-about-lang="en" aria-label="English" title="English">🇬🇧</button>
    </div>
-   <button class="iconbtn" id="abBack">✕</button>
   </div>
   <div class="cfg">
    <div class="abouttechhero">
@@ -1880,7 +1882,7 @@ const TTS={
 let audioEl=null;
 let AUTO={on:true};
 const saveAuto=()=>Store.set('v7.auto',JSON.stringify(AUTO));
-const APPV='3.2.2';
+const APPV='3.2.3';
 /* --- FAMILLES : clé, nom, couleur, valence, énergie --- */
 const FAM=[
  ['calme','Calme','#8aa0a8', 0.20,-0.60],
@@ -8326,7 +8328,7 @@ function renderAboutMeta(lang){
 function setAboutLang(lang,persist=true){
  lang=lang==='en'?'en':'fr';const t=ABOUT_I18N[lang];
  const text=(id,v)=>{const e=$(id);if(e)e.textContent=v};
- text('#abTitle',t.title);text('#abSubtitle',t.subtitle);text('#abKicker',t.kicker);text('#abProduct',t.product);text('#abLead',t.lead);
+ text('#abTitle',t.title);text('#abKicker',t.kicker);text('#abProduct',t.product);text('#abLead',t.lead);
  text('#abBadgePersona',t.badges[0]);text('#abBadgeTemporal',t.badges[1]);text('#abBadgeLocal',t.badges[2]);text('#abBadgeMulti',t.badges[3]);text('#abCoreTitle',t.core);
  text('#abPersonaDesc',t.persona);text('#abMemoryDesc',t.memory);text('#abTemporalDesc',t.temporal);text('#abInteractionDesc',t.interaction);text('#abInitiativeDesc',t.initiative);text('#abPrivacyDesc',t.privacy);
  text('#abDataTitle',t.dataTitle);text('#abPackageTitle',t.packageTitle);text('#abCompanyTitle',t.companyTitle);

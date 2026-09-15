@@ -5,6 +5,21 @@ $ErrorActionPreference = 'Stop'
 $ProjectRoot = Split-Path -Parent $PSScriptRoot
 $ManifestPath = Join-Path $ProjectRoot 'android\app\src\main\AndroidManifest.xml'
 
+
+# Holophone 3.1.4 : MainActivity canonique en plein écran immersif.
+# cap sync ne doit pas pouvoir réintroduire un ancien masquage limité à la barre de navigation.
+$MainPatch = Join-Path $ProjectRoot 'scripts\patches\android\MainActivity.java'
+$MainTarget = Join-Path $ProjectRoot 'android\app\src\main\java\com\mudva\lumen\MainActivity.java'
+if (Test-Path $MainPatch) {
+    $MainDir = Split-Path -Parent $MainTarget
+    if (-not (Test-Path $MainDir)) { New-Item -ItemType Directory -Force -Path $MainDir | Out-Null }
+    Copy-Item -LiteralPath $MainPatch -Destination $MainTarget -Force
+    Write-Host 'MainActivity immersif restaure.' -ForegroundColor Green
+}
+else {
+    Write-Host 'ATTENTION : patch MainActivity immersif absent.' -ForegroundColor Yellow
+}
+
 if (-not (Test-Path $ManifestPath)) {
     throw "AndroidManifest.xml introuvable : $ManifestPath"
 }

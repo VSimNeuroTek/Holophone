@@ -1,12 +1,11 @@
-/* Holophone 3.1.2 — couche de stabilisation technique + migration de présence.
-   Cette couche ne modifie pas la personnalité ni le comportement conversationnel.
+/* Holophone 3.2.3 — couche de stabilité + migrations de continuité vivante.
    Elle fournit : schéma/migrations, contrôles d'intégrité, santé, réparation sûre
-   et garde-fous de sauvegarde/restauration. */
+   et garde-fous de sauvegarde/restauration pour la présence, l'émotion et la vie autonome. */
 (() => {
   'use strict';
 
-  const STABLE_VERSION = '3.1.2';
-  const SCHEMA_VERSION = 3100;
+  const STABLE_VERSION = '3.2.3';
+  const SCHEMA_VERSION = 3200;
   const SCHEMA_KEY = 'v3.schemaVersion';
   const MIGRATION_LOG_KEY = 'v3.migrationLog';
   const LAST_HEALTH_KEY = 'v3.lastHealth';
@@ -118,9 +117,72 @@
     return result;
   }
 
+
+  async function migrationPersonaNeutral3140(){
+    const result={contacts:0,conversations:0,messages:0,proposals:0};
+    try{
+      const raw=await Store.get('v7.contacts'),list=safeJson(raw,[]);
+      if(Array.isArray(list)){
+        let changed=false;
+        list.forEach(c=>{if(!c||typeof c!=='object')return;result.contacts++;
+          const r=c.refuge;
+          if(r&&typeof r==='object'){
+            const oldKey=Object.keys(r).find(k=>/^last[A-Z].*ProposalTs$/.test(k)&&k!=='lastCharacterProposalTs');
+            if(!r.lastCharacterProposalTs&&oldKey&&Number(r[oldKey])){r.lastCharacterProposalTs=Number(r[oldKey]);changed=true}
+            if(Array.isArray(r.proposals))r.proposals.forEach(p=>{if(!p||typeof p!=='object')return;const by=p.by==='v'?'v':'character';if(p.by!==by){p.by=by;changed=true;result.proposals++}});
+          }
+          if(Array.isArray(c.jrn))c.jrn.forEach(e=>{if(!e||typeof e!=='object'||!e.owner)return;if(!['user','character','shared','pinned','foundation','relationship'].includes(e.owner)){e.owner='character';changed=true}});
+        });
+        if(changed)await Store.set('v7.contacts',JSON.stringify(list));
+      }
+    }catch(e){}
+    try{
+      const raw=await Store.get('v7.convs'),list=safeJson(raw,[]);
+      if(Array.isArray(list)){
+        let changed=false;
+        list.forEach(v=>{if(!v||typeof v!=='object')return;result.conversations++;
+          if(Array.isArray(v.msgs))v.msgs.forEach(m=>{if(!m||typeof m!=='object')return;const role=['v','sys','evt','refuge','character'].includes(String(m.w||''))?String(m.w):'character';if(m.w!==role){m.w=role;changed=true;result.messages++}if(m.reply&&m.reply.w){const rw=m.reply.w==='v'?'v':'character';if(m.reply.w!==rw){m.reply.w=rw;changed=true}}});
+        });
+        if(changed)await Store.set('v7.convs',JSON.stringify(list));
+      }
+    }catch(e){}
+    return result;
+  }
+
+
+  async function migrationContinuity3200(){
+    const result={contacts:0,presenceUpgraded:0,emotionCreated:0,lifeTrailCreated:0};
+    try{
+      const raw=await Store.get('v7.contacts'),list=safeJson(raw,[]);
+      if(Array.isArray(list)){
+        let changed=false;
+        list.forEach(c=>{
+          if(!c||typeof c!=='object')return;result.contacts++;
+          c.presence=c.presence&&typeof c.presence==='object'?c.presence:{};
+          const pd={version:2,updatedAt:0,lastObservedAt:0,offlineGapMs:0,lastGapEventTs:0,energy:55,connection:50,curiosity:55,autonomy:50,focus:'',thought:'',motive:'',motiveTs:0,recent:[],lastInitiativeAt:0,lastInitiativeMotive:'',lastDecision:null,lastDecisionTs:0,lastLifeCatchupAt:0};
+          let pChanged=false;Object.keys(pd).forEach(k=>{if(c.presence[k]===undefined){c.presence[k]=copy(pd[k]);pChanged=true}});
+          if(c.presence.version!==2){c.presence.version=2;pChanged=true}
+          if(!Array.isArray(c.presence.recent)){c.presence.recent=[];pChanged=true}
+          if(pChanged){changed=true;result.presenceUpgraded++}
+          if(!c.emotion||typeof c.emotion!=='object'){
+            const fam=(c.fond&&c.fond.fam)||c.temp||'calme',lvl=Number(c.fond&&c.fond.lvl)||2;
+            c.emotion={version:1,family:fam,nuance:'',level:lvl,startedAt:0,updatedAt:0,causeType:'background',cause:'le rythme de sa journée',undertone:fam,undertoneLevel:lvl,stability:45,lastTransitionAt:0};
+            changed=true;result.emotionCreated++;
+          }else if(c.emotion.version!==1){c.emotion.version=1;changed=true}
+          if(!Array.isArray(c.lifeTrail)){c.lifeTrail=[];changed=true;result.lifeTrailCreated++}
+          if(c.life&&typeof c.life==='object'&&c.life.version!==2){c.life.version=2;changed=true}
+        });
+        if(changed)await Store.set('v7.contacts',JSON.stringify(list));
+      }
+    }catch(e){}
+    return result;
+  }
+
   const MIGRATIONS=[
     {to:3000,name:'baseline-stable-3.0.0',run:migrationBaseline3000},
-    {to:3100,name:'judy-presence-3.1.0',run:migrationPresence3100}
+    {to:3100,name:'character-presence-3.1.0',run:migrationPresence3100},
+    {to:3140,name:'persona-neutral-3.1.4',run:migrationPersonaNeutral3140},
+    {to:3200,name:'living-continuity-3.2.0',run:migrationContinuity3200}
   ];
 
   async function migrateBeforeBoot(){
@@ -210,8 +272,8 @@
     const convIds=cvs.map(c=>String(c&&c.id||'')).filter(Boolean);
     const dupV=convIds.filter((x,i)=>convIds.indexOf(x)!==i);
     const orphan=cvs.filter(v=>v&&v.cid&&!cids.includes(String(v.cid)));
-    const malformedMsgs=cvs.reduce((n,v)=>n+(Array.isArray(v&&v.msgs)?v.msgs.filter(m=>!m||!['judy','v','sys','refuge'].includes(String(m.w||''))).length:1),0);
-    checks.push(makeCheck('contacts','Personnage',cts.length===1&&cids.length===1&&!dupC.length?'ok':cts.length?'warn':'fail',cts.length+' fiche(s) · '+dupC.length+' id dupliqué(s)',false));
+    const malformedMsgs=cvs.reduce((n,v)=>n+(Array.isArray(v&&v.msgs)?v.msgs.filter(m=>!m||!['character','v','sys','refuge'].includes(String(m.w||''))).length:1),0);
+    checks.push(makeCheck('contacts','Persona',cts.length===1&&cids.length===1&&!dupC.length?'ok':cts.length?'warn':'fail',cts.length+' fiche(s) · '+dupC.length+' id dupliqué(s)',false));
     checks.push(makeCheck('conversations','Conversations',!dupV.length&&!orphan.length&&!malformedMsgs?'ok':'warn',cvs.length+' conv. · '+dupV.length+' id dupliqué(s) · '+orphan.length+' orpheline(s) · '+malformedMsgs+' message(s) atypique(s)',false));
     return checks;
   }
@@ -350,13 +412,14 @@
     const tests=[];
     tests.push(recipeAssert('version','Version cohérente',String(APPV)===STABLE_VERSION,'APPV='+String(APPV)));
     tests.push(recipeAssert('audio-multi','Sélecteur MP3 multiple',!!(document.querySelector('#audioLibraryFile')&&document.querySelector('#audioLibraryFile').multiple),'input multiple'));
+    tests.push(recipeAssert('media-catalog','Catalogue vidéo / musique durable',typeof persistMediaCatalog==='function'&&typeof mediaCatalogHydrate==='function','contacts + IndexedDB + relecture'));
     tests.push(recipeAssert('pin-splash','Priorité PIN / splash',typeof maybeRunStartupSplash==='function'&&typeof lockNow==='function','fonctions présentes'));
     tests.push(recipeAssert('theme','Moteur de thèmes',typeof applyUiTheme==='function'&&Object.keys(UI_THEMES||{}).length>=5,Object.keys(UI_THEMES||{}).length+' thèmes'));
     tests.push(recipeAssert('interactions','Droits interactions',typeof actionUsableBy==='function'&&typeof normalizeActions==='function','garde-fous présents'));
     tests.push(recipeAssert('backup','Sauvegarde complète',typeof buildBackup==='function'&&typeof applyBackup==='function','export/import présents'));
     tests.push(recipeAssert('diagnostic','Diagnostic',typeof makeDiagnostic==='function'&&typeof idbInventory==='function','moteur présent'));
     tests.push(recipeAssert('braindance','Moteur Braindance',typeof bdRequest==='function'&&String(bdRequest).includes('generateContent'),'generateContent dédié'));
-    tests.push(recipeAssert('presence','Moteur de présence Judy',!!(window.HolophoneV2&&window.HolophoneV2.presence&&typeof window.HolophoneV2.presence.update==='function'),'présence persistante'));
+    tests.push(recipeAssert('presence','Moteur de présence persona',!!(window.HolophoneV2&&window.HolophoneV2.presence&&typeof window.HolophoneV2.presence.update==='function'),'présence persistante'));
     const health=await runHealthChecks({quiet:true});
     tests.push(recipeAssert('health','Santé sans panne critique',health.status!=='fail','santé='+health.status));
     const report={date:nowIso(),appVersion:String(APPV),status:tests.every(t=>t.status==='ok')?'ok':'fail',tests};
@@ -381,7 +444,7 @@
 
   async function prepareIncomingBackup(o){
     if(!o||typeof o!=='object')throw new Error('sauvegarde illisible');
-    if(!['holophone-backup','judy-phone'].includes(o.app))return o;
+    if(o.app!=='holophone-backup'&&!(Array.isArray(o.contacts)&&Array.isArray(o.convs)))return o;
     if(!Array.isArray(o.contacts))throw new Error('sauvegarde sans contacts');
     const clone=copy(o);
     if(clone.integrity&&clone.integrity.sha256){
@@ -391,6 +454,8 @@
     const schema=Math.max(0,Number(clone.schemaVersion)||0);
     if(schema>SCHEMA_VERSION)throw new Error('sauvegarde créée par un schéma Holophone plus récent ('+schema+')');
     if(!Array.isArray(clone.convs))clone.convs=[];
+    clone.convs.forEach(v=>{if(!v||!Array.isArray(v.msgs))return;v.msgs.forEach(m=>{if(!m||typeof m!=='object')return;m.w=['v','sys','evt','refuge','character'].includes(String(m.w||''))?String(m.w):'character';if(m.reply&&m.reply.w)m.reply.w=m.reply.w==='v'?'v':'character'})});
+    clone.contacts.forEach(c=>{const r=c&&c.refuge;if(r&&Array.isArray(r.proposals))r.proposals.forEach(p=>{if(p)p.by=p.by==='v'?'v':'character'})});
     const ids=new Set(clone.contacts.map(c=>String(c&&c.id||'')).filter(Boolean));
     const orphan=clone.convs.filter(v=>v&&v.cid&&!ids.has(String(v.cid))).length;
     if(orphan)throw new Error(orphan+' conversation(s) référencent un contact absent');

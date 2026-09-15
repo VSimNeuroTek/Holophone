@@ -1,10 +1,10 @@
-/* Holophone 3.2.2 — couche de stabilité + migrations de continuité vivante.
+/* Holophone 3.2.3 — couche de stabilité + migrations de continuité vivante.
    Elle fournit : schéma/migrations, contrôles d'intégrité, santé, réparation sûre
    et garde-fous de sauvegarde/restauration pour la présence, l'émotion et la vie autonome. */
 (() => {
   'use strict';
 
-  const STABLE_VERSION = '3.2.2';
+  const STABLE_VERSION = '3.2.3';
   const SCHEMA_VERSION = 3200;
   const SCHEMA_KEY = 'v3.schemaVersion';
   const MIGRATION_LOG_KEY = 'v3.migrationLog';

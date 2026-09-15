@@ -3,7 +3,7 @@ setlocal EnableExtensions
 cd /d "%~dp0"
 
 echo ============================================================
-echo  HOLOPHONE 3.1.2 - VSNT BRANDING DEFINITIF
+echo  HOLOPHONE 3.2.2 - VSNT SYSTEM PROFILE
 echo ============================================================
 echo.
 
@@ -52,6 +52,7 @@ if errorlevel 1 (
 
 echo.
 echo Projet pret.
-echo Release Android : regler manuellement versionName 3.1.2 / versionCode 44
+echo Release Android attendue : versionName 3.2.2 / versionCode 49
+echo Pour une release complete, utilise RELEASE_3.2.2.cmd
 echo.
 pause
