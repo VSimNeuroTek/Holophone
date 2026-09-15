@@ -4,7 +4,7 @@
 (() => {
   'use strict';
 
-  const STABLE_VERSION = '3.3.0';
+  const STABLE_VERSION = '3.3.1';
   const SCHEMA_VERSION = 3200;
   const SCHEMA_KEY = 'v3.schemaVersion';
   const MIGRATION_LOG_KEY = 'v3.migrationLog';

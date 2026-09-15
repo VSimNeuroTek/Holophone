@@ -3,7 +3,7 @@
    les nouveaux sous-systèmes vivent ici afin de commencer la modularisation. */
 (() => {
   const V2 = window.HolophoneV2 = {
-    version: '3.3.0',
+    version: '3.3.1',
     cfg: { biometric:false, handsFree:false, route:'speaker', autoBackup:true,
       interactionRetentionDays:55, interactionRotateTokens:60000, interactionRotateTurns:110,
       imageContextTtlHours:2 },
@@ -762,13 +762,12 @@
     if(st==='sleep')score-=100;else if(st==='work')score-=18;
     const sinceInit=now-Number(p.lastInitiativeAt||0);if(p.lastInitiativeAt&&sinceInit<2*3600000)score-=45;else if(p.lastInitiativeAt&&sinceInit<5*3600000)score-=20;else if(p.lastInitiativeAt&&sinceInit<10*3600000)score-=8;
     if(p.focus==='curiosité')score+=7;if(p.focus==='musique')score+=5;if(p.focus==='proximité')score+=5;if(p.focus==='se recentrer')score-=12;if(p.focus==='repos')score-=30;
-    if(c.life&&c.life.since&&now-c.life.since<45*60000&&!/^(dort|travaille)/.test(String(c.life.name||'')))score+=5;
+    /* 3.3.1 : l'activité influence la présence, mais ne pousse plus à écrire ni à devenir un sujet par défaut. */
     const slot=Math.floor(now/(30*60000)),jitter=(lifeHash(String(c.id||'')+'|initiative|'+slot)%1100)/100-5.5;score+=jitter;score=Math.round(score);
     let category='none',reason='aucune raison assez forte pour interrompre ce qu’elle fait';
     if(st==='sleep'){category='rest';reason='elle est dans sa période de repos'}
     else if(gap<45*60000){category='recent';reason='vous venez déjà d’échanger : elle laisse respirer la conversation'}
     else if(p.curiosity>=75){category='curiosity';reason='une vraie curiosité lui donne envie de reprendre un sujet'}
-    else if(c.life&&c.life.since&&now-c.life.since<75*60000&&!/^(dort|travaille)/.test(String(c.life.name||''))){category='life';reason='un petit détail de ce qu’elle vit maintenant peut naturellement lui donner envie d’écrire'}
     else if(p.focus==='musique'&&aff(c).some(e=>e.p>0&&e.k==='mus')){category='music';reason='son moment actuel lui fait penser à quelque chose qu’elle aime écouter'}
     else if(gap>=10*3600000&&p.connection>=62){category='contact';reason='le silence commence réellement à se faire sentir et elle a envie de reprendre contact'}
     else if(p.connection>=68){category='contact';reason='elle a une envie simple mais réelle de reprendre le fil'}
@@ -779,7 +778,7 @@
     return '\n\nPRÉSENCE INTÉRIEURE — continuité, pas une consigne à réciter\n'+
       'Énergie '+pLevel(p.energy)+' ; envie de contact '+pLevel(p.connection)+' ; curiosité '+pLevel(p.curiosity)+' ; besoin d’autonomie '+pLevel(p.autonomy)+'.\n'+
       'Émotion vécue : '+emotionLabel(e)+' · intensité '+(e.level||2)+'/5 · '+emotionDuration(e)+'. Sous-ton : '+moodName(e.undertone).toLowerCase()+'. Cause retenue : '+e.cause+'.\n'+
-      'Activité : '+String(life.name||'rien de particulier')+(life.since?' depuis '+hhmm(life.since):'')+'. Focus : '+p.focus+'.'+(recentLife?' Plus tôt : '+recentLife+'.':'')+'\n'+
+      'Activité interne : '+String(life.name||'rien de particulier')+(life.since?' depuis '+hhmm(life.since):'')+'. Focus : '+p.focus+'.'+(recentLife?' Plus tôt : '+recentLife+'.':'')+' Cette activité est un contexte silencieux : ne la transforme pas spontanément en récit de ce que tu fais.\n'+
       'Ce qui flotte en arrière-plan : '+p.thought+'\n'+
       'Élan possible : '+p.motive+'.\n'+
       'Ces états servent à éviter une personnalité plate. Ils ne t’obligent ni à parler de toi, ni à écrire, ni à être disponible. Ne les annonce jamais comme des jauges et ne récite pas la cause de ton humeur.';
@@ -1155,9 +1154,10 @@
   }
   function outputRules(c){
     return'\n\nSTYLE DE CE TOUR\nRéponds en français comme '+(characterName(c))+' qui écrit sur téléphone : naturel, vivant, pas administratif. 1 à 3 bulles en général. '+
+      'RÈGLE FORTE : m contient uniquement les messages que tu tapes et envoies. Pas de narration, pas de didascalie, pas de description de tes gestes, postures, mouvements ou sensations comme si une caméra te suivait. Évite notamment les formulations du type « je ferme les yeux », « je me blottis », « je regarde par la fenêtre », sauf si tu les dis réellement comme une information utile dans la conversation. Si tu veux faire un geste envers '+uName(c)+', utilise uniquement le champ act lorsqu’une interaction autorisée convient ; ne décris pas ce geste dans m. '+
       'Ne récite pas la mémoire et n’essaie pas de caser un souvenir à chaque réponse. Si tu ne sais pas, tu peux le dire. '+
       'Ne confonds jamais la vie de '+uName(c)+' avec celle de '+(characterName(c))+'. Les citations gardent toujours leur auteur. '+
-      'Le format JSON est imposé par l’API : m contient les bulles ; mood/lvl sont facultatifs ; img/mus/pl/yt seulement si cela vient naturellement ; act doit rester vide dans la majorité des tours. Une action spontanée est rare et ne doit pas apparaître dans plusieurs réponses successives. Si tu réponds à une ACTION PHYSIQUE de Vincent, une action en retour est facultative ; si tu en choisis une, ne renvoie jamais la même action en miroir et choisis uniquement une alternative compatible indiquée dans la demande. room peut contenir le nom exact d’une pièce du Refuge si tu décides naturellement de t’y déplacer. refugeDecisionId, refugeDecision, refugeProposalName et refugeProposalDescription sont toujours présents dans le JSON : laisse-les à "" quand ils ne servent pas. Si le message contient une PROPOSITION POUR NOTRE REFUGE avec un ID, tu DOIS donner ton vrai avis dans m, recopier cet ID dans refugeDecisionId et mettre refugeDecision à "accept" ou "refuse". Si le contexte dit PROPOSITION ATTENDUE DE TOI ou si tu choisis rarement de proposer une nouvelle pièce, remplis refugeProposalName et refugeProposalDescription ; cela crée seulement une proposition en attente de Vincent, jamais une pièce automatiquement construite. La proposition de Vincent n’existe dans la maison qu’après ton acceptation, et ta proposition n’existe qu’après l’acceptation de Vincent ; coop=true uniquement avec mus quand tu choisis vraiment de garder ce morceau dans votre playlist commune ; att=true seulement si tu attends réellement une réponse.';
+      'Le format JSON est imposé par l’API : m contient les bulles ; mood/lvl sont facultatifs ; img/mus/pl/yt seulement si cela vient naturellement ; act doit rester vide dans la majorité des tours. Une action spontanée est rare et ne doit pas apparaître dans plusieurs réponses successives. Si tu réponds à une ACTION PHYSIQUE de '+uName(c)+', une action en retour est facultative ; si tu en choisis une, ne renvoie jamais la même action en miroir et choisis uniquement une alternative compatible indiquée dans la demande. room peut contenir le nom exact d’une pièce du Refuge si tu décides naturellement de t’y déplacer. refugeDecisionId, refugeDecision, refugeProposalName et refugeProposalDescription sont toujours présents dans le JSON : laisse-les à "" quand ils ne servent pas. Si le message contient une PROPOSITION POUR NOTRE REFUGE avec un ID, tu DOIS donner ton vrai avis dans m, recopier cet ID dans refugeDecisionId et mettre refugeDecision à "accept" ou "refuse". Si le contexte dit PROPOSITION ATTENDUE DE TOI ou si tu choisis rarement de proposer une nouvelle pièce, remplis refugeProposalName et refugeProposalDescription ; cela crée seulement une proposition en attente de Vincent, jamais une pièce automatiquement construite. La proposition de Vincent n’existe dans la maison qu’après ton acceptation, et ta proposition n’existe qu’après l’acceptation de Vincent ; coop=true uniquement avec mus quand tu choisis vraiment de garder ce morceau dans votre playlist commune ; att=true seulement si tu attends réellement une réponse.';
   }
   sysPrompt=function(c,conv){
     conv=conv||cur;c=c||(conv?CONTACTS.find(x=>x.id===conv.cid):null);if(!c)throw new Error('personnage introuvable');
