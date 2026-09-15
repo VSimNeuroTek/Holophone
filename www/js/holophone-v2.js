@@ -3,7 +3,7 @@
    les nouveaux sous-systèmes vivent ici afin de commencer la modularisation. */
 (() => {
   const V2 = window.HolophoneV2 = {
-    version: '3.1.4',
+    version: '3.2.1',
     cfg: { biometric:false, handsFree:false, route:'speaker', autoBackup:true,
       interactionRetentionDays:55, interactionRotateTokens:60000, interactionRotateTurns:110,
       imageContextTtlHours:2 },
@@ -569,13 +569,21 @@
     if(m.w==='v'){const p=presenceUpdate(c,false,cur);if(p&&p.connection>30)p.connection=pClamp(p.connection-4)}
   }}catch(e){}return r};
   const baseMoodStep=moodStep;
-  moodStep=function(conv,c,raw,lvl){const before=conv?{m:conv.mood,l:conv.lvl}:null,r=baseMoodStep(conv,c,raw,lvl);try{if(conv&&c&&before&&conv.mood!==before.m){if((conv.lvl||0)>=4)timelineAdd(c,'mood','Bascule émotionnelle',moodName(conv.mood)+' · '+lvlName(conv.lvl||1),nowTs());pEvent(c,'mood','Humeur',moodName(conv.mood)+' · '+lvlName(conv.lvl||1),nowTs());presenceUpdate(c,true,conv)}}catch(e){}return r};
+  moodStep=function(conv,c,raw,lvl){
+    const before=conv?{m:conv.mood,n:conv.nu,l:conv.lvl}:null,r=baseMoodStep(conv,c,raw,lvl);
+    try{if(conv&&c&&before){
+      const changed=conv.mood!==before.m||conv.nu!==before.n||Math.abs((conv.lvl||0)-(before.l||0))>=2;
+      if(conv.mood!==before.m){if((conv.lvl||0)>=4)timelineAdd(c,'mood','Bascule émotionnelle',moodName(conv.mood)+' · '+lvlName(conv.lvl||1),nowTs());pEvent(c,'mood','Humeur',moodName(conv.mood)+' · '+lvlName(conv.lvl||1),nowTs())}
+      const cause=emotionCauseFromConversation(c,conv);emotionSync(c,conv,cause.type,cause.text,changed);presenceUpdate(c,true,conv);
+    }}catch(e){}return r};
 
-  /* ---------- présence intérieure 3.1 ---------- */
-  const PRESENCE_VERSION=1;
+  /* ---------- présence intérieure 3.2 : émotion, temps, vie autonome ---------- */
+  const PRESENCE_VERSION=2,EMOTION_VERSION=1,LIFE_VERSION=2;
   function presence(c){
     if(!c)return null;
-    const d={version:PRESENCE_VERSION,updatedAt:0,energy:55,connection:50,curiosity:55,autonomy:50,focus:'',thought:'',motive:'',motiveTs:0,recent:[],lastInitiativeAt:0,lastInitiativeMotive:''};
+    const d={version:PRESENCE_VERSION,updatedAt:0,lastObservedAt:0,offlineGapMs:0,lastGapEventTs:0,
+      energy:55,connection:50,curiosity:55,autonomy:50,focus:'',thought:'',motive:'',motiveTs:0,
+      recent:[],lastInitiativeAt:0,lastInitiativeMotive:'',lastDecision:null,lastDecisionTs:0,lastLifeCatchupAt:0};
     c.presence=c.presence&&typeof c.presence==='object'?c.presence:{};
     Object.keys(d).forEach(k=>{if(c.presence[k]===undefined)c.presence[k]=copy(d[k])});
     c.presence.version=PRESENCE_VERSION;c.presence.recent=Array.isArray(c.presence.recent)?c.presence.recent:[];
@@ -587,10 +595,47 @@
   function pEvent(c,type,title,detail,ts){
     const p=presence(c);if(!p)return null;ts=Number(ts)||nowTs();title=String(title||type||'moment').slice(0,100);detail=String(detail||'').slice(0,260);
     const prev=p.recent.slice(-4).find(e=>e.type===type&&Math.abs((e.ts||0)-ts)<10*60000&&similarity((e.title||'')+' '+(e.detail||''),title+' '+detail)>.75);if(prev)return prev;
-    const e={id:'pr'+uid(),type,title,detail,ts};p.recent.push(e);if(p.recent.length>36)p.recent.splice(0,p.recent.length-36);return e;
+    const e={id:'pr'+uid(),type,title,detail,ts};p.recent.push(e);if(p.recent.length>48)p.recent.splice(0,p.recent.length-48);return e;
   }
   function contactConvs(c){return CONVS.filter(v=>v&&v.cid===c.id&&!v.mindArchived)}
+  function latestConversation(c){return contactConvs(c).slice().sort((a,b)=>lastTs(b)-lastTs(a))[0]||null}
   function lastContactMsg(c,who){let best=null;contactConvs(c).forEach(v=>(v.msgs||[]).forEach(m=>{if(m&&(!who||m.w===who)&&m.ts&&(!best||m.ts>best.ts))best=m}));return best}
+
+  /* L'émotion vécue complète l'humeur existante sans la remplacer. Elle retient
+     depuis quand le même registre dure, son sous-ton et une cause locale lisible. */
+  function emotion(c,conv){
+    if(!c)return null;conv=conv||latestConversation(c);const f=fondOf(c),fam=(conv&&conv.mood)||f.fam||'calme';
+    const d={version:EMOTION_VERSION,family:fam,nuance:(conv&&conv.nu)||'',level:Number(conv&&conv.lvl)||Number(f.lvl)||2,
+      startedAt:Number(conv&&conv.moodTs)||nowTs(),updatedAt:0,causeType:'background',cause:'le rythme de sa journée',
+      undertone:f.fam||'calme',undertoneLevel:Number(f.lvl)||2,stability:45,lastTransitionAt:0};
+    c.emotion=c.emotion&&typeof c.emotion==='object'?c.emotion:{};
+    Object.keys(d).forEach(k=>{if(c.emotion[k]===undefined)c.emotion[k]=copy(d[k])});
+    c.emotion.version=EMOTION_VERSION;return c.emotion;
+  }
+  function emotionCauseFromConversation(c,conv){
+    const now=Date.now(),msgs=conv&&Array.isArray(conv.msgs)?conv.msgs:[],rev=[...msgs].reverse();
+    const lastUser=rev.find(m=>m&&m.ts&&m.w==='v');if(lastUser&&now-lastUser.ts<20*60000)return{type:'exchange',text:'le dernier échange avec '+uName(c)};
+    const last=rev.find(m=>m&&m.ts&&(m.w==='character'||m.w==='refuge'));
+    if(last&&now-last.ts<20*60000){
+      if(last.w==='refuge')return{type:'refuge',text:'ce qui vient de se passer dans le Refuge'};
+      return{type:'self',text:'ce qu’elle vient elle-même d’exprimer'};
+    }
+    const life=c&&c.life;if(life&&life.since&&now-life.since<75*60000)return{type:'activity',text:'ce qu’elle est en train de vivre'};
+    return{type:'background',text:'son humeur de fond et le rythme de sa journée'};
+  }
+  function emotionSync(c,conv,causeType,causeText,meaningful){
+    if(!c)return null;conv=conv||latestConversation(c);const e=emotion(c,conv),f=fondOf(c),now=Date.now();
+    const fam=(conv&&conv.mood)||f.fam||'calme',nu=(conv&&conv.nu)||'',lvl=Math.max(1,Math.min(5,Number(conv&&conv.lvl)||Number(f.lvl)||2));
+    const changed=e.family!==fam||e.nuance!==nu;
+    if(changed){e.family=fam;e.nuance=nu;e.startedAt=now;e.lastTransitionAt=now;meaningful=true}
+    e.level=lvl;e.undertone=f.fam||fam;e.undertoneLevel=Number(f.lvl)||2;
+    if(meaningful||!e.cause){const src=(causeType&&causeText)?{type:causeType,text:causeText}:emotionCauseFromConversation(c,conv);e.causeType=src.type;e.cause=src.text}
+    const age=Math.max(0,now-(Number(e.startedAt)||now)),ageBoost=Math.min(45,age/(8*3600000)*45),repeatBoost=Math.min(24,Number(conv&&conv.moodAge||0)*5);
+    e.stability=pClamp(28+ageBoost+repeatBoost);e.updatedAt=now;return e;
+  }
+  function emotionDuration(e){const ms=Math.max(0,Date.now()-Number(e&&e.startedAt||Date.now()));return ms<3*60000?'depuis quelques minutes':'depuis '+durLabel(ms)}
+  function emotionLabel(e){if(!e)return'—';return e.nuance?nuLabel(e.nuance):moodName(e.family).toLowerCase()}
+
   function presenceFocus(c,p,life){
     const sched=schedState(c),f=fondOf(c).fam;
     if(sched==='sleep')return'repos';if(sched==='work')return'travail';
@@ -626,36 +671,8 @@
     if(p.focus==='se recentrer')return'préserver un peu son espace tout en restant présente';
     return'laisser venir une raison naturelle plutôt que meubler le silence';
   }
-  function presenceUpdate(c,force,conv){
-    const p=presence(c);if(!p)return null;const now=Date.now();
-    if(!force&&p.updatedAt&&now-p.updatedAt<4*60000)return p;
-    const life=updateActivity(c,false),sched=schedState(c),F=famOf(fondOf(c).fam),lu=lastContactMsg(c,'v');
-    const gap=lu?Math.max(0,now-lu.ts):24*3600000;
-    let energy=sched==='sleep'?12:sched==='work'?58:(new Date(now).getHours()<8?38:new Date(now).getHours()>23?34:62);
-    energy+=F[4]*18;
-    let connection=46+Math.min(28,gap/(12*3600000)*28);if(conv&&conv.wait&&!conv.wait.closed)connection+=8;if(fondOf(c).fam==='tendre'||fondOf(c).fam==='desir')connection+=6;
-    let curiosity=52+Math.sin((now/3600000)+(String(c.id||'').length))*13;if(fondOf(c).fam==='curieux')curiosity+=24;if(/lecture|musique|série|film/.test(String(life&&life.name||'')))curiosity+=8;
-    let autonomy=sched==='work'?76:sched==='sleep'?88:52;if(gap<30*60000)autonomy-=12;if(fondOf(c).fam==='retrait')autonomy+=22;if(fondOf(c).fam==='complice'||fondOf(c).fam==='tendre')autonomy-=8;
-    const w=p.updatedAt?.22:1;p.energy=pSmooth(p.energy,energy,w);p.connection=pSmooth(p.connection,connection,w);p.curiosity=pSmooth(p.curiosity,curiosity,w);p.autonomy=pSmooth(p.autonomy,autonomy,w);
-    p.focus=presenceFocus(c,p,life);p.thought=presenceThought(c,p,life,conv);p.motive=presenceMotive(c,p,conv,life);p.motiveTs=now;p.updatedAt=now;
-    return p;
-  }
-  function presenceBlock(c,conv){
-    const p=presenceUpdate(c,false,conv),life=c&&c.life||{};if(!p)return'';
-    return '\n\nPRÉSENCE INTÉRIEURE — continuité, pas une consigne à réciter\n'+
-      'Énergie '+pLevel(p.energy)+' ; envie de contact '+pLevel(p.connection)+' ; curiosité '+pLevel(p.curiosity)+' ; besoin d’autonomie '+pLevel(p.autonomy)+'.\n'+
-      'Activité : '+String(life.name||'rien de particulier')+(life.since?' depuis '+hhmm(life.since):'')+'. Focus : '+p.focus+'.\n'+
-      'Ce qui flotte en arrière-plan : '+p.thought+'\n'+
-      'Élan possible : '+p.motive+'.\n'+
-      'Ces états servent à éviter une personnalité plate. Ils ne t’obligent ni à parler de toi, ni à écrire, ni à être disponible. Ne les annonce jamais comme des jauges.';
-  }
-  function presenceInitiative(c,conv){const p=presenceUpdate(c,true,conv);return p?'Ton élan intérieur du moment : '+p.motive+'. Utilise-le seulement s’il donne une raison naturelle d’écrire ; sinon reste simple.':''}
-  function presenceScheduled(c,motive,at){const p=presence(c);if(!p)return;p.lastInitiativeAt=Number(at)||Date.now();p.lastInitiativeMotive=String(motive||p.motive||'').slice(0,240);pEvent(c,'initiative','Initiative préparée',p.lastInitiativeMotive,p.lastInitiativeAt)}
-  function presenceDelivered(c,motive,at){const p=presence(c);if(!p)return;p.connection=pClamp(p.connection-18);pEvent(c,'initiative','Initiative envoyée',String(motive||p.lastInitiativeMotive||p.motive||''),Number(at)||Date.now())}
-  window.holoPresenceInitiative=presenceInitiative;window.holoPresenceScheduled=presenceScheduled;window.holoPresenceDelivered=presenceDelivered;
-  V2.presence={version:PRESENCE_VERSION,get:presence,update:presenceUpdate,event:pEvent,initiative:presenceInitiative};
 
-  /* ---------- activité autonome ---------- */
+  /* ---------- vie autonome : le temps continue quand l'app est fermée ---------- */
   const ACT={
     matin:['petit-déjeuner','douche','trajet','café','rangement','musique au casque'],
     journée:['pause','courses','déjeuner','trajet','lecture','musique','entraînement'],
@@ -663,16 +680,133 @@
     nuit:['musique tardive','lecture','insomnie','douche','traîne sur son téléphone']
   };
   function activityPool(ts){const h=new Date(ts).getHours();return h<6?ACT.nuit:h<11?ACT.matin:h<18?ACT.journée:ACT.soirée}
-  function updateActivity(c,force){
-    if(!c)return null;const now=nowTs(),sched=schedState(c);c.life=c.life||{};
-    let name='';if(sched==='sleep')name='dort';else if(sched==='work')name=c.job?('travaille — '+c.job):'travaille';
-    if(name){if(c.life.name!==name){c.life={name,since:now,until:now+45*60000,next:sched==='sleep'?'réveil':'pause'};timelineAdd(c,'activity','Activité',name,now);pEvent(c,'activity','Activité',name,now)}return c.life}
-    if(!force&&c.life.name&&c.life.until>now&&!/^(dort|travaille)/.test(c.life.name))return c.life;
-    const pool=activityPool(now),prev=c.life.name||'',choices=pool.filter(x=>x!==prev),pick=choices[Math.floor(Math.random()*Math.max(1,choices.length))]||'chez elle';
-    const dur=(45+Math.floor(Math.random()*106))*60000,next=pool[Math.floor(Math.random()*pool.length)]||'se repose';
-    c.life={name:pick,since:now,until:now+dur,next};timelineAdd(c,'activity','Activité',pick,now,{next});pEvent(c,'activity','Activité',pick,now);return c.life;
+  function lifeTrail(c){c.lifeTrail=Array.isArray(c.lifeTrail)?c.lifeTrail:[];return c.lifeTrail}
+  function lifeHash(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0}
+  function lifeRnd(c,ts,salt){return(lifeHash(String(c&&c.id||'persona')+'|'+Math.floor(Number(ts||0)/900000)+'|'+String(salt||''))%10000)/10000}
+  function lifePickFree(c,ts,prev,salt){const pool=activityPool(ts),choices=pool.filter(x=>x!==prev),list=choices.length?choices:pool;return list[Math.floor(lifeRnd(c,ts,salt||'pick')*Math.max(1,list.length))]||'chez elle'}
+  function lifeScheduledName(c,ts){const st=schedState(c,ts);if(st==='sleep')return'dort';if(st==='work')return c.job?('travaille — '+c.job):'travaille';return''}
+  function lifeBoundary(c,start,state,maxEnd){for(let t=start+15*60000;t<=maxEnd;t+=15*60000){if(schedState(c,t)!==state)return t}return maxEnd}
+  function lifePeek(c,ts,prev){return lifeScheduledName(c,ts)||lifePickFree(c,ts,prev,'next')}
+  function lifeMakeBlock(c,start,prev){
+    start=Number(start)||nowTs();const st=schedState(c,start),scheduled=lifeScheduledName(c,start);let name=scheduled,end;
+    if(st){end=lifeBoundary(c,start,st,start+12*3600000)}
+    else{
+      name=lifePickFree(c,start,prev,'current');const mins=45+Math.floor(lifeRnd(c,start,'duration')*106);end=start+mins*60000;
+      for(let t=start+15*60000;t<end;t+=15*60000){if(schedState(c,t)){end=t;break}}
+    }
+    if(end<=start)end=start+30*60000;
+    return{version:LIFE_VERSION,name,since:start,until:end,next:lifePeek(c,end,name),kind:st||'free'};
   }
-  function activityBlock(c){const before=c&&c.life?c.life.name:'';const a=updateActivity(c,false);if(!a)return'';if(before!==a.name){try{saveContacts()}catch(e){}}return '\n\nACTIVITÉ ACTUELLE\nTu es actuellement : '+a.name+'. Tu as commencé vers '+hhmm(a.since)+'. '+(a.next?'Ensuite, tu envisages plutôt : '+a.next+'. ':'')+'Ce n’est pas une obligation de le raconter : c’est simplement ce que tu es en train de vivre.'}
+  function lifeRemember(c,b){
+    if(!b||!b.name||!b.since)return;const a=lifeTrail(c),last=a[a.length-1];
+    if(last&&last.name===b.name&&Math.abs(Number(last.since)-Number(b.since))<60000)return;
+    a.push({name:b.name,since:Number(b.since)||0,until:Number(b.until)||0,kind:b.kind||'free'});if(a.length>28)a.splice(0,a.length-28);
+  }
+  function lifeRecent(c,hours){const cut=Date.now()-(Number(hours)||12)*3600000;return lifeTrail(c).filter(x=>Number(x.until||x.since)>=cut).slice(-5)}
+  function updateActivity(c,force){
+    if(!c)return null;const now=nowTs(),p=presence(c);c.life=c.life&&typeof c.life==='object'?c.life:{};
+    let curLife=c.life,created=false,completed=[];
+    if(!curLife.name||!Number(curLife.since)||!Number(curLife.until)){
+      curLife=lifeMakeBlock(c,now,curLife.name||'');created=true;
+    }else{
+      curLife.version=LIFE_VERSION;
+      const currentSched=schedState(c,now),should=lifeScheduledName(c,now);
+      if((should&&curLife.name!==should&&currentSched!==String(curLife.kind||''))||(!currentSched&&/^(dort|travaille)/.test(String(curLife.name||''))))curLife.until=Math.min(Number(curLife.until)||now,now);
+      let guard=0;
+      while(Number(curLife.until)<=now&&guard<32){
+        completed.push(copy(curLife));lifeRemember(c,curLife);const start=Number(curLife.until)||now;curLife=lifeMakeBlock(c,start,curLife.name);guard++;
+      }
+      if(Number(curLife.until)<=now){const skippedFrom=Number(curLife.until)||now;curLife=lifeMakeBlock(c,now,curLife.name);completed.push({name:'plusieurs activités ordinaires',since:skippedFrom,until:now,kind:'summary'})}
+    }
+    c.life=curLife;c.life.version=LIFE_VERSION;
+    if(created){timelineAdd(c,'activity','Activité',curLife.name,curLife.since,{next:curLife.next});pEvent(c,'activity','Activité',curLife.name,curLife.since)}
+    if(completed.length){
+      const recent=completed.slice(-3).map(x=>x.name).join(' → '),detail=(completed.length>3?(completed.length+' étapes · '):'')+recent;
+      timelineAdd(c,'activity','Vie entre deux ouvertures',detail,now,{count:completed.length});pEvent(c,'activity','Temps écoulé',detail,now);if(p)p.lastLifeCatchupAt=now;
+    }
+    curLife.next=lifePeek(c,curLife.until,curLife.name);return curLife;
+  }
+  function activityContinuityText(c){
+    const a=lifeRecent(c,10);if(!a.length)return'';return a.map(x=>x.name+' ('+hhmm(x.since)+'–'+hhmm(x.until||x.since)+')').join(' ; ')
+  }
+  function activityBlock(c){const before=c&&c.life?c.life.name:'';const a=updateActivity(c,false);if(!a)return'';if(before!==a.name){try{saveContacts()}catch(e){}}
+    const recent=activityContinuityText(c);return '\n\nACTIVITÉ ACTUELLE\nTu es actuellement : '+a.name+'. Tu as commencé vers '+hhmm(a.since)+'. '+(a.next?'Ensuite, tu envisages plutôt : '+a.next+'. ':'')+
+      (recent?'Plus tôt dans les dernières heures : '+recent+'. ':'')+'Ce sont des éléments de continuité quotidienne, pas des sujets à réciter ni des événements extraordinaires.'}
+
+  function presenceUpdate(c,force,conv){
+    const p=presence(c);if(!p)return null;const now=Date.now(),previousObserved=Number(p.lastObservedAt)||Number(p.updatedAt)||now;
+    const gapObserved=Math.max(0,now-previousObserved);p.offlineGapMs=gapObserved;
+    if(gapObserved>=45*60000&&(!p.lastGapEventTs||now-p.lastGapEventTs>30*60000)){
+      const crossed=!sameDay(previousObserved,now),detail=(crossed?'Une coupure avec changement de jour · ':'Coupure · ')+durLabel(gapObserved);
+      pEvent(c,'time','Temps écoulé',detail,now);p.lastGapEventTs=now;
+    }
+    p.lastObservedAt=now;
+    if(!force&&p.updatedAt&&now-p.updatedAt<4*60000){emotionSync(c,conv);return p}
+    const life=updateActivity(c,false),sched=schedState(c),F=famOf(fondOf(c).fam),lu=lastContactMsg(c,'v');
+    const gap=lu?Math.max(0,now-lu.ts):24*3600000;
+    let energy=sched==='sleep'?12:sched==='work'?58:(new Date(now).getHours()<8?38:new Date(now).getHours()>23?34:62);energy+=F[4]*18;
+    let connection=46+Math.min(28,gap/(12*3600000)*28);if(conv&&conv.wait&&!conv.wait.closed)connection+=8;if(fondOf(c).fam==='tendre'||fondOf(c).fam==='desir')connection+=6;
+    let curiosity=52+Math.sin((now/3600000)+(String(c.id||'').length))*13;if(fondOf(c).fam==='curieux')curiosity+=24;if(/lecture|musique|série|film/.test(String(life&&life.name||'')))curiosity+=8;
+    let autonomy=sched==='work'?76:sched==='sleep'?88:52;if(gap<30*60000)autonomy-=12;if(fondOf(c).fam==='retrait')autonomy+=22;if(fondOf(c).fam==='complice'||fondOf(c).fam==='tendre')autonomy-=8;
+    const w=p.updatedAt?.22:1;p.energy=pSmooth(p.energy,energy,w);p.connection=pSmooth(p.connection,connection,w);p.curiosity=pSmooth(p.curiosity,curiosity,w);p.autonomy=pSmooth(p.autonomy,autonomy,w);
+    p.focus=presenceFocus(c,p,life);p.thought=presenceThought(c,p,life,conv);p.motive=presenceMotive(c,p,conv,life);p.motiveTs=now;p.updatedAt=now;emotionSync(c,conv);return p;
+  }
+
+  /* Décision locale d'initiative. Les règles utilisateur restent l'autorité ;
+     cette couche ajoute seulement la question : "a-t-elle une raison maintenant ?" */
+  function initiativeDecision(c,conv){
+    conv=conv||latestConversation(c);const p=presenceUpdate(c,false,conv);if(!p)return{allow:false,score:0,reason:'aucun état disponible',category:'none',ts:Date.now()};
+    const now=Date.now(),lastAny=lastContactMsg(c),gap=lastAny?Math.max(0,now-lastAny.ts):24*3600000,st=schedState(c);let score=45;
+    score+=(p.connection-50)*.34+(p.curiosity-50)*.16+(p.energy-50)*.10-(p.autonomy-50)*.22;
+    if(gap<45*60000)score-=35;else if(gap<2*3600000)score-=20;else if(gap<5*3600000)score-=8;else if(gap>=10*3600000&&gap<18*3600000)score+=8;else if(gap>=18*3600000)score+=14;
+    if(st==='sleep')score-=100;else if(st==='work')score-=18;
+    const sinceInit=now-Number(p.lastInitiativeAt||0);if(p.lastInitiativeAt&&sinceInit<2*3600000)score-=45;else if(p.lastInitiativeAt&&sinceInit<5*3600000)score-=20;else if(p.lastInitiativeAt&&sinceInit<10*3600000)score-=8;
+    if(p.focus==='curiosité')score+=7;if(p.focus==='musique')score+=5;if(p.focus==='proximité')score+=5;if(p.focus==='se recentrer')score-=12;if(p.focus==='repos')score-=30;
+    if(c.life&&c.life.since&&now-c.life.since<45*60000&&!/^(dort|travaille)/.test(String(c.life.name||'')))score+=5;
+    const slot=Math.floor(now/(30*60000)),jitter=(lifeHash(String(c.id||'')+'|initiative|'+slot)%1100)/100-5.5;score+=jitter;score=Math.round(score);
+    let category='none',reason='aucune raison assez forte pour interrompre ce qu’elle fait';
+    if(st==='sleep'){category='rest';reason='elle est dans sa période de repos'}
+    else if(gap<45*60000){category='recent';reason='vous venez déjà d’échanger : elle laisse respirer la conversation'}
+    else if(p.curiosity>=75){category='curiosity';reason='une vraie curiosité lui donne envie de reprendre un sujet'}
+    else if(c.life&&c.life.since&&now-c.life.since<75*60000&&!/^(dort|travaille)/.test(String(c.life.name||''))){category='life';reason='un petit détail de ce qu’elle vit maintenant peut naturellement lui donner envie d’écrire'}
+    else if(p.focus==='musique'&&aff(c).some(e=>e.p>0&&e.k==='mus')){category='music';reason='son moment actuel lui fait penser à quelque chose qu’elle aime écouter'}
+    else if(gap>=10*3600000&&p.connection>=62){category='contact';reason='le silence commence réellement à se faire sentir et elle a envie de reprendre contact'}
+    else if(p.connection>=68){category='contact';reason='elle a une envie simple mais réelle de reprendre le fil'}
+    const allow=score>=55&&st!=='sleep';const d={allow,score,reason,category,ts:now,gapMs:gap};p.lastDecision=d;p.lastDecisionTs=now;return d;
+  }
+  function presenceBlock(c,conv){
+    const p=presenceUpdate(c,false,conv),life=c&&c.life||{},e=emotionSync(c,conv);if(!p)return'';const recentLife=activityContinuityText(c);
+    return '\n\nPRÉSENCE INTÉRIEURE — continuité, pas une consigne à réciter\n'+
+      'Énergie '+pLevel(p.energy)+' ; envie de contact '+pLevel(p.connection)+' ; curiosité '+pLevel(p.curiosity)+' ; besoin d’autonomie '+pLevel(p.autonomy)+'.\n'+
+      'Émotion vécue : '+emotionLabel(e)+' · intensité '+(e.level||2)+'/5 · '+emotionDuration(e)+'. Sous-ton : '+moodName(e.undertone).toLowerCase()+'. Cause retenue : '+e.cause+'.\n'+
+      'Activité : '+String(life.name||'rien de particulier')+(life.since?' depuis '+hhmm(life.since):'')+'. Focus : '+p.focus+'.'+(recentLife?' Plus tôt : '+recentLife+'.':'')+'\n'+
+      'Ce qui flotte en arrière-plan : '+p.thought+'\n'+
+      'Élan possible : '+p.motive+'.\n'+
+      'Ces états servent à éviter une personnalité plate. Ils ne t’obligent ni à parler de toi, ni à écrire, ni à être disponible. Ne les annonce jamais comme des jauges et ne récite pas la cause de ton humeur.';
+  }
+  function presenceInitiative(c,conv){const d=initiativeDecision(c,conv);return d.allow?'Raison interne retenue : '+d.reason+'. Pars de cette raison seulement si elle donne un message naturel ; ne la nomme pas comme une règle.':''}
+  function presenceScheduled(c,motive,at){const p=presence(c);if(!p)return;p.lastInitiativeAt=Number(at)||Date.now();p.lastInitiativeMotive=String(motive||p.motive||'').slice(0,240);pEvent(c,'initiative','Initiative préparée',p.lastInitiativeMotive,p.lastInitiativeAt)}
+  function presenceDelivered(c,motive,at){const p=presence(c);if(!p)return;p.lastInitiativeAt=Number(at)||Date.now();p.connection=pClamp(p.connection-18);pEvent(c,'initiative','Initiative envoyée',String(motive||p.lastInitiativeMotive||p.motive||''),p.lastInitiativeAt)}
+  window.holoPresenceInitiative=presenceInitiative;window.holoPresenceDecision=initiativeDecision;window.holoPresenceScheduled=presenceScheduled;window.holoPresenceDelivered=presenceDelivered;
+  V2.presence={version:PRESENCE_VERSION,get:presence,update:presenceUpdate,event:pEvent,initiative:presenceInitiative,decision:initiativeDecision,emotion:emotionSync,life:updateActivity};
+
+  /* Les réglages d'initiative existants restent prioritaires ; la présence ajoute
+     un filtre de pertinence avant de lancer une génération spontanée. */
+  const baseMayInitPresence=mayInit;
+  mayInit=function(c){if(!baseMayInitPresence(c))return false;return initiativeDecision(c,latestConversation(c)).allow};
+
+  const baseResumePresence=resumeHolophoneLifecycle;
+  resumeHolophoneLifecycle=async function(){
+    try{const c=C();if(c){updateActivity(c,false);presenceUpdate(c,true,cur&&cur.cid===c.id?cur:null);await saveContacts()}}catch(e){}
+    return await baseResumePresence();
+  };
+
+  /* Capture aussi les changements d'humeur provoqués par le temps ou les relances. */
+  const baseDecayMoodPresence=decayMood;
+  decayMood=function(conv,c){const before=conv?{m:conv.mood,n:conv.nu,l:conv.lvl}:null;baseDecayMoodPresence(conv,c);try{if(c&&conv&&before&&(before.m!==conv.mood||before.n!==conv.nu||before.l!==conv.lvl))emotionSync(c,conv,'time','le temps qui passe',true)}catch(e){}};
+  const baseDegradeMoodPresence=degradeMood;
+  degradeMood=function(c,conv,n){baseDegradeMoodPresence(c,conv,n);try{emotionSync(c,conv,'silence','le silence qui se prolonge',true);presenceUpdate(c,true,conv)}catch(e){}};
+
 
   /* ---------- galerie intelligente ---------- */
   function galMeta(g){g.context=g.context||'';g.people=g.people||'';g.place=g.place||'';g.privacy=g.privacy||'normal';g.firstSeen=g.firstSeen||nowTs();return g}
@@ -1093,7 +1227,7 @@
     c.mindArchives=[...ids];c.mindResetAt=ts;
     c.jrn=jrn(c).filter(e=>e.ty==='socle').map(e=>Object.assign(e,{owner:'foundation',kind:'durable',active:true,replacedBy:'',expiresAt:0}));
     c.episodes=[];
-    c.aff=[];c.timeline=[];c.life={};c.threads='';c.silence=null;c.memMsg='';
+    c.aff=[];c.timeline=[];c.life={};c.lifeTrail=[];c.presence={};c.emotion={};c.threads='';c.silence=null;c.memMsg='';
     c.lastAuto=0;c.next=0;c.push=null;c.count={day:todayKey()};
     c.temp='calme';c.fond={fam:'calme',lvl:2};c.fv={v:famOf('calme')[3],e:famOf('calme')[4]};
     (c.gal||[]).forEach(g=>{g.used=0;g.last=0});
@@ -1184,7 +1318,7 @@
 
   /* ---------- snapshots automatiques ---------- */
   function snapshotContacts(){return CONTACTS.map(c=>{const x=copy(c);(x.av||[]).forEach(a=>{if(a.fid)delete a.src});(x.gal||[]).forEach(g=>{if(g.fid)delete g.src});(x.toys||[]).forEach(t=>{if(t.fid)delete t.src});return x})}
-  function snapshotData(){return{app:'holophone-auto-snapshot',v:3,schemaVersion:3000,appVersion:APPV,date:new Date().toISOString(),rev:REV,contacts:snapshotContacts(),convs:copy(CONVS),auto:copy(AUTO),gen:copy(GEN),user:copy(USER),theme:copy(THEME),actions:copy(ACTCFG),braindance:copy(BDCFG),startup:copy(STARTCFG),audioLibrary:copy(AUDIOCFG),v2:copy(V2.cfg),api:{prov:API.prov,model:API.model,base:API.base,think:API.think,safe:API.safe},voice:{...copy(VOICE),key:''},search:{...copy(SEARCH),key:''},spot:{id:SPOT.id,dev:SPOT.dev,auto:SPOT.auto}}}
+  function snapshotData(){return{app:'holophone-auto-snapshot',v:4,schemaVersion:3200,appVersion:APPV,date:new Date().toISOString(),rev:REV,contacts:snapshotContacts(),convs:copy(CONVS),auto:copy(AUTO),gen:copy(GEN),user:copy(USER),theme:copy(THEME),actions:copy(ACTCFG),braindance:copy(BDCFG),startup:copy(STARTCFG),audioLibrary:copy(AUDIOCFG),v2:copy(V2.cfg),api:{prov:API.prov,model:API.model,base:API.base,think:API.think,safe:API.safe},voice:{...copy(VOICE),key:''},search:{...copy(SEARCH),key:''},spot:{id:SPOT.id,dev:SPOT.dev,auto:SPOT.auto}}}
   async function fsRead(path){const F=CAP().Filesystem;if(!F||!F.readFile)return null;try{const r=await F.readFile({path,directory:'DATA',encoding:'utf8'});return r&&r.data?String(r.data):null}catch(e){return null}}
   async function fsWrite(path,data){const F=CAP().Filesystem;if(!F||!F.writeFile)throw new Error('Filesystem indisponible');return F.writeFile({path,data,directory:'DATA',encoding:'utf8',recursive:true})}
   async function autoBackup(force){if(!isNative()||!V2.cfg.autoBackup)return false;const now=Date.now();if(!force&&V2.lastAutoBackup&&now-V2.lastAutoBackup<6*3600000&&REV<=V2.lastAutoBackup)return false;
@@ -1194,7 +1328,7 @@
     if(!txt)throw new Error('aucun snapshot disponible');
     const o=JSON.parse(txt);
     if(!o||o.app!=='holophone-auto-snapshot')throw new Error('snapshot invalide');
-    if(Number(o.schemaVersion||0)>3000)throw new Error('snapshot créé par un schéma Holophone plus récent');
+    if(Number(o.schemaVersion||0)>3200)throw new Error('snapshot créé par un schéma Holophone plus récent');
     CONTACTS=o.contacts||[];CONVS=o.convs||[];
     if(o.auto)Object.assign(AUTO,o.auto);if(o.gen)Object.assign(GEN,o.gen);if(o.user)Object.assign(USER,o.user);if(o.theme)Object.assign(THEME,o.theme);
     if(o.actions){ACTCFG=o.actions;normalizeActions()}
@@ -1234,7 +1368,7 @@
 
   /* ---------- diagnostic enrichi ---------- */
   const baseMakeDiagnostic=makeDiagnostic;
-  makeDiagnostic=async function(){const d=await baseMakeDiagnostic();d.v2={config:{...V2.cfg},trace:copy(V2.trace),interactions:copy(V2.interactionStats),conversationStates:CONVS.filter(v=>v&&v.geminiInteractionId).map(v=>({id:v.id,cid:v.cid,interactionId:v.geminiInteractionId,model:v.geminiModel||'',updatedAt:v.geminiUpdatedAt||0,ageMs:v.geminiUpdatedAt?Date.now()-v.geminiUpdatedAt:0,turns:(v.geminiTurns||[]).length,lastInputTokens:Number(v.geminiLastInputTokens)||0,rotationCount:Number(v.geminiRotationCount)||0,lastRotation:v.geminiLastRotation||null,imageContextOldestTs:Number(v.geminiImageContextOldestTs)||0,imageContextAgeMs:v.geminiImageContextOldestTs?Date.now()-Number(v.geminiImageContextOldestTs):0,imageContextCount:Number(v.geminiImageContextCount)||0})),longMemory:{mode:'local-source-only',segmentation:'anchor-windows-v2',maxSourcesPerEpisode:EP_MAX_SOURCES,backgroundAiCalls:0,recovery:copy(V2.episodeRecovery),contacts:CONTACTS.map(c=>({id:c.id,count:episodes(c).length,episodes:episodes(c).map(ep=>({id:ep.id,convId:ep.convId,fromTs:ep.fromTs,toTs:ep.toTs,importance:ep.importance,tags:ep.tags,origin:ep.origin,sourceCount:(ep.sources||[]).length}))}))},spotifyFeatures:{playlistAuthRev:Number(SPOT.authRev)||0,coop:SPOT.coop?{id:SPOT.coop.id||'',name:SPOT.coop.name||'',collaborative:!!SPOT.coop.collaborative}:null},braindance:{engine:'dedicated-generateContent',api:'v1beta',thinking:'high',safety:'BLOCK_NONE-adjustable',chatBridge:'neutral-only',rawBlocksInChat:false,blocks:Number(BDCFG.blocks)||5,maxOutputTokens:Number(BDCFG.maxOutputTokens)||16384,modelPriority:['gemini-3.1-pro-preview','gemini-3.8-flash','gemini-3.5-flash'],instructionsChars:String(BDCFG.instructions||'').length,listCounts:{focus:(BDCFG.focus||[]).length,zones:(BDCFG.zones||[]).length,dynamics:(BDCFG.dynamics||[]).length,words:(BDCFG.words||[]).length},replays:(BDCFG.replays||[]).map(r=>({id:r.id,title:r.title,rating:r.rating,ts:r.ts,contactId:r.contactId,blockCount:r.blockCount,model:r.model||'',audioCachedBlocks:Number(r.audioCachedBlocks)||0,audioBytes:Number(r.audioBytes)||0,audioVoice:r.audioVoice||''})),last:window.__lastBraindance?copy(window.__lastBraindance):null},actions:{categories:(ACTCFG.categories||[]).length,count:allActions().length,actorName:ACTCFG.userActorName||'',replyPolicy:'no-identical-mirror · reply cooldown 90s · spontaneous cooldown 5min + 2 user turns'},reactionPolicy:'no-identical-standalone-echo',spotifyReplyPolicy:'no-echo-of-user-shared-track-or-playlist',refuge:(()=>{const c=C(),r=c&&ensureRefuge(c);return r?{name:r.name,rooms:r.rooms.length,currentRoom:(refugeCurrentRoom(c)||{}).name||'',autoEvents:!!r.autoEvents,eventCount:(r.events||[]).length,proposals:{pending:r.proposals.filter(p=>p.status==='pending').length,pendingFromV:r.proposals.filter(p=>p.status==='pending'&&p.by!=='character').length,pendingFromCharacter:r.proposals.filter(p=>p.status==='pending'&&p.by==='character').length,accepted:r.proposals.filter(p=>p.status==='accepted').length,rejected:r.proposals.filter(p=>p.status==='rejected').length,ideaDue:!!r.ideaDue,lastCharacterProposalTs:Number(r.lastCharacterProposalTs)||0,recent:r.proposals.slice(-8).map(p=>({id:p.id,by:p.by,status:p.status,kind:p.kind,summary:p.summary}))}}:null})(),security:{keystore:!!secureNative(),secretKeys:[...SECURE_KEYS]},autoBackup:{last:V2.lastAutoBackup},call:{phase:V2.callPhase,rms:V2.callRms,muted:V2.audioMuted},timeline:CONTACTS.map(c=>({id:c.id,items:timeline(c)})),activity:CONTACTS.map(c=>({id:c.id,life:c.life||null})),presence:CONTACTS.map(c=>({id:c.id,state:copy(presenceUpdate(c,false,null))}))};return d};
+  makeDiagnostic=async function(){const d=await baseMakeDiagnostic();d.v2={config:{...V2.cfg},trace:copy(V2.trace),interactions:copy(V2.interactionStats),conversationStates:CONVS.filter(v=>v&&v.geminiInteractionId).map(v=>({id:v.id,cid:v.cid,interactionId:v.geminiInteractionId,model:v.geminiModel||'',updatedAt:v.geminiUpdatedAt||0,ageMs:v.geminiUpdatedAt?Date.now()-v.geminiUpdatedAt:0,turns:(v.geminiTurns||[]).length,lastInputTokens:Number(v.geminiLastInputTokens)||0,rotationCount:Number(v.geminiRotationCount)||0,lastRotation:v.geminiLastRotation||null,imageContextOldestTs:Number(v.geminiImageContextOldestTs)||0,imageContextAgeMs:v.geminiImageContextOldestTs?Date.now()-Number(v.geminiImageContextOldestTs):0,imageContextCount:Number(v.geminiImageContextCount)||0})),longMemory:{mode:'local-source-only',segmentation:'anchor-windows-v2',maxSourcesPerEpisode:EP_MAX_SOURCES,backgroundAiCalls:0,recovery:copy(V2.episodeRecovery),contacts:CONTACTS.map(c=>({id:c.id,count:episodes(c).length,episodes:episodes(c).map(ep=>({id:ep.id,convId:ep.convId,fromTs:ep.fromTs,toTs:ep.toTs,importance:ep.importance,tags:ep.tags,origin:ep.origin,sourceCount:(ep.sources||[]).length}))}))},spotifyFeatures:{playlistAuthRev:Number(SPOT.authRev)||0,coop:SPOT.coop?{id:SPOT.coop.id||'',name:SPOT.coop.name||'',collaborative:!!SPOT.coop.collaborative}:null},braindance:{engine:'dedicated-generateContent',api:'v1beta',thinking:'high',safety:'BLOCK_NONE-adjustable',chatBridge:'neutral-only',rawBlocksInChat:false,blocks:Number(BDCFG.blocks)||5,maxOutputTokens:Number(BDCFG.maxOutputTokens)||16384,modelPriority:['gemini-3.1-pro-preview','gemini-3.8-flash','gemini-3.5-flash'],instructionsChars:String(BDCFG.instructions||'').length,listCounts:{focus:(BDCFG.focus||[]).length,zones:(BDCFG.zones||[]).length,dynamics:(BDCFG.dynamics||[]).length,words:(BDCFG.words||[]).length},replays:(BDCFG.replays||[]).map(r=>({id:r.id,title:r.title,rating:r.rating,ts:r.ts,contactId:r.contactId,blockCount:r.blockCount,model:r.model||'',audioCachedBlocks:Number(r.audioCachedBlocks)||0,audioBytes:Number(r.audioBytes)||0,audioVoice:r.audioVoice||''})),last:window.__lastBraindance?copy(window.__lastBraindance):null},actions:{categories:(ACTCFG.categories||[]).length,count:allActions().length,actorName:ACTCFG.userActorName||'',replyPolicy:'no-identical-mirror · reply cooldown 90s · spontaneous cooldown 5min + 2 user turns'},reactionPolicy:'no-identical-standalone-echo',spotifyReplyPolicy:'no-echo-of-user-shared-track-or-playlist',refuge:(()=>{const c=C(),r=c&&ensureRefuge(c);return r?{name:r.name,rooms:r.rooms.length,currentRoom:(refugeCurrentRoom(c)||{}).name||'',autoEvents:!!r.autoEvents,eventCount:(r.events||[]).length,proposals:{pending:r.proposals.filter(p=>p.status==='pending').length,pendingFromV:r.proposals.filter(p=>p.status==='pending'&&p.by!=='character').length,pendingFromCharacter:r.proposals.filter(p=>p.status==='pending'&&p.by==='character').length,accepted:r.proposals.filter(p=>p.status==='accepted').length,rejected:r.proposals.filter(p=>p.status==='rejected').length,ideaDue:!!r.ideaDue,lastCharacterProposalTs:Number(r.lastCharacterProposalTs)||0,recent:r.proposals.slice(-8).map(p=>({id:p.id,by:p.by,status:p.status,kind:p.kind,summary:p.summary}))}}:null})(),security:{keystore:!!secureNative(),secretKeys:[...SECURE_KEYS]},autoBackup:{last:V2.lastAutoBackup},call:{phase:V2.callPhase,rms:V2.callRms,muted:V2.audioMuted},timeline:CONTACTS.map(c=>({id:c.id,items:timeline(c)})),activity:CONTACTS.map(c=>({id:c.id,life:copy(c.life||null),trail:copy(lifeRecent(c,24))})),presence:CONTACTS.map(c=>({id:c.id,state:copy(presenceUpdate(c,false,null)),emotion:copy(emotionSync(c,null)),decision:copy(presence(c).lastDecision||null)}))};return d};
 
   /* ---------- UI config voix / verrou ---------- */
   function injectVoiceUi(){const cfg=q('#screenVoice .cfg');if(!cfg||q('#v2Hands'))return;const sec=document.createElement('div');sec.innerHTML='<div class="sect">Appels</div><button class="chk" id="v2Hands"><span class="bx">✓</span><span class="lb2"><b>Mains libres expérimental</b><i>Après chaque réponse, Holophone réouvre automatiquement le micro. Le push-to-talk reste disponible.</i></span></button><div class="sect">Sortie audio des appels</div><select id="v2Route"><option value="speaker">Haut-parleur</option><option value="earpiece">Écouteur</option><option value="bluetooth">Bluetooth</option><option value="wired">Casque filaire / USB</option></select><div class="v2-callmode-note">Le routage est appliqué au mieux par Android ; les appareils réellement disponibles apparaissent pendant l’appel.</div>';cfg.appendChild(sec);
@@ -1246,7 +1380,10 @@
   async function migrateData(){
     if(!CONTACTS||!CONTACTS.length)return;V2.migrating=true;let changed=false;
     for(const c of CONTACTS){
-      c.timeline=Array.isArray(c.timeline)?c.timeline:[];c.life=c.life||{};c.episodes=Array.isArray(c.episodes)?c.episodes:[];presence(c);
+      c.timeline=Array.isArray(c.timeline)?c.timeline:[];c.life=c.life||{};c.episodes=Array.isArray(c.episodes)?c.episodes:[];
+      if(!c.presence||Number(c.presence.version)!==PRESENCE_VERSION)changed=true;presence(c);
+      if(!c.emotion||Number(c.emotion.version)!==EMOTION_VERSION)changed=true;emotion(c,null);
+      if(!Array.isArray(c.lifeTrail)){c.lifeTrail=[];changed=true}
       (c.jrn||[]).forEach(e=>{const m=memoryMeta(e.ty,e);['owner','kind','expiresAt','source','confidence','importance','confirmedAt','replaces','replacedBy','active'].forEach(k=>{if(e[k]===undefined){e[k]=m[k];changed=true}})});
       (c.aff||[]).forEach(e=>{if(e.strength===undefined){e.strength=e.st==='ok'?4:2;changed=true}if(e.confidence===undefined){e.confidence=e.st==='ok'?.9:.62;changed=true}if(!e.source){e.source=e.st==='ok'?'explicit':'inference';changed=true}if(!e.firstSeen){e.firstSeen=e.ts||nowTs();changed=true}if(e.lastConfirmed===undefined){e.lastConfirmed=e.st==='ok'?(e.ts||nowTs()):0;changed=true}if(!e.why)e.why=e.w||''});
       (c.gal||[]).forEach(g=>{const before=JSON.stringify([g.context,g.people,g.place,g.privacy,g.firstSeen]);galMeta(g);if(before!==JSON.stringify([g.context,g.people,g.place,g.privacy,g.firstSeen]))changed=true});
@@ -1362,20 +1499,29 @@
   function pPct(v){return Math.max(0,Math.min(100,Math.round(Number(v)||0)))}
   function pMetric(label,val){return'<div class="presencecell"><div class="plabel">'+label+'</div><div class="pval">'+pLevel(val)+'</div><div class="pmeter"><i style="width:'+pPct(val)+'%"></i></div></div>'}
   function presenceRender(){
-    const c=C(),B=q('#presenceBody');if(!c||!B)return;const cv=cur&&cur.cid===c.id?cur:null,p=presenceUpdate(c,true,cv),life=c.life||{};
+    const c=C(),B=q('#presenceBody');if(!c||!B)return;const cv=cur&&cur.cid===c.id?cur:null,p=presenceUpdate(c,true,cv),life=c.life||{},e=emotionSync(c,cv),decision=initiativeDecision(c,cv);
     q('#presenceTitle').textContent='Vie de '+(characterName(c));q('#presenceSub').textContent=p.focus||'présence intérieure';
     B.innerHTML='';
     const hero=document.createElement('div');hero.className='presencehero';hero.innerHTML='<b>'+((life.name||'Présente')+(life.since?' · depuis '+hhmm(life.since):''))+'</b><i>'+p.thought+'</i>';B.append(hero);
     const sh=document.createElement('div');sh.className='sect';sh.textContent='État intérieur';B.append(sh);
     const grid=document.createElement('div');grid.className='presencegrid';grid.innerHTML=pMetric('Énergie',p.energy)+pMetric('Envie de contact',p.connection)+pMetric('Curiosité',p.curiosity)+pMetric('Autonomie',p.autonomy);B.append(grid);
+
+    const mh=document.createElement('div');mh.className='sect';mh.textContent='Humeur vivante';B.append(mh);
+    const mood=document.createElement('div');mood.className='note';mood.innerHTML='<b>'+emotionLabel(e)+' · '+lvlName(e.level||2)+'</b><br>'+emotionDuration(e)+' · sous-ton '+moodName(e.undertone).toLowerCase()+'<br><span style="color:var(--dim)">Cause retenue : '+String(e.cause||'rythme de la journée')+'. Stabilité '+pLevel(e.stability)+'.</span>';B.append(mood);
+
+    const lh=document.createElement('div');lh.className='sect';lh.textContent='Vie entre les messages';B.append(lh);
+    const lnote=document.createElement('div');lnote.className='note';const trail=lifeRecent(c,10);
+    lnote.innerHTML='<b>Maintenant : '+String(life.name||'rien de particulier')+'</b>'+(life.next?'<br>Ensuite : '+String(life.next):'')+
+      (trail.length?'<br><span style="color:var(--dim)">Dernières heures : '+trail.map(x=>String(x.name)+' · '+hhmm(x.since)).join(' → ')+'</span>':'<br><span style="color:var(--dim)">La continuité quotidienne se construira avec le temps.</span>');B.append(lnote);
+
     const eh=document.createElement('div');eh.className='sect';eh.textContent='Élan du moment';B.append(eh);
-    const motive=document.createElement('div');motive.className='note';motive.innerHTML='<b>'+p.focus+'</b><br>'+p.motive+'<br><span style="color:var(--dim)">Ce n’est pas un ordre : cet élan peut être ignoré si la conversation appelle autre chose.</span>';B.append(motive);
+    const motive=document.createElement('div');motive.className='note';motive.innerHTML='<b>'+(decision.allow?'Initiative plausible':'Pas de raison forte d’écrire maintenant')+'</b><br>'+decision.reason+'<br><span style="color:var(--dim)">'+p.motive+' · décision locale, jamais une obligation.</span>';B.append(motive);
     const rh=document.createElement('div');rh.className='sect';rh.textContent='Petits événements récents';B.append(rh);
-    const events=(p.recent||[]).slice().sort((a,b)=>(b.ts||0)-(a.ts||0)).slice(0,8);
+    const events=(p.recent||[]).slice().sort((a,b)=>(b.ts||0)-(a.ts||0)).slice(0,10);
     if(!events.length){const x=document.createElement('div');x.className='presencequiet';x.textContent='Rien de particulier pour l’instant. La chronologie se construira au fil des activités, humeurs, gestes et initiatives.';B.append(x)}
-    else events.forEach(e=>{const row=document.createElement('div');row.className='presenceevent';row.innerHTML='<time>'+dayLabel(e.ts)+'<br>'+hhmm(e.ts)+'</time><div><b>'+String(e.title||e.type)+'</b><i>'+String(e.detail||'')+'</i></div>';B.append(row)});
+    else events.forEach(ev=>{const row=document.createElement('div');row.className='presenceevent';row.innerHTML='<time>'+dayLabel(ev.ts)+'<br>'+hhmm(ev.ts)+'</time><div><b>'+String(ev.title||ev.type)+'</b><i>'+String(ev.detail||'')+'</i></div>';B.append(row)});
     const ch=document.createElement('div');ch.className='sect';ch.textContent='Continuité';B.append(ch);
-    const state=contactConvs(c).find(v=>v.geminiInteractionId)||null;const note=document.createElement('div');note.className='note';note.innerHTML=(episodes(c).length+' épisode(s) sourcé(s) · '+jrn(c).length+' souvenir(s) explicite(s) · '+aff(c).length+' goût(s)')+'<br>'+(state&&state.geminiInteractionId?'Interaction Gemini active · '+(state.geminiTurns||[]).length+' tour(s) locaux':'Interaction démarrera au prochain échange')+'<br><span style="color:var(--dim)">Cette page décrit des états de fonctionnement, pas les pensées privées du modèle.</span>';B.append(note);
+    const state=contactConvs(c).find(v=>v.geminiInteractionId)||null;const note=document.createElement('div');note.className='note';note.innerHTML=(episodes(c).length+' épisode(s) sourcé(s) · '+jrn(c).length+' souvenir(s) explicite(s) · '+aff(c).length+' goût(s)')+'<br>'+(state&&state.geminiInteractionId?'Interaction Gemini active · '+(state.geminiTurns||[]).length+' tour(s) locaux':'Interaction démarrera au prochain échange')+'<br><span style="color:var(--dim)">Cette page décrit des états entretenus par Holophone, pas les pensées privées du modèle.</span>';B.append(note);
     const row=document.createElement('div');row.className='rowb';const refresh=document.createElement('button');refresh.className='mini g';refresh.textContent='Actualiser';refresh.onclick=()=>{presenceUpdate(c,true,cv);presenceRender();saveContacts()};row.append(refresh);B.append(row);
     if(q('#presenceState'))q('#presenceState').textContent=(life.name||'présente')+' · '+p.focus;
   }

@@ -874,7 +874,26 @@ select{font-family:'Share Tech Mono';font-size:11px}
 .startup[data-style="wallace"] .vsntlogo{filter:drop-shadow(0 0 10px rgba(255,223,169,.24))}
 .startup[data-style="cyber"] .vsntbrand .slogan{color:#2ee6c8}
 .startup[data-style="cyber"] .vsntlogo{filter:drop-shadow(0 0 10px rgba(255,48,61,.34))}
-.aboutvsntlogo{display:block;width:min(100%,420px);height:auto;margin:0 auto 12px;background:#000;object-fit:contain;border:1px solid rgba(255,75,31,.22);box-shadow:0 0 24px rgba(255,75,31,.08)}
+.aboutvsntlogo{display:block;width:min(100%,430px);height:auto;margin:0 auto 14px;background:#000;object-fit:contain;border:1px solid rgba(255,75,31,.28);box-shadow:0 0 30px rgba(255,75,31,.12)}
+.abouttechhero{position:relative;overflow:hidden;padding:16px 15px 15px;border:1px solid var(--theme-border,#324047);background:linear-gradient(180deg,rgba(255,255,255,.022),rgba(255,255,255,.008));box-shadow:inset 0 0 28px rgba(0,0,0,.34)}
+.abouttechhero:before{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,transparent 0 49.7%,color-mix(in srgb,var(--theme-accent,var(--teal)) 9%,transparent) 50%,transparent 50.3%),linear-gradient(0deg,transparent 0 49.7%,color-mix(in srgb,var(--theme-accent,var(--teal)) 7%,transparent) 50%,transparent 50.3%);background-size:46px 46px;opacity:.28}
+.abouttechhero>*{position:relative}
+.abouttechkicker{margin:2px 0 7px;text-align:center;font:10px/1.2 'Share Tech Mono',monospace;letter-spacing:.18em;text-transform:uppercase;color:var(--theme-accent,var(--teal))}
+.abouttechtitle{text-align:center;font:700 19px/1.2 'Rajdhani',system-ui,sans-serif;letter-spacing:.05em;color:var(--txt);text-transform:uppercase}
+.abouttechlead{max-width:620px;margin:9px auto 0;text-align:center;font-size:14px;line-height:1.5;color:var(--dim)}
+.aboutbadges{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin:13px 0 2px}
+.aboutbadge{padding:5px 7px;border:1px solid color-mix(in srgb,var(--theme-accent,var(--teal)) 46%,#1b2529);background:color-mix(in srgb,var(--theme-accent,var(--teal)) 7%,#06090a);font:9px/1 'Share Tech Mono',monospace;letter-spacing:.09em;text-transform:uppercase;color:var(--theme-accent,var(--teal))}
+.aboutbuild{margin-top:12px;padding-top:10px;border-top:1px solid color-mix(in srgb,var(--theme-border,#324047) 72%,transparent);display:flex;flex-direction:column;align-items:center;gap:5px;text-align:center}
+.aboutbuild .tag{margin:0}
+.aboutbuild .meta{font:10px/1.25 'Share Tech Mono',monospace;letter-spacing:.07em;color:var(--dim)}
+.aboutgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:8px 0 3px}
+.aboutmodule{min-height:112px;padding:11px 12px;border:1px solid color-mix(in srgb,var(--theme-border,#324047) 88%,transparent);background:rgba(255,255,255,.014)}
+.aboutmodule b{display:block;margin-bottom:5px;font:700 11px/1.2 'Share Tech Mono',monospace;letter-spacing:.09em;text-transform:uppercase;color:var(--theme-accent,var(--teal))}
+.aboutmodule span{display:block;font-size:12.5px;line-height:1.42;color:var(--dim)}
+.aboutprotocol{padding:12px 13px;border-left:2px solid var(--theme-accent,var(--teal));background:color-mix(in srgb,var(--theme-accent,var(--teal)) 5%,#050708);font-size:12.5px;line-height:1.5;color:var(--dim)}
+.aboutprotocol strong{color:var(--txt)}
+.aboutlegal{margin:14px 0 4px;text-align:center;font:9.5px/1.5 'Share Tech Mono',monospace;letter-spacing:.06em;color:var(--dim);opacity:.78}
+@media(max-width:430px){.aboutgrid{grid-template-columns:1fr}.aboutmodule{min-height:0}.abouttechlead{font-size:13px}.abouttechtitle{font-size:17px}}
 @media(max-width:420px){.startupcore{gap:7px;padding:15px 12px 12px}.vsntvisual{height:226px}.vsntlogo{width:min(78vw,274px);min-width:0}.vsntbrand .slogan{font-size:10px;letter-spacing:.14em}.vsntstatus{margin-top:8px}}
 
 .startstylegrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
@@ -1414,22 +1433,38 @@ select{font-family:'Share Tech Mono';font-size:11px}
 
  <!-- À PROPOS -->
  <div id="screenAbout" class="hide" style="flex:1;display:flex;flex-direction:column;min-height:0">
-  <div class="title">À propos<small>Holophone</small><button class="iconbtn" id="abBack">✕</button></div>
+  <div class="title">À propos<small>VSim NeuroTek · Synthetic Presence Systems</small><button class="iconbtn" id="abBack">✕</button></div>
   <div class="cfg">
-   <div class="card">
+   <div class="abouttechhero">
     <img class="aboutvsntlogo" src="media/vsnt-logo-full.png" alt="VSim NeuroTek — Connecting Minds &amp; Bytes">
-    <span class="tag" id="abV">Version</span>
-<div class="note" style="font-size:16px;color:var(--txt)">Un téléphone de fiction. Tu y discutes avec des personnages qui ont une mémoire, une humeur et une vie propre — ils t'écrivent d'eux-mêmes, t'envoient des images, et n'attendent pas toujours que tu commences.</div>
-    <div class="note" id="abStat" style="font-size:13.5px"></div>
+    <div class="abouttechkicker">VSNT // Synthetic Presence Systems</div>
+    <div class="abouttechtitle">Holophone™ · Adaptive Persona Interface</div>
+    <div class="abouttechlead">Une architecture de présence synthétique conçue pour maintenir une persona persistante, contextuelle et multimodale — avec identité, mémoire, continuité temporelle, états internes, initiatives, voix, médias et environnement partagé.</div>
+    <div class="aboutbadges">
+     <span class="aboutbadge">Persistent Persona</span><span class="aboutbadge">Temporal Continuity</span><span class="aboutbadge">Local-First</span><span class="aboutbadge">Multimodal Runtime</span>
+    </div>
+    <div class="aboutbuild"><span class="tag" id="abV">Version</span><div class="meta" id="abStat">Initialisation du runtime…</div></div>
    </div>
-   <div class="sect">Comment ça marche</div>
-   <div class="note">Chaque contact possède une fiche de personnalité découpée en blocs, envoyée au modèle de langage à chaque message, avec sa mémoire et ses souvenirs gravés. Rien n'est écrit d'avance : les réponses sont improvisées à chaque fois, en tenant compte de l'heure qu'il est et du temps écoulé depuis ton dernier message.</div>
-   <div class="sect">Ce qui reste sur ton téléphone</div>
-   <div class="note">Contacts, conversations, images et clés API ne quittent jamais l'appareil, sauf le texte des messages envoyé au fournisseur d'IA que tu as choisi pour obtenir les réponses.</div>
-   <div class="sect">Fiches partagées</div>
-   <div class="note">Une fiche de personnage importée contient des consignes envoyées au modèle. Elles sont affichées avant que tu acceptes : lis-les si le fichier vient de quelqu'un que tu ne connais pas.</div>
-   <div class="sect">Crédits</div>
-   <div class="note"><b>Holophone™ est conçu par VSim NeuroTek (VSNT)</b> — <i>Connecting Minds &amp; Bytes</i><br><br>Application libre et gratuite, sans publicité, sans compte et sans collecte. Les personnages, images et textes que tu ajoutes t'appartiennent et restent sur ton appareil.</div>
+
+   <div class="sect">Core systems</div>
+   <div class="aboutgrid">
+    <div class="aboutmodule"><b>Persona Runtime</b><span>Identité, personnalité, comportement, humeur et présence sont maintenus comme un état cohérent plutôt que reconstruits à chaque message.</span></div>
+    <div class="aboutmodule"><b>Memory Fabric</b><span>Souvenirs persistants, contexte conversationnel, goûts, événements et protections anti-répétition assurent une continuité au-delà d'une seule session.</span></div>
+    <div class="aboutmodule"><b>Temporal Engine</b><span>Holophone suit le temps écoulé, les rythmes de vie, les activités et les changements d'état afin que plusieurs heures ou plusieurs jours aient un sens.</span></div>
+    <div class="aboutmodule"><b>Interaction Layer</b><span>Texte, voix, images, musique, Braindance, Refuge et interactions structurées sont coordonnés autour de la même persona.</span></div>
+    <div class="aboutmodule"><b>Initiative Core</b><span>La persona peut prendre l'initiative selon son contexte, son activité et ses états internes — ou décider qu'elle n'a aucune raison pertinente d'intervenir.</span></div>
+    <div class="aboutmodule"><b>Privacy Architecture</b><span>Stockage local, verrouillage, protection de l'aperçu Android, sauvegardes contrôlées et secrets configurés localement par l'utilisateur.</span></div>
+   </div>
+
+   <div class="sect">Architecture des données</div>
+   <div class="aboutprotocol"><strong>Local-first.</strong> Les données persistantes de Holophone résident sur l'appareil. Lorsqu'une fonction fait appel à un service externe, seules les informations nécessaires à cette fonction sont transmises au fournisseur concerné. Les clés de service ne sont pas intégrées à l'application distribuée : elles sont ajoutées et conservées localement par l'utilisateur.</div>
+
+   <div class="sect">Persona packages</div>
+   <div class="aboutprotocol">Une persona importée peut contenir des consignes de comportement destinées au moteur d'IA. Holophone présente ces informations avant validation afin que l'utilisateur conserve le contrôle sur ce qu'il installe.</div>
+
+   <div class="sect">VSim NeuroTek</div>
+   <div class="aboutprotocol"><strong>Holophone™</strong> est présenté comme une technologie de VSim NeuroTek (VSNT), division Synthetic Presence Systems. <i>Connecting Minds &amp; Bytes.</i></div>
+   <div class="aboutlegal">PERSONAL RUNTIME · NO EMBEDDED SERVICE KEYS · USER-CONTROLLED DATA<br>HOLOPHONE™ / VSIM NEUROTEK (VSNT)</div>
   </div>
  </div>
 
@@ -1830,7 +1865,7 @@ const TTS={
 let audioEl=null;
 let AUTO={on:true};
 const saveAuto=()=>Store.set('v7.auto',JSON.stringify(AUTO));
-const APPV='3.1.4';
+const APPV='3.2.1';
 /* --- FAMILLES : clé, nom, couleur, valence, énergie --- */
 const FAM=[
  ['calme','Calme','#8aa0a8', 0.20,-0.60],
@@ -5748,8 +5783,8 @@ function mayInit(c){
  if(r.mode==='num'&&counter(c,k)>=(r.max||0))return false;
  return true;
 }
-function schedState(c){
- const h=new Date().getHours();
+function schedState(c,ts){
+ const h=new Date(ts===undefined?Date.now():ts).getHours();
  if(inRange(h,c.sleep))return 'sleep';
  if(inRange(h,c.work))return 'work';
  return '';
@@ -8228,9 +8263,9 @@ $('#hoodOrphans').onclick=async()=>{
 
 /* ===================== À PROPOS ===================== */
 $('#goAbout').onclick=()=>{show($('#screenAbout'));
- $('#abV').textContent='Version '+APPV+(isNative()?' · application Android':' · navigateur');
+ $('#abV').textContent='HOLOPHONE '+APPV+(isNative()?' · ANDROID RUNTIME':' · WEB RUNTIME');
  const nb=CONTACTS.length,cv=CONVS.length,ms=CONVS.reduce((a,v)=>a+v.msgs.length,0);
- $('#abStat').textContent=nb+' contact'+(nb>1?'s':'')+' · '+cv+' conversation'+(cv>1?'s':'')+' · '+ms+' messages échangés';
+ $('#abStat').textContent='LOCAL STATE · '+nb+' persona'+(nb>1?'s':'')+' · '+cv+' conversation'+(cv>1?'s':'')+' · '+ms+' message'+(ms>1?'s':'');
 };
 $('#abBack').onclick=()=>{show($('#screenSys'));refreshSys()};
 
@@ -9739,8 +9774,9 @@ async function spontaneous(ct){
   CONVS.unshift(conv);
  }
  const vie=opt(ct,'life')
-  ?" Avant d'écrire, décide en silence ce qui vient de t'arriver depuis votre dernier contact — un incident, une rencontre, une contrariété, une bonne nouvelle — et pars de là plutôt que d'une formule vide."
+  ?" Avant d'écrire, pars si possible d'un détail ordinaire déjà présent dans ta continuité de vie plutôt que d'inventer artificiellement un événement spectaculaire."
   :"";
+ const presenceHint=(window.holoPresenceInitiative?window.holoPresenceInitiative(ct,conv):'');
  const rang=relance?((conv.wait&&conv.wait.n)||0):0;
  const attente=relance?durLabel(nowTs()-(conv.wait.since||nowTs())):'';
  const consigne=relance
@@ -9754,7 +9790,8 @@ async function spontaneous(ct){
      "Ajoute \"fin\": true si dans ce message tu renonces à insister — parce que tu lui trouves "+
      "une excuse qui te convient, parce que tu comprends qu'il est occupé, ou parce que tu décides "+
      "de le laisser tranquille. Dans ce cas tu ne relanceras plus, même s'il reste muet.")
-  : ("Tu prends l'initiative d'écrire à "+uName(ct)+", sans qu'on t'ait rien demandé. Une raison concrète : un truc qui vient de t'arriver, une question, une envie, une inquiétude. Commence directement, sans formule d'introduction.")+vie;
+  : ("Tu prends l'initiative d'écrire à "+uName(ct)+", sans qu'on t'ait rien demandé. Commence directement, sans formule d'introduction.")+
+    (presenceHint?' '+presenceHint:'')+vie;
  const o=parseAI(await callModel(sysPrompt(ct,conv)+'\n\nSITUATION\n'+consigne,
   conv.ai.slice(-20).concat([{role:'user',content:'[écris maintenant, de ta propre initiative]'}])));
  conv.ai.pop();

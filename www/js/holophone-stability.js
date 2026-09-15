@@ -1,12 +1,11 @@
-/* Holophone 3.1.4 — couche de stabilisation technique + migration de présence.
-   Cette couche ne modifie pas la personnalité ni le comportement conversationnel.
+/* Holophone 3.2.1 — couche de stabilité + migrations de continuité vivante.
    Elle fournit : schéma/migrations, contrôles d'intégrité, santé, réparation sûre
-   et garde-fous de sauvegarde/restauration. */
+   et garde-fous de sauvegarde/restauration pour la présence, l'émotion et la vie autonome. */
 (() => {
   'use strict';
 
-  const STABLE_VERSION = '3.1.4';
-  const SCHEMA_VERSION = 3140;
+  const STABLE_VERSION = '3.2.1';
+  const SCHEMA_VERSION = 3200;
   const SCHEMA_KEY = 'v3.schemaVersion';
   const MIGRATION_LOG_KEY = 'v3.migrationLog';
   const LAST_HEALTH_KEY = 'v3.lastHealth';
@@ -150,10 +149,40 @@
     return result;
   }
 
+
+  async function migrationContinuity3200(){
+    const result={contacts:0,presenceUpgraded:0,emotionCreated:0,lifeTrailCreated:0};
+    try{
+      const raw=await Store.get('v7.contacts'),list=safeJson(raw,[]);
+      if(Array.isArray(list)){
+        let changed=false;
+        list.forEach(c=>{
+          if(!c||typeof c!=='object')return;result.contacts++;
+          c.presence=c.presence&&typeof c.presence==='object'?c.presence:{};
+          const pd={version:2,updatedAt:0,lastObservedAt:0,offlineGapMs:0,lastGapEventTs:0,energy:55,connection:50,curiosity:55,autonomy:50,focus:'',thought:'',motive:'',motiveTs:0,recent:[],lastInitiativeAt:0,lastInitiativeMotive:'',lastDecision:null,lastDecisionTs:0,lastLifeCatchupAt:0};
+          let pChanged=false;Object.keys(pd).forEach(k=>{if(c.presence[k]===undefined){c.presence[k]=copy(pd[k]);pChanged=true}});
+          if(c.presence.version!==2){c.presence.version=2;pChanged=true}
+          if(!Array.isArray(c.presence.recent)){c.presence.recent=[];pChanged=true}
+          if(pChanged){changed=true;result.presenceUpgraded++}
+          if(!c.emotion||typeof c.emotion!=='object'){
+            const fam=(c.fond&&c.fond.fam)||c.temp||'calme',lvl=Number(c.fond&&c.fond.lvl)||2;
+            c.emotion={version:1,family:fam,nuance:'',level:lvl,startedAt:0,updatedAt:0,causeType:'background',cause:'le rythme de sa journée',undertone:fam,undertoneLevel:lvl,stability:45,lastTransitionAt:0};
+            changed=true;result.emotionCreated++;
+          }else if(c.emotion.version!==1){c.emotion.version=1;changed=true}
+          if(!Array.isArray(c.lifeTrail)){c.lifeTrail=[];changed=true;result.lifeTrailCreated++}
+          if(c.life&&typeof c.life==='object'&&c.life.version!==2){c.life.version=2;changed=true}
+        });
+        if(changed)await Store.set('v7.contacts',JSON.stringify(list));
+      }
+    }catch(e){}
+    return result;
+  }
+
   const MIGRATIONS=[
     {to:3000,name:'baseline-stable-3.0.0',run:migrationBaseline3000},
     {to:3100,name:'character-presence-3.1.0',run:migrationPresence3100},
-    {to:3140,name:'persona-neutral-3.1.4',run:migrationPersonaNeutral3140}
+    {to:3140,name:'persona-neutral-3.1.4',run:migrationPersonaNeutral3140},
+    {to:3200,name:'living-continuity-3.2.0',run:migrationContinuity3200}
   ];
 
   async function migrateBeforeBoot(){
