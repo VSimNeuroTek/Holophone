@@ -16,3 +16,6 @@ signing-config.json
 /_backup_patch_*/
 # Sorties de compilation Android
 /android/app/release/
+# Android Studio / IntelliJ local configuration
+/.idea/
+/android/.idea/
