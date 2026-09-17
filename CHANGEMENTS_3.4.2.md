@@ -38,8 +38,21 @@ Les sauvegardes JSON v12/v13 restent importables par l'ancien chemin de restaura
 - aucune modification des conversations, de la Persona ou du moteur Gemini ;
 - la sauvegarde globale contient toujours les médias.
 
+## Préparation APK de test
+
+La 3.4.2 est volontairement une couche hotfix au-dessus du cœur web 3.4.1 avant validation terrain.
+
+- `TESTER_3.4.2.cmd` lance la recette locale ciblée ;
+- `RELEASE_3.4.2.cmd` lance `scripts/release-hotfix-v342.ps1` ;
+- la préparation réutilise la recette native stable 3.4.1, synchronise Capacitor, vérifie que `holophone-backup342.js` est réellement copié dans les assets Android, puis positionne Android sur `versionName 3.4.2` / `versionCode 56` ;
+- l'APK doit être généré en **release signé avec le même keystore que la 3.4.1** afin de pouvoir être installé par-dessus sans perdre les données.
+
+Le protocole complet est dans `TEST_SAUVEGARDE_3.4.2.md`.
+
 ## Recette
 
 Nouveau test : `scripts/test-stable-v342.js`.
 
 Il vérifie notamment l'écriture incrémentale, l'absence du chemin `buildBackup(true)` sur le bouton principal, la compatibilité v12/v13, le staging IndexedDB, l'intégrité par bloc et la présence du correctif `toyList`.
+
+Pour la première validation terrain, on teste **l'export uniquement** sur les données actuelles. La restauration v14 sera validée séparément avant fusion de la PR.
