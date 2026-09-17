@@ -92,4 +92,14 @@
   }
   window.HolophoneI18n={init,setLanguage,current:()=>state.active,t,list,importPack,removePack,exportState,importState,apply,validatePack,norm,isReady:()=>state.ready};
   window.holoT=t;
+
+  /* 3.4.2 : charge le hotfix sauvegarde après le parsing complet de index.html.
+     Le module doit arriver après le moteur historique pour remplacer proprement
+     les gestionnaires #svDl/#svFile sans déplacer le gros code monolithique. */
+  const loadBackup342=()=>{
+    if(document.querySelector('script[data-holophone-backup342]'))return;
+    const s=document.createElement('script');s.src='js/holophone-backup342.js';s.dataset.holophoneBackup342='1';
+    s.onerror=()=>console.error('Holophone 3.4.2 backup hotfix non chargé');document.body.appendChild(s);
+  };
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',loadBackup342,{once:true});else setTimeout(loadBackup342,0);
 })();
