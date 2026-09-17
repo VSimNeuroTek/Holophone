@@ -3,7 +3,7 @@
    les nouveaux sous-systèmes vivent ici afin de commencer la modularisation. */
 (() => {
   const V2 = window.HolophoneV2 = {
-    version: '3.3.1',
+    version: '3.4.1',
     cfg: { biometric:false, handsFree:false, route:'speaker', autoBackup:true,
       interactionRetentionDays:55, interactionRotateTokens:60000, interactionRotateTurns:110,
       imageContextTtlHours:2 },
@@ -126,7 +126,7 @@
   function bootstrapTranscript(conv,pendingText){
     const c=CONTACTS.find(x=>x.id===(conv&&conv.cid)),U=c?uName(c):'V',J=c?characterName(c):'Persona';
     const mem=c?episodeBootstrap(c,pendingText||''):'';
-    let list=(conv&&conv.msgs||[]).filter(m=>m&&m.w!=='sys'&&!isBraindanceUiMessage(conv,m)&&(m.t||m.cap||m.mus||m.yt||m.img||m.imgId)).slice(-12);
+    let list=(conv&&conv.msgs||[]).filter(m=>m&&m.w!=='sys'&&!isBraindanceUiMessage(conv,m)&&(m.t||m.cap||m.mus||m.yt||m.img||m.imgId)).slice(-8);
     if(list.length){const last=list[list.length-1];if(last.w==='v'&&last.t&&pendingText&&normText(pendingText).includes(normText(last.t).slice(0,80)))list=list.slice(0,-1)}
     let recent='';
     if(list.length)recent='[REPRISE LOCALE RÉCENTE — SOURCE BRUTE, NE PAS RÉINTERPRÉTER]\n'+list.map(m=>{
@@ -134,6 +134,7 @@
       if(m.mus)return who+' : [musique « '+String(m.mus.label||'').slice(0,120)+' »]';
       if(m.yt)return who+' : [vidéo « '+String(m.yt.label||'').slice(0,120)+' »]';
       if(m.img||m.imgId)return who+' : [image « '+String(m.cap||'image').slice(0,100)+' »]'+(m.t?' '+String(m.t).slice(0,300):'');
+      if(m.act){const a=m.act||{};return who+' : [INTERACTION id='+String(a.id||'').slice(0,80)+' ; label='+String(a.label||'interaction').slice(0,120)+']'}
       return who+' : '+String(m.t||m.cap||'').slice(0,1000);
     }).join('\n')+'\n[FIN REPRISE LOCALE RÉCENTE]\n';
     return(mem?mem+'\n':'')+recent;
@@ -783,7 +784,7 @@
       'Élan possible : '+p.motive+'.\n'+
       'Ces états servent à éviter une personnalité plate. Ils ne t’obligent ni à parler de toi, ni à écrire, ni à être disponible. Ne les annonce jamais comme des jauges et ne récite pas la cause de ton humeur.';
   }
-  function presenceInitiative(c,conv){const d=initiativeDecision(c,conv);return d.allow?'Raison interne retenue : '+d.reason+'. Pars de cette raison seulement si elle donne un message naturel ; ne la nomme pas comme une règle.':''}
+  function presenceInitiative(c,conv){initiativeDecision(c,conv);return''}
   function presenceScheduled(c,motive,at){const p=presence(c);if(!p)return;p.lastInitiativeAt=Number(at)||Date.now();p.lastInitiativeMotive=String(motive||p.motive||'').slice(0,240);pEvent(c,'initiative','Initiative préparée',p.lastInitiativeMotive,p.lastInitiativeAt)}
   function presenceDelivered(c,motive,at){const p=presence(c);if(!p)return;p.lastInitiativeAt=Number(at)||Date.now();p.connection=pClamp(p.connection-18);pEvent(c,'initiative','Initiative envoyée',String(motive||p.lastInitiativeMotive||p.motive||''),p.lastInitiativeAt)}
   window.holoPresenceInitiative=presenceInitiative;window.holoPresenceDecision=initiativeDecision;window.holoPresenceScheduled=presenceScheduled;window.holoPresenceDelivered=presenceDelivered;
@@ -839,7 +840,10 @@
 
   function episodes(c){c.episodes=Array.isArray(c.episodes)?c.episodes:[];return c.episodes}
   function epEligibleMessages(conv){
-    return (conv&&conv.msgs||[]).filter(m=>m&&(m.w==='v'||m.w==='character')&&!isBraindanceUiMessage(conv,m)&&String(m.t||'').trim());
+    /* 3.4.0 Prompt Diet : les gestes structurés ne deviennent pas des souvenirs
+       textuels. Leur libellé UI est utile à l'écran mais ne doit pas entraîner
+       le style conversationnel ni polluer la mémoire longue. */
+    return (conv&&conv.msgs||[]).filter(m=>m&&(m.w==='v'||m.w==='character')&&!m.act&&!isBraindanceUiMessage(conv,m)&&String(m.t||'').trim());
   }
   function epTags(v){
     return [...new Set((Array.isArray(v)?v:[]).map(x=>String(x||'').trim().toLowerCase()).filter(x=>x.length>1).slice(0,8))];
@@ -1144,20 +1148,30 @@
     }
     return s;
   }
-  function tinyActions(c){try{return actionPromptBlock(c)||''}catch(e){return''}}
-  function tinyRefuge(c){try{return refugePrompt(c)||''}catch(e){return''}}
-  function currentState(c,conv){
-    const now=Date.now(),F=fondOf(c),st=schedState(c);let s='\n\nMAINTENANT\n'+dateLabel(now)+' · '+hhmm(now)+' · '+partDay(now)+'. Humeur de fond : '+moodName(F.fam).toLowerCase()+'.';
-    if(conv&&conv.mood)s+=' Humeur du fil : '+(conv.nu?nuLabel(conv.nu):moodName(conv.mood).toLowerCase())+' ('+(conv.lvl||1)+'/5).';
-    if(st==='work')s+=' Selon ses horaires, '+characterName(c)+' est normalement au travail'+(c.job?' ('+c.job+')':'')+'.';else if(st==='sleep')s+=' Selon ses horaires, '+characterName(c)+' est normalement en période de sommeil.';
+  function refugeContextNeeded(q){return /\b(refuge|maison|piece|pièce|chambre|salon|serre|travaux|amenag|aménag|constru|proposition)\b/i.test(noAcc(q||''))}
+  function activityContextNeeded(q){return /\b(tu fais quoi|que fais tu|qu est ce que tu fais|occupee|occupée|activite|activité|travail|dors|dormir|reveil|réveil|journee|journée)\b/i.test(noAcc(q||''))}
+  function actionContextNeeded(conv,q){
+    const a=(conv&&conv.ai||[]).slice(-3);return /\b(interaction|geste|toucher|caress|embrass|enlac|main|bras|dos)\b/i.test(noAcc(q||''))||a.some(x=>x&&x.role==='user'&&/\[ACTION PHYSIQUE|\[INTERACTION_/i.test(String(x.content||'')));
+  }
+  function tinyActions(c,conv,q){if(!actionContextNeeded(conv,q))return'';try{return actionPromptBlock(c)||''}catch(e){return''}}
+  function tinyRefuge(c,q){if(!refugeContextNeeded(q))return'';try{return refugePrompt(c)||''}catch(e){return''}}
+  function currentState(c,conv,q){
+    const now=Date.now();let s='\n\nREPÈRE TEMPOREL\n'+dateLabel(now)+' · '+hhmm(now)+' · '+partDay(now)+'.';
+    if(activityContextNeeded(q)){
+      const st=schedState(c),life=updateActivity(c,false);
+      if(st==='work')s+=' Selon ses horaires, '+characterName(c)+' est normalement au travail'+(c.job?' ('+c.job+')':'')+'.';
+      else if(st==='sleep')s+=' Selon ses horaires, '+characterName(c)+' est normalement en période de sommeil.';
+      if(life&&life.name)s+=' Activité locale estimée : '+life.name+'. Cette donnée est indicative ; ne la transforme pas en récit si elle n’aide pas à répondre.';
+    }
     return s;
   }
   function outputRules(c){
-    return'\n\nSTYLE DE CE TOUR\nRéponds en français comme '+(characterName(c))+' qui écrit sur téléphone : naturel, vivant, pas administratif. 1 à 3 bulles en général. '+
-      'RÈGLE FORTE : m contient uniquement les messages que tu tapes et envoies. Pas de narration, pas de didascalie, pas de description de tes gestes, postures, mouvements ou sensations comme si une caméra te suivait. Évite notamment les formulations du type « je ferme les yeux », « je me blottis », « je regarde par la fenêtre », sauf si tu les dis réellement comme une information utile dans la conversation. Si tu veux faire un geste envers '+uName(c)+', utilise uniquement le champ act lorsqu’une interaction autorisée convient ; ne décris pas ce geste dans m. '+
+    return'\n\nCONTRAT DE CONVERSATION\nRéponds en français comme '+(characterName(c))+' qui échange sur une messagerie : naturel, vivant, direct, pas administratif. 1 à 3 bulles en général. '+
+      'N’essaie pas de mettre en scène chaque réponse. Tu peux naturellement dire ce que tu fais, ce que tu ressens ou décrire quelque chose lorsque la conversation le demande ; évite seulement de transformer spontanément chaque tour en narration romanesque. '+
+      'Les interactions physiques structurées utilisent act lorsqu’une interaction autorisée est pertinente. act reste vide dans la majorité des tours. '+
       'Ne récite pas la mémoire et n’essaie pas de caser un souvenir à chaque réponse. Si tu ne sais pas, tu peux le dire. '+
       'Ne confonds jamais la vie de '+uName(c)+' avec celle de '+(characterName(c))+'. Les citations gardent toujours leur auteur. '+
-      'Le format JSON est imposé par l’API : m contient les bulles ; mood/lvl sont facultatifs ; img/mus/pl/yt seulement si cela vient naturellement ; act doit rester vide dans la majorité des tours. Une action spontanée est rare et ne doit pas apparaître dans plusieurs réponses successives. Si tu réponds à une ACTION PHYSIQUE de '+uName(c)+', une action en retour est facultative ; si tu en choisis une, ne renvoie jamais la même action en miroir et choisis uniquement une alternative compatible indiquée dans la demande. room peut contenir le nom exact d’une pièce du Refuge si tu décides naturellement de t’y déplacer. refugeDecisionId, refugeDecision, refugeProposalName et refugeProposalDescription sont toujours présents dans le JSON : laisse-les à "" quand ils ne servent pas. Si le message contient une PROPOSITION POUR NOTRE REFUGE avec un ID, tu DOIS donner ton vrai avis dans m, recopier cet ID dans refugeDecisionId et mettre refugeDecision à "accept" ou "refuse". Si le contexte dit PROPOSITION ATTENDUE DE TOI ou si tu choisis rarement de proposer une nouvelle pièce, remplis refugeProposalName et refugeProposalDescription ; cela crée seulement une proposition en attente de Vincent, jamais une pièce automatiquement construite. La proposition de Vincent n’existe dans la maison qu’après ton acceptation, et ta proposition n’existe qu’après l’acceptation de Vincent ; coop=true uniquement avec mus quand tu choisis vraiment de garder ce morceau dans votre playlist commune ; att=true seulement si tu attends réellement une réponse.';
+      'Le format JSON est imposé par l’API : m contient les bulles ; mood/lvl sont facultatifs ; img/mus/pl/yt seulement si cela vient naturellement ; act doit rester vide dans la majorité des tours. room peut contenir le nom exact d’une pièce du Refuge seulement lorsque ce contexte est réellement actif. refugeDecisionId, refugeDecision, refugeProposalName et refugeProposalDescription sont toujours présents dans le JSON : laisse-les à "" quand ils ne servent pas. Si le message contient une PROPOSITION POUR NOTRE REFUGE avec un ID, donne ton vrai avis dans m, recopie cet ID dans refugeDecisionId et mets refugeDecision à "accept" ou "refuse". coop=true uniquement avec mus quand tu choisis vraiment de garder ce morceau dans votre playlist commune ; att=true seulement si tu attends réellement une réponse.';
   }
   sysPrompt=function(c,conv){
     conv=conv||cur;c=c||(conv?CONTACTS.find(x=>x.id===conv.cid):null);if(!c)throw new Error('personnage introuvable');
@@ -1168,7 +1182,9 @@
     if(visualContextNeeded(conv,q)&&(c.look||'').trim())s+='\nAPPARENCE — utile pour ce tour visuel\n'+clipText(c.look,2400)+'\n';
     s+=sourceMemories(c,q);s+=epRelevantBlock(c,conv,q);s+=crossThreadRawRecall(c,conv,q);
     if(opt(c,'threads')&&(c.threads||'').trim())s+='\n\nINTENTION MANUELLE ÉVENTUELLE\n'+clipText(c.threads,380);
-    s+=currentState(c,conv);s+=presenceBlock(c,conv);s+=tinyRefuge(c);s+=tinyActions(c);s+=tinyMedia(c,q);s+=outputRules(c);return s;
+    /* 3.4.0 Prompt Diet : la vie locale reste observable et pilote le timing,
+       mais n'est plus injectée comme mini-cerveau parallèle à chaque tour. */
+    s+=currentState(c,conv,q);s+=tinyRefuge(c,q);s+=tinyActions(c,conv,q);s+=tinyMedia(c,q);s+=outputRules(c);return s;
   };
 
   /* generateContent de secours pour les autres fournisseurs et tâches internes.
@@ -1391,8 +1407,25 @@
         CONVS.filter(v=>v.cid===c.id&&v.type==='call'&&!v.mindArchived).slice(-20).forEach(v=>timelineAdd(c,'call',convTitle(v),v.callSummary||'',v.created||nowTs(),{conv:v.id}));
       }
       updateActivity(c,false);
+      /* 3.4.0 : décontamination unique. Les libellés narratifs des gestes restent
+         visibles dans la conversation, mais cessent d'alimenter la mémoire longue.
+         On repart également sur un nouvel Interaction ID : le serveur ne conserve
+         ainsi pas les anciennes surcouches 3.2/3.3 comme exemples de style. */
+      if(!c.promptDiet340Applied){
+        const actionTs=new Set();
+        CONVS.filter(v=>v.cid===c.id).forEach(v=>(v.msgs||[]).forEach(m=>{if(m&&m.act&&m.ts)actionTs.add(Number(m.ts))}));
+        c.episodes=(c.episodes||[]).map(ep=>{ep.sources=(ep.sources||[]).filter(src=>!actionTs.has(Number(src.ts)));return ep}).filter(ep=>(ep.sources||[]).length);
+        c.promptDiet340Applied=true;changed=true;
+      }
     }
-    V2.migrating=false;if(changed)await saveContacts();
+    let convChanged=false;
+    CONVS.forEach(v=>{
+      if(v&&v.geminiInteractionId&&!v.promptDiet340Reset){
+        v.geminiInteractionId='';v.geminiTurns=[];delete v.geminiAiCursor;delete v.geminiLastInputTokens;
+        v.promptDiet340Reset=true;convChanged=true;
+      }else if(v&&!v.promptDiet340Reset){v.promptDiet340Reset=true;convChanged=true}
+    });
+    V2.migrating=false;if(changed)await saveContacts();if(convChanged)await saveConvs();
   }
 
 

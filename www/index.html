@@ -1373,14 +1373,14 @@ select{font-family:'Share Tech Mono';font-size:11px}
    <div class="note"><b>Sauvegarde complète de l'application</b> : tous tes contacts, toutes les conversations, tes réglages et tes images dans un seul fichier. C'est ce qu'il faut faire avant chaque mise à jour ou changement de téléphone. L'import <b>remplace tout</b> ce qui est présent.</div>
    <div class="note" style="font-size:13px">Pour partager un seul personnage, ne passe pas par ici : ouvre le contact, engrenage, section « Partager ce personnage ».</div>
    <div class="sect">État du stockage</div>
-   <div class="ok" id="svDiag" style="min-height:60px"></div>
-   <button class="mini g" id="svCheck">Vérifier</button>
+   <div class="ok" id="svDiag" style="min-height:72px;position:relative;z-index:1;padding-bottom:6px"></div>
+   <button class="mini g" id="svCheck" style="position:relative;z-index:1;width:100%;margin-top:10px">Vérifier le stockage</button>
    <div class="sect">Exporter</div>
-   <div class="note" style="font-size:13px">Sur Android, tous les fichiers sont rangés sous <b>Documents / Holophone</b>, puis séparés par type : <b>Conversations</b>, <b>Fiches</b>, <b>Images</b> et <b>Sauvegardes</b>. Le chemin exact s'affiche après chaque export, une fois le fichier relu sur le disque.</div>
-   <button class="chk on" id="svImg"><span class="bx">✓</span><span class="lb2"><b>Inclure les images</b><i>avatars et galerie — fichier plus lourd</i></span></button>
+   <div class="note" style="font-size:13px">La sauvegarde globale est écrite dans <b>Documents / Holophone / saves</b>. Elle contient les personnages, conversations, réglages, mémoire, Refuge, médias, packs de langue et préférences d'interface. Les clés API restent optionnelles pour éviter de les écrire en clair.</div>
+   <button class="chk on" id="svImg" aria-disabled="true"><span class="bx">✓</span><span class="lb2"><b>Médias inclus dans la sauvegarde globale</b><i>avatars, galerie, audio, Braindance et stockage binaire — obligatoire</i></span></button>
    <button class="chk" id="svKeys"><span class="bx">✓</span><span class="lb2"><b>Inclure les clés API</b><i>elles seront écrites en clair dans la sauvegarde — ne partage jamais ce fichier</i></span></button>
    <div class="rowb" style="margin-top:8px"><button class="mini g" id="svDl">Enregistrer la sauvegarde</button>
-    <button class="mini g" id="svCopy">Copier (sans images)</button></div>
+    <button class="mini g" id="svCopy">Copier l'état (sans médias)</button></div>
    <div class="sect">Importer</div>
    <button class="opt" id="svPick">Restaurer une sauvegarde complète…</button>
    <input type="file" id="svFile" accept=".json,application/json" class="hide">
@@ -1913,7 +1913,7 @@ const TTS={
 let audioEl=null;
 let AUTO={on:true};
 const saveAuto=()=>Store.set('v7.auto',JSON.stringify(AUTO));
-const APPV='3.3.1';
+const APPV='3.4.1';
 const uiT=(key,vars)=>window.HolophoneI18n?window.HolophoneI18n.t(key,vars):key;
 const appLang=()=>window.HolophoneI18n?window.HolophoneI18n.current():'fr-FR';
 /* --- FAMILLES : clé, nom, couleur, valence, énergie --- */
@@ -9608,10 +9608,15 @@ $('#ctExportImg').onclick=async()=>{
    (dernier&&!dernier.natif?'\nTéléchargé par le navigateur.':''),'var(--teal)',300000);
  }catch(e){exportFail($('#ctMsg'),e)}
 };
+/* Compatibilité technique 3.4.1 : l'ancien helper toyList a disparu lors des refontes,
+   mais plusieurs chemins export/import l'appelaient encore. On normalise ici sans recréer
+   un sous-système séparé : c.toys est désormais la source canonique. */
+function toyList(c){if(!c)return[];if(!Array.isArray(c.toys))c.toys=[];return c.toys}
+
 /* ===================== SAUVEGARDE ===================== */
 $('#goSave').onclick=()=>{show($('#screenSave'));svCheck()};
 $('#svBack').onclick=()=>{show($('#screenSys'));refreshSys()};
-$('#svImg').onclick=()=>$('#svImg').classList.toggle('on');
+$('#svImg').onclick=()=>flash($('#svMsg'),'Les médias font désormais partie de la sauvegarde globale.','var(--teal)',12000);
 $('#svKeys').onclick=()=>$('#svKeys').classList.toggle('on');
 
 async function svCheck(){
@@ -9631,11 +9636,11 @@ async function svCheck(){
  const FS=CAP().Filesystem;
  if(FS&&FS.writeFile){
   try{
-   await FS.writeFile({path:EXPORT_DIR+'/Sauvegardes/.essai',data:'ok',directory:'DOCUMENTS',
+   await FS.writeFile({path:EXPORT_DIR+'/saves/.essai',data:'ok',directory:'DOCUMENTS',
     encoding:'utf8',recursive:true});
-   out.push('Documents/'+EXPORT_DIR+' : écriture possible · dossiers compartimentés');
-   try{await FS.deleteFile({path:EXPORT_DIR+'/Sauvegardes/.essai',directory:'DOCUMENTS'})}catch(e){}
-  }catch(e){out.push('Documents/'+EXPORT_DIR+' : ÉCRITURE REFUSÉE — '+(e.message||''))}
+   out.push('Documents/'+EXPORT_DIR+'/saves : écriture possible');
+   try{await FS.deleteFile({path:EXPORT_DIR+'/saves/.essai',directory:'DOCUMENTS'})}catch(e){}
+  }catch(e){out.push('Documents/'+EXPORT_DIR+'/saves : ÉCRITURE REFUSÉE — '+(e.message||''))}
  }else if(isNative()){
   out.push('Module Fichiers ABSENT — les exports échoueront');
  }else{
@@ -9644,7 +9649,7 @@ async function svCheck(){
  if(!ls||!ix)out.push('→ Exporte une sauvegarde avant de fermer.');
  d.innerHTML='';out.forEach(t=>{const l=document.createElement('div');
   l.textContent=t;if(/PERDU|→|REFUS|ABSENT/.test(t))l.style.color='var(--magenta)';d.appendChild(l)});
- $('#saveState').textContent=(ls&&ix)?'stockage sain':'stockage non fiable ici';
+ $('#saveState').textContent=(ls&&ix)?'sauvegarde globale disponible':'stockage non fiable ici';
 }
 $('#svCheck').onclick=svCheck;
 
@@ -9692,6 +9697,53 @@ async function startupBackupImport(o){
  }
  delete STARTCFG.audio;audioNormalize();await saveStartup();
 }
+function backupLocalStorageExport(withKeys){
+ const out={};
+ try{for(let i=0;i<localStorage.length;i++){
+  const k=localStorage.key(i);if(!k)continue;
+  if(!withKeys&&(SECURE_KEYS.has(k)||k===K.key||/api\.keys/i.test(k)))continue;
+  out[k]=localStorage.getItem(k);
+ }}catch(e){}
+ return out;
+}
+async function backupStoreExport(withKeys){
+ const keys=new Set([
+  ...DIAG_KEYS,K.ct,K.cv,K.voice,K.se,K.model,K.prov,
+  'v7.actions','v7.auto','v7.base','v7.braindance','v7.dernier-fil','v7.emojiRecent','v7.gen',
+  'v7.nowarn','v7.pin','v7.privacy','v7.rev','v7.safe','v7.seen','v7.spot','v7.startup','v7.theme',
+  'v7.think','v7.user','v7.audioLibrary','v7.language','v2.config','v2.backupLast'
+ ]);
+ if(withKeys)keys.add(K.key);else keys.delete(K.key);
+ const out={};
+ for(const k of keys){try{const v=await Store.get(k);if(v!==null&&v!==undefined&&v!=='')out[k]=v}catch(e){}}
+ return out;
+}
+async function backupIdbExport(){
+ const db=await idb();
+ const keys=await new Promise((res,rej)=>{const out=[],t=db.transaction('files','readonly'),q=t.objectStore('files').openCursor();q.onsuccess=()=>{const c=q.result;if(!c){res(out);return}out.push(String(c.key));c.continue()};q.onerror=()=>rej(q.error)});
+ const out=[];
+ for(const key of keys){try{const v=await idbGet(key);if(v instanceof Blob){out.push({key,kind:'blob',type:v.type||'application/octet-stream',data:await startupBlobData(v)})}else{out.push({key,kind:'json',data:v})}}catch(e){}}
+ return out;
+}
+async function backupIdbImport(entries){
+ if(!Array.isArray(entries))return;
+ const db=await idb();
+ await new Promise((res,rej)=>{const t=db.transaction('files','readwrite');t.objectStore('files').clear();t.oncomplete=()=>res(true);t.onerror=()=>rej(t.error)});
+ for(const it of entries){if(!it||!it.key)continue;try{
+  if(it.kind==='blob'&&typeof it.data==='string'&&it.data.startsWith('data:')){const b=await(await fetch(it.data)).blob();await idbPut(String(it.key),b)}
+  else if(it.kind==='json')await idbPut(String(it.key),it.data);
+ }catch(e){console.warn('restore idb',it.key,e)}}
+}
+async function backupStoreImport(o,withKeys){
+ if(!o||typeof o!=='object')return;
+ for(const [k,v] of Object.entries(o)){if(!withKeys&&(SECURE_KEYS.has(k)||k===K.key||/api\.keys/i.test(k)))continue;try{await Store.set(k,String(v??''))}catch(e){}}
+}
+function backupLocalStorageImport(o,withKeys){
+ if(!o||typeof o!=='object')return;
+ try{localStorage.clear()}catch(e){}
+ for(const [k,v] of Object.entries(o)){if(!withKeys&&(SECURE_KEYS.has(k)||k===K.key||/api\.keys/i.test(k)))continue;try{localStorage.setItem(k,String(v??''))}catch(e){}}
+}
+
 async function buildBackup(withImg,withKeys){
  const cts=[],bdReplayRecords=await bdReplayExportAll();
  for(const c of CONTACTS){
@@ -9702,11 +9754,12 @@ async function buildBackup(withImg,withKeys){
   cc.av=cc.av.filter(a=>a.src);cc.gal=cc.gal.filter(g=>g.src);
   cts.push(cc);
  }
- const out={app:'holophone-backup',v:12,date:new Date().toISOString(),contacts:cts,convs:CONVS,
+ const out={app:'holophone-backup',v:13,date:new Date().toISOString(),appVersion:APPV,contacts:cts,convs:CONVS,
   auto:AUTO,voice:VOICE,search:SEARCH,gen:GEN,braindance:BDCFG,braindanceReplays:bdReplayRecords,actions:ACTCFG,user:USER,spot:SPOT,theme:THEME,
   startup:await startupBackupExport(),audioLibrary:await audioLibraryBackupExport(withImg),privacy:privacyNormalize(),
   language:window.HolophoneI18n?window.HolophoneI18n.exportState():null,
   v2:(window.HolophoneV2&&window.HolophoneV2.cfg)?window.HolophoneV2.cfg:null,
+  raw:{localStorage:backupLocalStorageExport(withKeys),store:await backupStoreExport(withKeys),indexedDB:withImg?await backupIdbExport():[]},
   api:{prov:API.prov,model:API.model,keys:withKeys?API.keys:{}}};
  if(window.HolophoneStability&&window.HolophoneStability.decorateBackup)return await window.HolophoneStability.decorateBackup(out);
  return out;
@@ -9714,9 +9767,9 @@ async function buildBackup(withImg,withKeys){
 $('#svDl').onclick=async()=>{
  flash($('#svMsg'),'Préparation…','var(--teal)',60000);
  try{
-  const o=await buildBackup($('#svImg').classList.contains('on'),$('#svKeys').classList.contains('on'));
+  const o=await buildBackup(true,$('#svKeys').classList.contains('on'));
   const txt=JSON.stringify(o);
-  const r=await saveFile('holophone-sauvegarde-'+new Date().toISOString().slice(0,10)+'.json',txt,'Sauvegardes');
+  const r=await saveFile('holophone-global-'+new Date().toISOString().replace(/[:.]/g,'-')+'.json',txt,'saves');
   const nc=o.contacts.length,nv=o.convs.length;
   exportDone($('#svMsg'),'Sauvegarde enregistrée',r,
    exportPoids(txt.length)+' · '+nc+' fiche'+(nc>1?'s':'')+' · '+nv+' conversation'+(nv>1?'s':'')+
@@ -9726,7 +9779,7 @@ $('#svDl').onclick=async()=>{
 $('#svCopy').onclick=async()=>{
  try{const o=await buildBackup(false,$('#svKeys').classList.contains('on'));
   await navigator.clipboard.writeText(JSON.stringify(o));
-  flash($('#svMsg'),'Copié dans le presse-papier (sans images).','var(--teal)',20000)}
+  flash($('#svMsg'),'État copié dans le presse-papier (sans médias binaires).','var(--teal)',20000)}
  catch(e){flash($('#svMsg'),'Copie refusée — '+e.message,'var(--magenta)',20000)}
 };
 async function applyBackup(o){
@@ -9782,7 +9835,16 @@ async function applyBackup(o){
   if(o.api.keys&&Object.keys(o.api.keys).length)API.keys=o.api.keys}
  await saveContacts();await mediaCatalogSyncAll();await saveConvs();await saveAuto();await saveVoice();await saveSearch();await saveUser();await saveGen();await saveBDCfg();await savePrivacy();await applyPrivacyNative();
  await Store.set(K.key,JSON.stringify(API.keys));await Store.set(K.model,API.model);await Store.set(K.prov,API.prov);
- curCt=CONTACTS[0].id;
+ /* v13 : restauration exhaustive des préférences et du stockage binaire. Les structures
+    métier ont été validées ci-dessus ; le snapshot brut restitue ensuite les réglages
+    périphériques qui ne doivent plus dépendre d'une liste codée en dur. */
+ if(o.raw&&typeof o.raw==='object'){
+  const rawHasKeys=!!(o.api&&o.api.keys&&Object.keys(o.api.keys).length);
+  if(Array.isArray(o.raw.indexedDB))await backupIdbImport(o.raw.indexedDB);
+  if(o.raw.store)await backupStoreImport(o.raw.store,rawHasKeys);
+  if(o.raw.localStorage)backupLocalStorageImport(o.raw.localStorage,rawHasKeys);
+ }
+ curCt=CONTACTS[0]&&CONTACTS[0].id||null;
  return CONTACTS.length;
 }
 async function applyBackupSafe(o){
@@ -9795,15 +9857,15 @@ $('#svFile').onchange=async e=>{
  const f=e.target.files[0];e.target.value='';if(!f)return;
  flash($('#svMsg'),'Lecture…','var(--teal)',60000);
  try{const nb=await applyBackupSafe(JSON.parse(await f.text()));
-  flash($('#svMsg'),nb+' contacts restaurés. Retourne à la liste.','var(--teal)',30000);
-  buildInbox();refreshSys()}
+  flash($('#svMsg'),nb+' personnage(s) restauré(s). Redémarrage de Holophone…','var(--teal)',30000);
+  buildInbox();refreshSys();setTimeout(()=>location.reload(),900)}
  catch(err){flash($('#svMsg'),'Import impossible — '+err.message,'var(--magenta)',30000)}
 };
 $('#svPasteGo').onclick=async()=>{
  const t=$('#svPaste').value.trim();
  if(!t){flash($('#svMsg'),'Colle d\'abord une sauvegarde.','var(--magenta)',15000);return}
  try{const nb=await applyBackupSafe(JSON.parse(t));$('#svPaste').value='';
-  flash($('#svMsg'),'Sauvegarde restaurée.','var(--teal)',30000);buildInbox();refreshSys()}
+  flash($('#svMsg'),'Sauvegarde restaurée. Redémarrage de Holophone…','var(--teal)',30000);buildInbox();refreshSys();setTimeout(()=>location.reload(),900)}
  catch(err){flash($('#svMsg'),'Import impossible — '+err.message,'var(--magenta)',30000)}
 };
 
@@ -9872,9 +9934,8 @@ async function spontaneous(ct){
    node:null,msgs:[],pending:null,ai:[],created:nowTs(),bumps:0};
   CONVS.unshift(conv);
  }
- const vie=opt(ct,'life')
-  ?" Ta continuité de vie peut influencer ton ton ou ta disponibilité, mais ne raconte pas spontanément ce que tu es en train de faire."
-  :"";
+ /* 3.4.0 Prompt Diet : la vie locale décide du timing mais ne dicte plus le contenu. */
+ const vie='';
  const presenceHint=(window.holoPresenceInitiative?window.holoPresenceInitiative(ct,conv):'');
  const rang=relance?((conv.wait&&conv.wait.n)||0):0;
  const attente=relance?durLabel(nowTs()-(conv.wait.since||nowTs())):'';
@@ -10122,5 +10183,6 @@ async function boot(){
  }else{boot()}
  </script>
  <script src="js/holophone-v2.js"></script>
+ <script src="js/holophone-ux340.js"></script>
 </body>
 </html>

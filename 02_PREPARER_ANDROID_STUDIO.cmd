@@ -3,7 +3,7 @@ setlocal EnableExtensions
 cd /d "%~dp0"
 
 echo ============================================================
-echo  HOLOPHONE 3.3.1 - CORRECTIFS CONVERSATION + SPOTIFY
+echo  HOLOPHONE 3.4.0 - ERGO + PROMPT DIET
 echo ============================================================
 echo.
 
@@ -52,7 +52,7 @@ if errorlevel 1 (
 
 echo.
 echo Projet pret.
-echo Release Android attendue : versionName 3.3.1 / versionCode 52
-echo Pour une release complete, utilise RELEASE_3.3.1.cmd
+echo Release Android attendue : versionName 3.4.0 / versionCode 54
+echo Pour une release complete, utilise RELEASE_3.4.0.cmd
 echo.
 pause
